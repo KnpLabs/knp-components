@@ -14,7 +14,7 @@ class PaginatorTest extends BaseTestCase
      */
     function shouldNotBeAbleToPaginateWithoutListeners()
     {
-        $p = new Paginator;
+        $p = new Paginator(new EventDispatcher);
         $p->paginate(array());
     }
 

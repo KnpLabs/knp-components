@@ -8,6 +8,7 @@ use Knp\Component\Pager\Event\CountEvent;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\BeforeEvent;
 use Knp\Component\Pager\Event\AfterEvent;
+use Knp\Component\Pager\Event\Subscriber\Paginate\PaginateSubscriber;
 
 class Paginator
 {
@@ -24,6 +25,7 @@ class Paginator
         $this->eventDispatcher = $eventDispatcher;
         if (is_null($this->eventDispatcher)) {
             $this->eventDispatcher = new EventDispatcher;
+            $this->eventDispatcher->addSubscriber(new PaginateSubscriber);
         }
     }
 

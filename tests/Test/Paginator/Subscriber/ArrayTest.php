@@ -57,11 +57,8 @@ class ArrayTest extends BaseTestCase
      */
     function shouldSupportPaginateStrategySubscriber()
     {
-        $dispatcher = new EventDispatcher;
-        $dispatcher->addSubscriber(new PaginateSubscriber);
-
         $items = array('first', 'second');
-        $p = new Paginator($dispatcher);
+        $p = new Paginator;
         $view = $p->paginate($items, 1, 10);
         $this->assertTrue($view instanceof PaginationInterface);
     }

@@ -44,14 +44,11 @@ class QueryTest extends BaseTestCaseORM
      */
     function shouldSupportPaginateStrategySubscriber()
     {
-        $dispatcher = new EventDispatcher;
-        $dispatcher->addSubscriber(new PaginateSubscriber);
-
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Mock\Entity\Article a')
         ;
-        $p = new Paginator($dispatcher);
+        $p = new Paginator;
         $view = $p->paginate($query, 1, 10);
         $this->assertTrue($view instanceof PaginationInterface);
     }
