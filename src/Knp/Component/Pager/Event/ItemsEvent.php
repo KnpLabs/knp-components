@@ -27,7 +27,7 @@ class ItemsEvent extends Event
         $this->alias = $alias;
     }
 
-    public function getTarget()
+    public function &getTarget()
     {
         return $this->target;
     }
@@ -55,7 +55,7 @@ class ItemsEvent extends Event
     /**
      * @todo: maybe a closure to lazy load
      *
-     * @param unknown_type $items
+     * @param mixed $items
      */
     public function setItems($items)
     {

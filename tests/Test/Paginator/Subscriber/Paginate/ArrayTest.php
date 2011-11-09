@@ -27,7 +27,7 @@ class ArrayTest extends BaseTestCase
 
         $this->assertEquals(1, $view->getCurrentPageNumber());
         $this->assertEquals(10, $view->getItemNumberPerPage());
-        $this->assertEquals($items, $view->getItems());
+        $this->assertEquals(2, count($view->getItems()));
         $this->assertEquals(2, $view->getTotalItemCount());
         $this->assertEquals('', $view->getAlias());
     }
@@ -47,7 +47,7 @@ class ArrayTest extends BaseTestCase
 
         $this->assertEquals(2, $view->getCurrentPageNumber());
         $this->assertEquals(10, $view->getItemNumberPerPage());
-        $this->assertEquals(array_slice($items, 10, 10), $view->getItems());
+        $this->assertEquals(10, count($view->getItems()));
         $this->assertEquals(21, $view->getTotalItemCount());
         $this->assertEquals('al', $view->getAlias());
     }

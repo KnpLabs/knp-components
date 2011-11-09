@@ -12,6 +12,7 @@ class SortableSubscriber implements EventSubscriberInterface
     {
         $disp = $event->getEventDispatcher();
         // hook all standard sortable subscribers
+        $disp->addSubscriber(new ArraySubscriber);
     }
 
     public static function getSubscribedEvents()

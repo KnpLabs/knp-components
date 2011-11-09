@@ -3,22 +3,29 @@
 namespace Knp\Component\Pager;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Event\InitPaginationEvent;
-use Knp\Component\Pager\Event\CountEvent;
-use Knp\Component\Pager\Event\ItemsEvent;
-use Knp\Component\Pager\Event\BeforeEvent;
-use Knp\Component\Pager\Event\AfterEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginateSubscriber;
+use Knp\Component\Pager\Event;
 
+/**
+ * Paginator uses event dispatcher to trigger pagination
+ * lifecycle events. Subscribers are expected to paginate
+ * wanted target and finally it generates pagination view
+ * which is only the result of paginator
+ */
 class Paginator
 {
+    /**
+     * @var Symfony\Component\EventDispatcher\EventDispatcher
+     */
     protected $eventDispatcher;
 
     /**
      * Initialize paginator with event dispatcher
-     * Can be a service in concept
+     * Can be a service in concept. By default it
+     * hooks standard pagination subscriber
      *
-     * @param EventDispatcher $eventDispatcher
+     * @param Symfony\Component\EventDispatcher\EventDispatcher $eventDispatcher
      */
     public function __construct(EventDispatcher $eventDispatcher = null)
     {
@@ -33,13 +40,14 @@ class Paginator
      * Paginates anything (depending on event listeners)
      * into Pagination object, which is a view targeted
      * pagination object (might be aggregated helper object)
+     * responsible for the pagination result representation
      *
-     * @param mixed $target
-     * @param integer $offset
-     * @param integer $limit
-     * @param boolean $distinct
-     * @param string $alias
-     * @throws \LogicException
+     * @param mixed $target - anything what needs to be paginated
+     * @param integer $page - page number, starting from 1
+     * @param integer $limit - number of items per page
+     * @param boolean $distinct - distinction of results if possible
+     * @param string $alias - pagination alias, allows multiple paginations per request
+     * @throws LogicException
      * @return Knp\Component\Pager\Pagination\PaginationInterface
      */
     public function paginate($target, $page = 1, $limit = 10, $distinct = true, $alias = '')
@@ -50,24 +58,24 @@ class Paginator
         }
         $offset = abs($page - 1) * $limit;
         // before pagination start
-        $beforeEvent = new BeforeEvent($this->eventDispatcher);
+        $beforeEvent = new Event\BeforeEvent($this->eventDispatcher);
         $this->eventDispatcher->dispatch('before', $beforeEvent);
         // count
-        $countEvent = new CountEvent($target, $distinct, $alias);
+        $countEvent = new Event\CountEvent($target, $distinct, $alias);
         $this->eventDispatcher->dispatch('count', $countEvent);
         if (!$countEvent->isPropagationStopped()) {
             throw new \RuntimeException('Some listener must count the given data');
         }
         $count = $countEvent->getCount();
         // items
-        $itemsEvent = new ItemsEvent($target, $distinct, $offset, $limit, $alias);
+        $itemsEvent = new Event\ItemsEvent($target, $distinct, $offset, $limit, $alias);
         $this->eventDispatcher->dispatch('items', $itemsEvent);
         if (!$itemsEvent->isPropagationStopped()) {
             throw new \RuntimeException('Some listener must slice the given data');
         }
         $items = $itemsEvent->getItems();
         // pagination initialization event
-        $initPaginationEvent = new InitPaginationEvent($target, $alias);
+        $initPaginationEvent = new Event\InitPaginationEvent($target, $alias);
         $this->eventDispatcher->dispatch('pagination', $initPaginationEvent);
         if (!$initPaginationEvent->isPropagationStopped()) {
             throw new \RuntimeException('Some listener must create pagination view');
@@ -81,16 +89,28 @@ class Paginator
         $paginationView->setItems($items);
 
         // after
-        $afterEvent = new AfterEvent($paginationView);
+        $afterEvent = new Event\AfterEvent($paginationView);
         $this->eventDispatcher->dispatch('after', $afterEvent);
         return $paginationView;
     }
 
-    public function subscribe($subscriber)
+    /**
+     * Hooks in the given event subscriber
+     *
+     * @param Symfony\Component\EventDispatcher\EventSubscriberInterface $subscriber
+     */
+    public function subscribe(EventSubscriberInterface $subscriber)
     {
         $this->eventDispatcher->addSubscriber($subscriber);
     }
 
+    /**
+     * Hooks the listener to the given event name
+     *
+     * @param string $eventName
+     * @param object $listener
+     * @param integer $priority
+     */
     public function connect($eventName, $listener, $priority = 0)
     {
         $this->eventDispatcher->addListener($eventName, $listener, $priority);

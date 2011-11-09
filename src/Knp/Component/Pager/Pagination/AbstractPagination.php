@@ -10,6 +10,9 @@ abstract class AbstractPagination implements PaginationInterface
     protected $totalCount;
     protected $alias;
 
+    /**
+     * {@inheritDoc}
+     */
     public function setCurrentPageNumber($pageNumber)
     {
         $this->currentPageNumber = $pageNumber;
@@ -20,6 +23,9 @@ abstract class AbstractPagination implements PaginationInterface
         return $this->currentPageNumber;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function setItemNumberPerPage($numItemsPerPage)
     {
         $this->numItemsPerPage = $numItemsPerPage;
@@ -30,6 +36,9 @@ abstract class AbstractPagination implements PaginationInterface
         return $this->numItemsPerPage;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function setTotalItemCount($numTotal)
     {
         $this->totalCount = $numTotal;
@@ -40,6 +49,9 @@ abstract class AbstractPagination implements PaginationInterface
         return $this->totalCount;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function setAlias($paginationAlias)
     {
         $this->alias = $paginationAlias;
@@ -50,6 +62,9 @@ abstract class AbstractPagination implements PaginationInterface
         return $this->alias;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function setItems($items)
     {
         $this->items = $items;
