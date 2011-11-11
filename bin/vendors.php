@@ -12,10 +12,20 @@ if (!is_dir(VENDOR_PATH)) {
 $deps = array(
     array('Symfony/Component/ClassLoader', 'http://github.com/symfony/ClassLoader.git', 'v2.0.4'),
     array('Symfony/Component/EventDispatcher', 'http://github.com/symfony/EventDispatcher.git', 'aeff4b4'),
-    // orm
+    // doctrine 2.2.x
+    /*
     array('doctrine-orm', 'http://github.com/doctrine/doctrine2.git', '15562d030e'),
     array('doctrine-dbal', 'http://github.com/doctrine/dbal.git', '537de7e'),
     array('doctrine-common', 'http://github.com/doctrine/common.git', 'b3b1e62b1c'),
+    array('doctrine-mongodb', 'http://github.com/doctrine/mongodb.git', '1674e629f2'),
+    array('doctrine-mongodb-odm', 'http://github.com/doctrine/mongodb-odm.git', '1674e629f2'),
+    */
+    // doctrine 2.1.x
+    array('doctrine-orm', 'http://github.com/doctrine/doctrine2.git', '550fcbc17fc9d927edf3'),
+    array('doctrine-dbal', 'http://github.com/doctrine/dbal.git', 'eb80a3797e80fbaa024bb0a1ef01c3d81bb68a76'),
+    array('doctrine-common', 'http://github.com/doctrine/common.git', '73b61b50782640358940'),
+    array('doctrine-mongodb', 'http://github.com/doctrine/mongodb.git', '4109734e249a951f270c531999871bfe9eeed843'),
+    array('doctrine-mongodb-odm', 'http://github.com/doctrine/mongodb-odm.git', '8fb97a4740c2c12a2a5a4e7d78f0717847c39691'),
 );
 
 foreach ($deps as $dep) {

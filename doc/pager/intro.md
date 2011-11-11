@@ -27,26 +27,26 @@ can be anything which will be responsible on how to render the pagination.
 ### Controller
 
     $paginator = new Knp\Component\Pager\Paginator;
-    $paginationTarget = range('a', 'u');
-    // uses event subscribers to paginate $paginationTarget
-    $paginationView = $paginator->paginate($paginationTarget, 2/*page*/, 10/*limit*/);
+    $target = range('a', 'u');
+    // uses event subscribers to paginate $target
+    $pagination = $paginator->paginate($target, 2/*page*/, 10/*limit*/);
     
     // iterate paginated items
-    foreach ($paginationView as $item) {
+    foreach ($pagination as $item) {
         //...
     }
-    echo $paginationView; // renders pagination
+    echo $pagination; // renders pagination
     
     // overriding view rendering
     
-    $paginationView->renderer = function($data) use ($template) {
+    $pagination->renderer = function($data) use ($template) {
         return $twig->render($template, $data);
     };
     
-    echo $paginationView;
+    echo $pagination;
     
     // or paginate Doctrine ORM query
     
-    $paginationView = $paginator->paginate($em->createQuery('SELECT a FROM Entity\Article a'), 1, 10);
+    $pagination = $paginator->paginate($em->createQuery('SELECT a FROM Entity\Article a'), 1, 10);
 
 

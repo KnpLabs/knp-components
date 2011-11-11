@@ -2,7 +2,7 @@
 <phpunit bootstrap="./bootstrap.php">
     <testsuites>
         <testsuite name="Paginator logical tests">
-            <directory suffix="Test.php">./Test/Paginator/</directory>
+            <directory suffix="Test.php">./Test/Pager/</directory>
         </testsuite>
     </testsuites>
 </phpunit>

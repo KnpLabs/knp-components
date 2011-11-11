@@ -8,7 +8,7 @@ use Knp\Component\Pager\Event\BeforeEvent;
 use Knp\Component\Pager\Pagination\SlidingPagination;
 use ReflectionClass;
 
-class PaginateSubscriber implements EventSubscriberInterface
+class PaginationSubscriber implements EventSubscriberInterface
 {
     public function pagination(PaginationEvent $event)
     {
@@ -22,6 +22,7 @@ class PaginateSubscriber implements EventSubscriberInterface
         // hook all standard subscribers
         $disp->addSubscriber(new ArraySubscriber);
         $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber);
+        $disp->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber);
     }
 
     public static function getSubscribedEvents()

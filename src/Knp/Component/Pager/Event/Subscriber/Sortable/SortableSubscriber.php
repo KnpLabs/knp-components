@@ -12,7 +12,8 @@ class SortableSubscriber implements EventSubscriberInterface
     {
         $disp = $event->getEventDispatcher();
         // hook all standard sortable subscribers
-        $disp->addSubscriber(new ArraySubscriber);
+        $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber);
+        $disp->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber);
     }
 
     public static function getSubscribedEvents()

@@ -4,7 +4,7 @@ use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\Pagination\SlidingPagination;
 use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginateSubscriber;
+use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 
 class SlidingTest extends BaseTestCase
 {

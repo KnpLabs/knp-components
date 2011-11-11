@@ -31,6 +31,8 @@ $loader->registerNamespaces(array(
     'Doctrine\\Common'           => VENDOR_PATH.'/doctrine-common/lib',
     'Doctrine\\DBAL'             => VENDOR_PATH.'/doctrine-dbal/lib',
     'Doctrine\\ORM'              => VENDOR_PATH.'/doctrine-orm/lib',
+    'Doctrine\\MongoDB'          => VENDOR_PATH.'/doctrine-mongodb/lib',
+    'Doctrine\\ODM\\MongoDB'     => VENDOR_PATH.'/doctrine-mongodb-odm/lib',
 ));
 $loader->register();
 

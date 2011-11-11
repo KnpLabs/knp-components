@@ -4,10 +4,10 @@ use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\Pagination\SlidingPagination;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Test\Mock\PaginationSubscriber;
+use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\ArraySubscriber;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginateSubscriber;
+use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 
 class ArrayTest extends BaseTestCase
 {
@@ -18,7 +18,7 @@ class ArrayTest extends BaseTestCase
     {
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new ArraySubscriber);
-        $dispatcher->addSubscriber(new PaginationSubscriber); // pagination view
+        $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
         $p = new Paginator($dispatcher);
 
         $items = array('first', 'second');
@@ -39,7 +39,7 @@ class ArrayTest extends BaseTestCase
     {
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new ArraySubscriber);
-        $dispatcher->addSubscriber(new PaginationSubscriber); // pagination view
+        $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
         $p = new Paginator($dispatcher);
 
         $items = range('a', 'u');

@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Mock\Entity;
+namespace Test\Fixture\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
