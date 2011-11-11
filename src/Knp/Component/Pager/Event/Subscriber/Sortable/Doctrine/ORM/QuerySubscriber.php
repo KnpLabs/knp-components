@@ -15,7 +15,7 @@ class QuerySubscriber implements EventSubscriberInterface
         $query = $event->getTarget();
         if ($query instanceof Query) {
             if (isset($_GET[$event->getAlias().'sort'])) {
-                $dir = strtolower($_GET[$event->getAlias().'direction']) == 'asc' ? 1 : -1;
+                $dir = strtolower($_GET[$event->getAlias().'direction']) === 'asc' ? 'asc' : 'desc';
                 $parts = explode('.', $_GET[$event->getAlias().'sort']);
                 if (count($parts) != 2) {
                     throw new UnexpectedValueException('Invalid sort key came by request, should be example: "article.title"');
@@ -26,7 +26,7 @@ class QuerySubscriber implements EventSubscriberInterface
                     ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_DIRECTION, $dir)
                     ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_FIELD, end($parts))
                 ;
-                QueryHelper::addCustomTreeWalker($query, self::TREE_WALKER_ORDER_BY);
+                QueryHelper::addCustomTreeWalker($query, 'Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\Query\OrderByWalker');
             }
         }
     }
@@ -34,7 +34,7 @@ class QuerySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'items' => array('items', 0)
+            'items' => array('items', 1)
         );
     }
 }

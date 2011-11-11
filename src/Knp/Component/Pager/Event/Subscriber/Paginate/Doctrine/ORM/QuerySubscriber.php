@@ -8,6 +8,7 @@ use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\Helper as QueryHelper;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\CountWalker;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\WhereInWalker;
+use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\LimitSubqueryWalker;
 use Doctrine\ORM\Query;
 
 class QuerySubscriber implements EventSubscriberInterface
@@ -52,6 +53,7 @@ class QuerySubscriber implements EventSubscriberInterface
                     ->setFirstResult($event->getOffset())
                     ->setMaxResults($event->getLimit())
                 ;
+
                 $ids = array_map('current', $limitSubQuery->getScalarResult());
                 // create where-in query
                 $whereInQuery = QueryHelper::cloneQuery($query);
@@ -65,8 +67,13 @@ class QuerySubscriber implements EventSubscriberInterface
                     ->setMaxResults(null)
                 ;
 
+                $type = $limitSubQuery->getHint(LimitSubqueryWalker::IDENTIFIER_TYPE);
                 foreach ($ids as $i => $id) {
-                    $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS . '_' . ++$i, $id);
+                    $whereInQuery->setParameter(
+                        WhereInWalker::PAGINATOR_ID_ALIAS . '_' . ++$i,
+                        $id,
+                        $type->getName()
+                    );
                 }
                 $result = $whereInQuery->execute();
             } else {

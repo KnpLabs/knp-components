@@ -18,6 +18,7 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\TreeWalkerAdapter,
     Doctrine\ORM\Query\AST\SelectStatement,
     Doctrine\ORM\Query\AST\SelectExpression,
@@ -35,6 +36,11 @@ use Doctrine\ORM\Query\TreeWalkerAdapter,
  */
 class LimitSubqueryWalker extends TreeWalkerAdapter
 {
+    /**
+     * ID type hint
+     */
+    const IDENTIFIER_TYPE = 'knp_paginator.id.type';
+
     /**
      * @var int Counter for generating unique order column aliases
      */
@@ -67,9 +73,16 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             }
         }
 
+        $identifier = $parent['metadata']->getSingleIdentifierFieldName();
+        $this->_getQuery()->setHint(
+            self::IDENTIFIER_TYPE,
+            Type::getType($parent['metadata']->getTypeOfField($identifier))
+        );
+
         $pathExpression = new PathExpression(
-                        PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $parentName,
-                        $parent['metadata']->getSingleIdentifierFieldName()
+            PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
+            $parentName,
+            $identifier
         );
         $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
 
@@ -80,9 +93,9 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             foreach ($AST->orderByClause->orderByItems as $item) {
                 if ($item->expression instanceof PathExpression) {
                     $pathExpression = new PathExpression(
-                                    PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
-                                    $item->expression->identificationVariable,
-                                    $item->expression->field
+                        PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
+                        $item->expression->identificationVariable,
+                        $item->expression->field
                     );
                     $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
                     $AST->selectClause->selectExpressions[] = new SelectExpression($pathExpression, '_dctrn_ord' . $this->_aliasCounter++);

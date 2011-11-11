@@ -30,7 +30,7 @@ class QuerySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'items' => array('items', 0)
+            'items' => array('items', 1)
         );
     }
 }
