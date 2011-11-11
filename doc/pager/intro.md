@@ -2,6 +2,8 @@
 
 This is a PHP 5.3 paginator with a totally diferent core concept.
 
+**Note:** it is still experimental, any ideas on structural design are very welcome
+
 How is it diferent? First of all, it uses **event dispatcher** to paginate whatever is needed.
 Pagination process involves triggering events which hits the **subscribers** and if the subscriber
 knows how to paginate the given object it does. Finally, some subscriber must initialize the
