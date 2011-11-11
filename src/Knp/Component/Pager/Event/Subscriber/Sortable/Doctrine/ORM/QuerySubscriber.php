@@ -1,91 +1,40 @@
 <?php
 
-namespace Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM;
+namespace Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Knp\Component\Pager\Event\CountEvent;
 use Knp\Component\Pager\Event\ItemsEvent;
+use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\Query\OrderByWalker;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\Helper as QueryHelper;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\CountWalker;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\WhereInWalker;
 use Doctrine\ORM\Query;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
-    /**
-     * @param CountEvent $event
-     */
-    public function count(CountEvent $event)
-    {
-        $query = $event->getTarget();
-        if ($query instanceof Query) {
-            $countQuery = QueryHelper::cloneQuery($query);
-            QueryHelper::addCustomTreeWalker(
-                $countQuery,
-                'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\CountWalker'
-            );
-            $countQuery
-                ->setHint(CountWalker::HINT_PAGINATOR_COUNT_DISTINCT, $event->isDistinct())
-                ->setFirstResult(null)
-                ->setMaxResults(null)
-            ;
-
-            $countResult = $countQuery->getResult(Query::HYDRATE_ARRAY);
-            $event->setCount(count($countResult) > 1 ? count($countResult) : current(current($countResult)));
-            $event->stopPropagation();
-        }
-    }
-
     public function items(ItemsEvent $event)
     {
         $query = $event->getTarget();
         if ($query instanceof Query) {
-            $result = null;
-            if ($event->isDistinct()) {
-                $limitSubQuery = QueryHelper::cloneQuery($query);
-                QueryHelper::addCustomTreeWalker(
-                    $limitSubQuery,
-                    'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\LimitSubqueryWalker'
-                );
-
-                $limitSubQuery
-                    ->setFirstResult($event->getOffset())
-                    ->setMaxResults($event->getLimit())
-                ;
-                $ids = array_map('current', $limitSubQuery->getScalarResult());
-                // create where-in query
-                $whereInQuery = QueryHelper::cloneQuery($query);
-                QueryHelper::addCustomTreeWalker(
-                    $whereInQuery,
-                    'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\WhereInWalker'
-                );
-                $whereInQuery
-                    ->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids))
-                    ->setFirstResult(null)
-                    ->setMaxResults(null)
-                ;
-
-                foreach ($ids as $i => $id) {
-                    $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS . '_' . ++$i, $id);
+            if (isset($_GET[$event->getAlias().'sort'])) {
+                $dir = strtolower($_GET[$event->getAlias().'direction']) == 'asc' ? 1 : -1;
+                $parts = explode('.', $_GET[$event->getAlias().'sort']);
+                if (count($parts) != 2) {
+                    throw new UnexpectedValueException('Invalid sort key came by request, should be example: "article.title"');
                 }
-                $result = $whereInQuery->execute();
-            } else {
+
                 $query
-                    ->setFirstResult($event->getOffset())
-                    ->setMaxResults($event->getLimit())
+                    ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_ALIAS, current($parts))
+                    ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_DIRECTION, $dir)
+                    ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_FIELD, end($parts))
                 ;
-                $result = $query->execute();
+                QueryHelper::addCustomTreeWalker($query, self::TREE_WALKER_ORDER_BY);
             }
-            $event->setItems($result);
-            $event->stopPropagation();
         }
     }
 
     public static function getSubscribedEvents()
     {
         return array(
-            'items' => array('items', 0),
-            'count' => array('count', 0)
+            'items' => array('items', 0)
         );
     }
 }

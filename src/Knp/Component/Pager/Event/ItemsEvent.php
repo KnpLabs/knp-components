@@ -9,8 +9,6 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class ItemsEvent extends Event
 {
-    const NAME = 'items';
-
     private $distinct;
     private $target;
     private $offset;
@@ -27,7 +25,7 @@ class ItemsEvent extends Event
         $this->alias = $alias;
     }
 
-    public function &getTarget()
+    public function getTarget()
     {
         return $this->target;
     }

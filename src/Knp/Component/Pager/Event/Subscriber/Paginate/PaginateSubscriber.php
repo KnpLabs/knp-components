@@ -3,14 +3,14 @@
 namespace Knp\Component\Pager\Event\Subscriber\Paginate;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Knp\Component\Pager\Event\InitPaginationEvent;
+use Knp\Component\Pager\Event\PaginationEvent;
 use Knp\Component\Pager\Event\BeforeEvent;
 use Knp\Component\Pager\Pagination\SlidingPagination;
 use ReflectionClass;
 
 class PaginateSubscriber implements EventSubscriberInterface
 {
-    public function pagination(InitPaginationEvent $event)
+    public function pagination(PaginationEvent $event)
     {
         $event->setPagination(new SlidingPagination);
         $event->stopPropagation();

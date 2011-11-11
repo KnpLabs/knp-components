@@ -75,13 +75,13 @@ class Paginator
         }
         $items = $itemsEvent->getItems();
         // pagination initialization event
-        $initPaginationEvent = new Event\InitPaginationEvent($target, $alias);
-        $this->eventDispatcher->dispatch('pagination', $initPaginationEvent);
-        if (!$initPaginationEvent->isPropagationStopped()) {
+        $paginationEvent = new Event\PaginationEvent($target, $alias);
+        $this->eventDispatcher->dispatch('pagination', $paginationEvent);
+        if (!$paginationEvent->isPropagationStopped()) {
             throw new \RuntimeException('Some listener must create pagination view');
         }
         // pagination class can be diferent, with diferent rendering methods
-        $paginationView = $initPaginationEvent->getPagination();
+        $paginationView = $paginationEvent->getPagination();
         $paginationView->setCurrentPageNumber($page);
         $paginationView->setItemNumberPerPage($limit);
         $paginationView->setTotalItemCount($count);

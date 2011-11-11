@@ -9,8 +9,6 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class CountEvent extends Event
 {
-    const NAME = 'count';
-
     private $distinct;
     private $target;
     private $count;

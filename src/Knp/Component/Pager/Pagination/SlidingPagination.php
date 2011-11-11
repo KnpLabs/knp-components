@@ -4,6 +4,11 @@ namespace Knp\Component\Pager\Pagination;
 
 use IteratorAggregate, Countable, Traversable, ArrayIterator, Closure;
 
+/**
+ * @todo: find a way to avoid exposing private member setters
+ *
+ * Sliding pagination
+ */
 class SlidingPagination extends AbstractPagination implements Countable, IteratorAggregate
 {
     /**
@@ -52,7 +57,7 @@ class SlidingPagination extends AbstractPagination implements Countable, Iterato
         $data = $this->getPaginationData();
         $output = '';
         if (!$this->renderer instanceof Closure) {
-            $output = 'default';
+            $output = 'override in order to render a template';
         } else {
             $output = call_user_func($this->renderer, $data);
         }

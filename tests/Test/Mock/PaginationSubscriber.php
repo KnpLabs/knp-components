@@ -3,7 +3,7 @@
 namespace Test\Mock;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Knp\Component\Pager\Event\InitPaginationEvent;
+use Knp\Component\Pager\Event\PaginationEvent;
 use Knp\Component\Pager\Pagination\SlidingPagination;
 
 class PaginationSubscriber implements EventSubscriberInterface
@@ -15,7 +15,7 @@ class PaginationSubscriber implements EventSubscriberInterface
         );
     }
 
-    function pagination(InitPaginationEvent $e)
+    function pagination(PaginationEvent $e)
     {
         $e->setPagination(new SlidingPagination);
         $e->stopPropagation();

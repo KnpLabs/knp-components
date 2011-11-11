@@ -8,10 +8,8 @@ use Knp\Component\Pager\Pagination\PaginationInterface;
 /**
  * Specific Event class for paginator
  */
-class InitPaginationEvent extends Event
+class PaginationEvent extends Event
 {
-    const NAME = 'pagination';
-
     private $target;
     private $pagination;
     private $alias;
