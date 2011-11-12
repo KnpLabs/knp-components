@@ -10,6 +10,10 @@ knows how to paginate the given object it does. Finally, some subscriber must in
 **pagination view** object, which will be the result of pagination request. Pagination view
 can be anything which will be responsible on how to render the pagination.
 
+**Magic?** no! only KISS principle
+
+Why reinventing the wheel? Can someone tell what is the definition of **wheel** in software world? 
+
 ## Requirements:
 
 - Symfony EventDispatcher component
@@ -22,7 +26,9 @@ can be anything which will be responsible on how to render the pagination.
 - Pagination view extensions based on event.
 - Paginator extensions based on events, etc.: another object pagination compatibilities.
 - Supports multiple paginations during one request
-- Separation of conserns, paginator is responsible for generating the pagination view only, pagination view - for displaying purposes.
+- Separation of conserns, paginator is responsible for generating the pagination view only,
+pagination view - for representation purposes.
+- Does not require initializing specific adapters
 
 ## Usage examples:
 

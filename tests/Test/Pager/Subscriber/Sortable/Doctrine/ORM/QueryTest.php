@@ -58,7 +58,7 @@ class QueryTest extends BaseTestCaseORM
      * @test
      * @expectedException UnexpectedValueException
      */
-    function shouldEscapeQuotedParams()
+    function shouldValidateSortableParameters()
     {
         $_GET['sort'] = '"a.title\'';
         $_GET['direction'] = 'asc';

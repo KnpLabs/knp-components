@@ -52,7 +52,7 @@ class QueryTest extends BaseTestCaseMongoODM
      * @test
      * @expectedException UnexpectedValueException
      */
-    function shouldEscapeQuotedParams()
+    function shouldValidateSortableParameters()
     {
         $_GET['sort'] = '"title\'';
         $_GET['direction'] = 'asc';

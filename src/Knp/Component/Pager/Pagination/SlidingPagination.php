@@ -76,7 +76,7 @@ class SlidingPagination extends AbstractPagination implements Countable, Iterato
         $delta = ceil($this->range / 2);
 
         if ($current - $delta > $pageCount - $this->range) {
-            $pages = range($pageCount - $this->range + 1);
+            $pages = range($pageCount - $this->range + 1, $pageCount);
         } else {
             if ($current - $delta < 0) {
                 $delta = $current;
