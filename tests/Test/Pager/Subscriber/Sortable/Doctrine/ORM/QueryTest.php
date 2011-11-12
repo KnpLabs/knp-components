@@ -68,7 +68,6 @@ class QueryTest extends BaseTestCaseORM
         ;
 
         $p = new Paginator;
-        $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
     }
 
@@ -77,6 +76,8 @@ class QueryTest extends BaseTestCaseORM
      */
     function shouldWorkWithInitialPaginatorEventDispatcher()
     {
+        $_GET['sort'] = 'a.title';
+        $_GET['direction'] = 'asc';
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
@@ -86,6 +87,10 @@ class QueryTest extends BaseTestCaseORM
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
         $this->assertTrue($view instanceof SlidingPagination);
+
+        $this->assertEquals(3, $this->queryAnalyzer->getNumExecutedQueries());
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+        $this->assertEquals('SELECT DISTINCT a0_.id AS id0, a0_.title AS title1 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10 OFFSET 0', $executed[1]);
     }
 
     protected function getUsedEntityFixtures()

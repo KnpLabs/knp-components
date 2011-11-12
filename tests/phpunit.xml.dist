@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit bootstrap="./bootstrap.php">
     <testsuites>
-        <testsuite name="Paginator logical tests">
+        <testsuite name="Pager tests">
             <directory suffix="Test.php">./Test/Pager/</directory>
         </testsuite>
     </testsuites>
