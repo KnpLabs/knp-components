@@ -16,6 +16,10 @@ class QuerySubscriber implements EventSubscriberInterface
                 $field = $_GET[$event->getAlias().'sort'];
                 $dir = strtolower($_GET[$event->getAlias().'direction']) == 'asc' ? 1 : -1;
 
+                $meta = $query->getClass();
+                if (!$meta->hasField($field)) {
+                    throw new \UnexpectedValueException($meta->name.' query cannot be sorted, because does not contain field: '.$field);
+                }
                 $reflClass = new \ReflectionClass('Doctrine\MongoDB\Query\Query');
                 $reflProp = $reflClass->getProperty('query');
                 $reflProp->setAccessible(true);

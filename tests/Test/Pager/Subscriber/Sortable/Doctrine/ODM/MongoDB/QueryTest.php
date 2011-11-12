@@ -48,6 +48,24 @@ class QueryTest extends BaseTestCaseMongoODM
         $this->assertEquals('autumn', $items[3]->getTitle());
     }
 
+    /**
+     * @test
+     * @expectedException UnexpectedValueException
+     */
+    function shouldEscapeQuotedParams()
+    {
+        $_GET['sort'] = '"title\'';
+        $_GET['direction'] = 'asc';
+        $query = $this
+            ->getMockDocumentManager()
+            ->createQueryBuilder('Test\Fixture\Document\Article')
+            ->getQuery()
+        ;
+
+        $p = new Paginator;
+        $view = $p->paginate($query, 1, 10);
+    }
+
     private function populate()
     {
         $em = $this->getMockDocumentManager();
