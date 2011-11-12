@@ -17,7 +17,7 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    function shouldPaginateSimpleDoctrineQuery()
+    function shouldSortSimpleDoctrineQuery()
     {
         $this->populate();
 
@@ -28,6 +28,7 @@ class QueryTest extends BaseTestCaseORM
 
         $_GET['sort'] = 'a.title';
         $_GET['direction'] = 'asc';
+        $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
         $view = $p->paginate($query, 1, 10);
 
@@ -46,6 +47,45 @@ class QueryTest extends BaseTestCaseORM
         $this->assertEquals('summer', $items[1]->getTitle());
         $this->assertEquals('spring', $items[2]->getTitle());
         $this->assertEquals('autumn', $items[3]->getTitle());
+
+        $this->assertEquals(6, $this->queryAnalyzer->getNumExecutedQueries());
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+        $this->assertEquals('SELECT DISTINCT a0_.id AS id0, a0_.title AS title1 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10 OFFSET 0', $executed[1]);
+        $this->assertEquals('SELECT DISTINCT a0_.id AS id0, a0_.title AS title1 FROM Article a0_ ORDER BY a0_.title DESC LIMIT 10 OFFSET 0', $executed[4]);
+    }
+
+    /**
+     * @test
+     * @expectedException UnexpectedValueException
+     */
+    function shouldEscapeQuotedParams()
+    {
+        $_GET['sort'] = '"a.title\'';
+        $_GET['direction'] = 'asc';
+        $query = $this
+            ->getMockSqliteEntityManager()
+            ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
+        ;
+
+        $p = new Paginator;
+        $this->startQueryLog();
+        $view = $p->paginate($query, 1, 10);
+    }
+
+    /**
+     * @test
+     */
+    function shouldWorkWithInitialPaginatorEventDispatcher()
+    {
+        $query = $this
+            ->getMockSqliteEntityManager()
+            ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
+        ;
+
+        $p = new Paginator;
+        $this->startQueryLog();
+        $view = $p->paginate($query, 1, 10);
+        $this->assertTrue($view instanceof SlidingPagination);
     }
 
     protected function getUsedEntityFixtures()

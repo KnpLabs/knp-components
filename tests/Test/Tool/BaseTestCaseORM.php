@@ -10,7 +10,14 @@ use Doctrine\ORM\Tools\SchemaTool;
 
 /**
  * Base test case contains common mock objects
+ * and functionality among all extensions using
  * ORM object manager
+ *
+ * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
+ * @package Gedmo
+ * @subpackage BaseTestCase
+ * @link http://www.gediminasm.org
+ * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
 {
@@ -18,6 +25,11 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
      * @var EntityManager
      */
     protected $em;
+
+    /**
+     * @var QueryAnalyzer
+     */
+    protected $queryAnalyzer;
 
     /**
      * {@inheritdoc}
@@ -101,6 +113,50 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
         $config = $this->getMockAnnotatedConfig();
         $this->em = EntityManager::create($conn, $config);
         return $this->em;
+    }
+
+    /**
+     * Starts query statistic log
+     *
+     * @throws \RuntimeException
+     */
+    protected function startQueryLog()
+    {
+        if (!$this->em || !$this->em->getConnection()->getDatabasePlatform()) {
+            throw new \RuntimeException('EntityManager and database platform must be initialized');
+        }
+        $this->queryAnalyzer = new QueryAnalyzer($this->em->getConnection()->getDatabasePlatform());
+        $this->em
+            ->getConfiguration()
+            ->expects($this->any())
+            ->method('getSQLLogger')
+            ->will($this->returnValue($this->queryAnalyzer));
+    }
+
+    /**
+     * Stops query statistic log and outputs
+     * the data to screen or file
+     *
+     * @param boolean $dumpOnlySql
+     * @param boolean $writeToLog
+     * @throws \RuntimeException
+     */
+    protected function stopQueryLog($dumpOnlySql = false, $writeToLog = false)
+    {
+        if ($this->queryAnalyzer) {
+            $output = $this->queryAnalyzer->getOutput($dumpOnlySql);
+            if ($writeToLog) {
+                $fileName = __DIR__.'/../../temp/query_debug_'.time().'.log';
+                if (($file = fopen($fileName, 'w+')) !== false) {
+                    fwrite($file, $output);
+                    fclose($file);
+                } else {
+                    throw new \RuntimeException('Unable to write to the log file');
+                }
+            } else {
+                echo $output;
+            }
+        }
     }
 
     /**

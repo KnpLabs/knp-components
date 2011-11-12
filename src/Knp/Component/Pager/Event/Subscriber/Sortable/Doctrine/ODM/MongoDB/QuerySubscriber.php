@@ -21,7 +21,7 @@ class QuerySubscriber implements EventSubscriberInterface
                 $reflProp->setAccessible(true);
                 $queryOptions = $reflProp->getValue($query);
 
-                $queryOptions['sort'][$field] = $direction;
+                $queryOptions['sort'][$field] = $dir;
                 $reflProp->setValue($query, $queryOptions);
             }
         }

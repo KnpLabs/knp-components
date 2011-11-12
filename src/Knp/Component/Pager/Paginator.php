@@ -5,6 +5,7 @@ namespace Knp\Component\Pager;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
+use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
 use Knp\Component\Pager\Event;
 
 /**
@@ -33,6 +34,7 @@ class Paginator
         if (is_null($this->eventDispatcher)) {
             $this->eventDispatcher = new EventDispatcher;
             $this->eventDispatcher->addSubscriber(new PaginationSubscriber);
+            $this->eventDispatcher->addSubscriber(new SortableSubscriber);
         }
     }
 

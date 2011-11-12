@@ -6,7 +6,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\PaginationEvent;
 use Knp\Component\Pager\Event\BeforeEvent;
 use Knp\Component\Pager\Pagination\SlidingPagination;
-use ReflectionClass;
 
 class PaginationSubscriber implements EventSubscriberInterface
 {
