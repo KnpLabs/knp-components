@@ -47,37 +47,44 @@ class Paginator
      * @param mixed $target - anything what needs to be paginated
      * @param integer $page - page number, starting from 1
      * @param integer $limit - number of items per page
-     * @param boolean $distinct - distinction of results if possible
-     * @param string $alias - pagination alias, allows multiple paginations per request
+     * @param array $options - less used options:
+     *     boolean $distinct - default true for distinction of results
+     *     string $alias - pagination alias, default none
+     *     array $blacklist - sortable blacklist for target fields being paginated
      * @throws LogicException
      * @return Knp\Component\Pager\Pagination\PaginationInterface
      */
-    public function paginate($target, $page = 1, $limit = 10, $distinct = true, $alias = '')
+    public function paginate($target, $page = 1, $limit = 10, $options = array())
     {
         $limit = intval(abs($limit));
         if (!$limit) {
             throw new \LogicException("Invalid item per page number, must be a positive number");
         }
         $offset = abs($page - 1) * $limit;
+        $defaultOptions = array(
+            'alias' => '',
+            'distinct' => true
+        );
+        $options = array_merge($defaultOptions, $options);
         // before pagination start
         $beforeEvent = new Event\BeforeEvent($this->eventDispatcher);
         $this->eventDispatcher->dispatch('before', $beforeEvent);
         // count
-        $countEvent = new Event\CountEvent($target, $distinct, $alias);
+        $countEvent = new Event\CountEvent($target, $options);
         $this->eventDispatcher->dispatch('count', $countEvent);
         if (!$countEvent->isPropagationStopped()) {
             throw new \RuntimeException('Some listener must count the given data');
         }
         $count = $countEvent->getCount();
         // items
-        $itemsEvent = new Event\ItemsEvent($target, $distinct, $offset, $limit, $alias);
+        $itemsEvent = new Event\ItemsEvent($target, $offset, $limit, $options);
         $this->eventDispatcher->dispatch('items', $itemsEvent);
         if (!$itemsEvent->isPropagationStopped()) {
             throw new \RuntimeException('Some listener must slice the given data');
         }
         $items = $itemsEvent->getItems();
         // pagination initialization event
-        $paginationEvent = new Event\PaginationEvent($target, $alias);
+        $paginationEvent = new Event\PaginationEvent($target, $options);
         $this->eventDispatcher->dispatch('pagination', $paginationEvent);
         if (!$paginationEvent->isPropagationStopped()) {
             throw new \RuntimeException('Some listener must create pagination view');
@@ -87,7 +94,7 @@ class Paginator
         $paginationView->setCurrentPageNumber($page);
         $paginationView->setItemNumberPerPage($limit);
         $paginationView->setTotalItemCount($count);
-        $paginationView->setAlias($alias);
+        $paginationView->setAlias($options['alias']);
         $paginationView->setItems($items);
 
         // after

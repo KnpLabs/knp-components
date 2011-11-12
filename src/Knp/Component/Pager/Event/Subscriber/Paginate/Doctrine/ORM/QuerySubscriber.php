@@ -26,7 +26,7 @@ class QuerySubscriber implements EventSubscriberInterface
                 'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\CountWalker'
             );
             $countQuery
-                ->setHint(CountWalker::HINT_PAGINATOR_COUNT_DISTINCT, $event->isDistinct())
+                ->setHint(CountWalker::HINT_PAGINATOR_COUNT_DISTINCT, $event->getOption('distinct'))
                 ->setFirstResult(null)
                 ->setMaxResults(null)
             ;
@@ -42,7 +42,7 @@ class QuerySubscriber implements EventSubscriberInterface
         $query = $event->getTarget();
         if ($query instanceof Query) {
             $result = null;
-            if ($event->isDistinct()) {
+            if ($event->getOption('distinct')) {
                 $limitSubQuery = QueryHelper::cloneQuery($query);
                 QueryHelper::addCustomTreeWalker(
                     $limitSubQuery,

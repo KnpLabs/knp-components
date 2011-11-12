@@ -43,7 +43,7 @@ class ArrayTest extends BaseTestCase
         $p = new Paginator($dispatcher);
 
         $items = range('a', 'u');
-        $view = $p->paginate($items, 2, 10, true, 'al');
+        $view = $p->paginate($items, 2, 10, array('alias' => 'al'));
 
         $this->assertEquals(2, $view->getCurrentPageNumber());
         $this->assertEquals(10, $view->getItemNumberPerPage());

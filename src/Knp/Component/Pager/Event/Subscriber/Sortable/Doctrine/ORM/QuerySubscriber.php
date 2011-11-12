@@ -14,11 +14,12 @@ class QuerySubscriber implements EventSubscriberInterface
     {
         $query = $event->getTarget();
         if ($query instanceof Query) {
-            if (isset($_GET[$event->getAlias().'sort'])) {
-                $dir = strtolower($_GET[$event->getAlias().'direction']) === 'asc' ? 'asc' : 'desc';
-                $parts = explode('.', $_GET[$event->getAlias().'sort']);
+            $alias = $event->getOption('alias');
+            if (isset($_GET[$alias.'sort'])) {
+                $dir = strtolower($_GET[$alias.'direction']) === 'asc' ? 'asc' : 'desc';
+                $parts = explode('.', $_GET[$alias.'sort']);
                 if (count($parts) != 2) {
-                    throw new UnexpectedValueException('Invalid sort key came by request, should be example: "article.title"');
+                    throw new UnexpectedValueException('Invalid sort key came by request, should be example "entityAlias.field" like: "article.title"');
                 }
 
                 $query

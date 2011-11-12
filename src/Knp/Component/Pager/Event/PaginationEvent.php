@@ -12,12 +12,12 @@ class PaginationEvent extends Event
 {
     private $target;
     private $pagination;
-    private $alias;
+    private $options;
 
-    public function __construct($target, $alias)
+    public function __construct($target, array $options)
     {
         $this->target = $target;
-        $this->alias = $alias;
+        $this->options = $options;
     }
 
     public function getTarget()
@@ -25,9 +25,14 @@ class PaginationEvent extends Event
         return $this->target;
     }
 
-    public function getAlias()
+    public function getOptions()
     {
-        return $this->alias;
+        return $this->options;
+    }
+
+    public function getOption($name)
+    {
+        return isset($this->options[$name]) ? $this->options[$name] : null;
     }
 
     public function setPagination(PaginationInterface $pagination)

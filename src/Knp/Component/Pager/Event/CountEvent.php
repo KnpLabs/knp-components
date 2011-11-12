@@ -9,16 +9,14 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class CountEvent extends Event
 {
-    private $distinct;
     private $target;
     private $count;
-    private $alias;
+    private $options;
 
-    public function __construct($target, $distinct, $alias)
+    public function __construct($target, array $options)
     {
         $this->target = $target;
-        $this->distinct = (bool)$distinct;
-        $this->alias = $alias;
+        $this->options = $options;
     }
 
     public function getTarget()
@@ -26,14 +24,14 @@ class CountEvent extends Event
         return $this->target;
     }
 
-    public function getAlias()
+    public function getOptions()
     {
-        return $this->alias;
+        return $this->options;
     }
 
-    public function isDistinct()
+    public function getOption($name)
     {
-        return $this->distinct;
+        return isset($this->options[$name]) ? $this->options[$name] : null;
     }
 
     /**

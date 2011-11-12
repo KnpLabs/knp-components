@@ -9,20 +9,18 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class ItemsEvent extends Event
 {
-    private $distinct;
     private $target;
     private $offset;
     private $limit;
     private $items;
-    private $alias;
+    private $options;
 
-    public function __construct($target, $distinct, $offset, $limit, $alias)
+    public function __construct($target, $offset, $limit, array $options)
     {
         $this->target = $target;
-        $this->distinct = (bool)$distinct;
         $this->offset = $offset;
         $this->limit = $limit;
-        $this->alias = $alias;
+        $this->options = $options;
     }
 
     public function getTarget()
@@ -30,14 +28,14 @@ class ItemsEvent extends Event
         return $this->target;
     }
 
-    public function getAlias()
+    public function getOptions()
     {
-        return $this->alias;
+        return $this->options;
     }
 
-    public function isDistinct()
+    public function getOption($name)
     {
-        return $this->distinct;
+        return isset($this->options[$name]) ? $this->options[$name] : null;
     }
 
     public function getLimit()

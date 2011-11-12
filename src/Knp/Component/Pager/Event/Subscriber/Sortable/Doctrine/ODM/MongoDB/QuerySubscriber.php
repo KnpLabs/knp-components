@@ -12,9 +12,10 @@ class QuerySubscriber implements EventSubscriberInterface
     {
         $query = $event->getTarget();
         if ($query instanceof Query) {
-            if (isset($_GET[$event->getAlias().'sort'])) {
-                $field = $_GET[$event->getAlias().'sort'];
-                $dir = strtolower($_GET[$event->getAlias().'direction']) == 'asc' ? 1 : -1;
+            $alias = $event->getOption('alias');
+            if (isset($_GET[$alias.'sort'])) {
+                $field = $_GET[$alias.'sort'];
+                $dir = strtolower($_GET[$alias.'direction']) == 'asc' ? 1 : -1;
 
                 $meta = $query->getClass();
                 if (!$meta->hasField($field)) {
