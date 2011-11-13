@@ -21,12 +21,17 @@ class QuerySubscriber implements EventSubscriberInterface
                 if (!$meta->hasField($field)) {
                     throw new \UnexpectedValueException($meta->name.' query cannot be sorted, because does not contain field: '.$field);
                 }
+                $whiteList = $event->getOption('whitelist');
+                if ($whiteList && !in_array($field, $whiteList)) {
+                    throw new \UnexpectedValueException("Cannot sort by: [{$field}] this field is not in whitelist");
+                }
                 $reflClass = new \ReflectionClass('Doctrine\MongoDB\Query\Query');
                 $reflProp = $reflClass->getProperty('query');
                 $reflProp->setAccessible(true);
                 $queryOptions = $reflProp->getValue($query);
 
-                $queryOptions['sort'][$field] = $dir;
+                //@todo: seems like does not support multisort ??
+                $queryOptions['sort'] = array($field => $dir);
                 $reflProp->setValue($query, $queryOptions);
             }
         }

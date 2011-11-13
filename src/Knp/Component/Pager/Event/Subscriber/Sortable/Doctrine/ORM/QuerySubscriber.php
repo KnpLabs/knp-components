@@ -19,7 +19,12 @@ class QuerySubscriber implements EventSubscriberInterface
                 $dir = strtolower($_GET[$alias.'direction']) === 'asc' ? 'asc' : 'desc';
                 $parts = explode('.', $_GET[$alias.'sort']);
                 if (count($parts) != 2) {
-                    throw new UnexpectedValueException('Invalid sort key came by request, should be example "entityAlias.field" like: "article.title"');
+                    throw new \UnexpectedValueException('Invalid sort key came by request, should be example "entityAlias.field" like: "article.title"');
+                }
+
+                $whiteList = $event->getOption('whitelist');
+                if ($whiteList && !in_array($_GET[$alias.'sort'], $whiteList)) {
+                    throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$alias.'sort']}] this field is not in whitelist");
                 }
 
                 $query

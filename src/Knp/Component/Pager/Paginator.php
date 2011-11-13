@@ -50,7 +50,7 @@ class Paginator
      * @param array $options - less used options:
      *     boolean $distinct - default true for distinction of results
      *     string $alias - pagination alias, default none
-     *     array $blacklist - sortable blacklist for target fields being paginated
+     *     array $whitelist - sortable whitelist for target fields being paginated
      * @throws LogicException
      * @return Knp\Component\Pager\Pagination\PaginationInterface
      */

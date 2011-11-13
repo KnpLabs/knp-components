@@ -131,7 +131,7 @@ abstract class BaseTestCaseMongoODM extends \PHPUnit_Framework_TestCase
 
         $config->expects($this->any())
             ->method('getDefaultDB')
-            ->will($this->returnValue('gedmo_extensions_test'));
+            ->will($this->returnValue('knp_pager_tests'));
 
         $config->expects($this->once())
             ->method('getAutoGenerateProxyClasses')
