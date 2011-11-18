@@ -2,14 +2,14 @@
 
 namespace Knp\Component\Pager\Pagination;
 
-use IteratorAggregate, Countable, Traversable, ArrayIterator, Closure;
+use Closure;
 
 /**
  * @todo: find a way to avoid exposing private member setters
  *
  * Sliding pagination
  */
-class SlidingPagination extends AbstractPagination implements Countable, IteratorAggregate
+class SlidingPagination extends AbstractPagination
 {
     /**
      * Pagination page range
@@ -28,25 +28,6 @@ class SlidingPagination extends AbstractPagination implements Countable, Iterato
     public function setPageRange($range)
     {
         $this->range = intval(abs($range));
-    }
-
-    public function count()
-    {
-        return count($this->items);
-    }
-
-    /**
-     * Returns a foreach-compatible iterator.
-     *
-     * @return Traversable
-     */
-    public function getIterator()
-    {
-        $items = $this->getItems();
-        if (!$items instanceof Traversable) {
-            $items = new ArrayIterator($items);
-        }
-        return $items;
     }
 
     /**
