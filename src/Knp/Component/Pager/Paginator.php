@@ -51,6 +51,7 @@ class Paginator
      *     boolean $distinct - default true for distinction of results
      *     string $alias - pagination alias, default none
      *     array $whitelist - sortable whitelist for target fields being paginated
+     *     array $viewOptions - options that will be passed to the view
      * @throws LogicException
      * @return Knp\Component\Pager\Pagination\PaginationInterface
      */
@@ -63,7 +64,8 @@ class Paginator
         $offset = abs($page - 1) * $limit;
         $defaultOptions = array(
             'alias' => '',
-            'distinct' => true
+            'distinct' => true,
+            'viewOptions' => array()
         );
         $options = array_merge($defaultOptions, $options);
         // before pagination start
@@ -89,13 +91,15 @@ class Paginator
         if (!$paginationEvent->isPropagationStopped()) {
             throw new \RuntimeException('Some listener must create pagination view');
         }
-        // pagination class can be diferent, with diferent rendering methods
+        // pagination class can be different, with different rendering methods
         $paginationView = $paginationEvent->getPagination();
         $paginationView->setCurrentPageNumber($page);
         $paginationView->setItemNumberPerPage($limit);
         $paginationView->setTotalItemCount($count);
         $paginationView->setAlias($options['alias']);
         $paginationView->setItems($items);
+        $paginationView->setAdditionalViewData($options['viewOptions']);
+        $paginationView->getPaginationData();
 
         // after
         $afterEvent = new Event\AfterEvent($paginationView);
