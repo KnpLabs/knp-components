@@ -44,15 +44,15 @@ class QuerySubscriber implements EventSubscriberInterface
             $result = null;
             if ($event->getOption('distinct')) {
                 $limitSubQuery = QueryHelper::cloneQuery($query);
+                $limitSubQuery
+                    ->setFirstResult($event->getOffset())
+                    ->setMaxResults($event->getLimit())
+                    ->useQueryCache(false)
+                ;
                 QueryHelper::addCustomTreeWalker(
                     $limitSubQuery,
                     'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\LimitSubqueryWalker'
                 );
-
-                $limitSubQuery
-                    ->setFirstResult($event->getOffset())
-                    ->setMaxResults($event->getLimit())
-                ;
 
                 $ids = array_map('current', $limitSubQuery->getScalarResult());
                 // create where-in query
