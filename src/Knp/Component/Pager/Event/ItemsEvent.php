@@ -28,6 +28,11 @@ class ItemsEvent extends Event
         return $this->target;
     }
 
+    public function setTarget($target)
+    {
+        $this->target = $target;
+    }
+
     public function getOptions()
     {
         return $this->options;
