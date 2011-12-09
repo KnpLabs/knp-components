@@ -25,8 +25,8 @@ class QueryBuilderSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'items' => array('items', 10/*make sure to transform before any further modifications*/),
-            'count' => array('count', 10)
+            'knp_pager.items' => array('items', 10/*make sure to transform before any further modifications*/),
+            'knp_pager.count' => array('count', 10)
         );
     }
 

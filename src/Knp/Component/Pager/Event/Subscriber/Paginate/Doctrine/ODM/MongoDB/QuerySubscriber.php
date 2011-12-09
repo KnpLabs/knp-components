@@ -50,8 +50,8 @@ class QuerySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'items' => array('items', 0),
-            'count' => array('count', 0)
+            'knp_pager.items' => array('items', 0),
+            'knp_pager.count' => array('count', 0)
         );
     }
 }

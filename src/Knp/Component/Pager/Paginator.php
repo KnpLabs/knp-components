@@ -68,12 +68,12 @@ class Paginator
         $options = array_merge($defaultOptions, $options);
         // before pagination start
         $beforeEvent = new Event\BeforeEvent($this->eventDispatcher);
-        $this->eventDispatcher->dispatch('before', $beforeEvent);
+        $this->eventDispatcher->dispatch('knp_pager.before', $beforeEvent);
         // count
         $countEvent = new Event\CountEvent;
         $countEvent->target = &$target;
         $countEvent->options = &$options;
-        $this->eventDispatcher->dispatch('count', $countEvent);
+        $this->eventDispatcher->dispatch('knp_pager.count', $countEvent);
         if (!$countEvent->isPropagationStopped()) {
             throw new \RuntimeException('Some listener must count the given data');
         }
@@ -82,7 +82,7 @@ class Paginator
         $itemsEvent = new Event\ItemsEvent($offset, $limit);
         $itemsEvent->options = &$options;
         $itemsEvent->target = &$target;
-        $this->eventDispatcher->dispatch('items', $itemsEvent);
+        $this->eventDispatcher->dispatch('knp_pager.items', $itemsEvent);
         if (!$itemsEvent->isPropagationStopped()) {
             throw new \RuntimeException('Some listener must slice the given data');
         }
@@ -91,7 +91,7 @@ class Paginator
         $paginationEvent = new Event\PaginationEvent;
         $paginationEvent->target = &$target;
         $paginationEvent->options = &$options;
-        $this->eventDispatcher->dispatch('pagination', $paginationEvent);
+        $this->eventDispatcher->dispatch('knp_pager.pagination', $paginationEvent);
         if (!$paginationEvent->isPropagationStopped()) {
             throw new \RuntimeException('Some listener must create pagination view');
         }
@@ -105,7 +105,7 @@ class Paginator
 
         // after
         $afterEvent = new Event\AfterEvent($paginationView);
-        $this->eventDispatcher->dispatch('after', $afterEvent);
+        $this->eventDispatcher->dispatch('knp_pager.after', $afterEvent);
         return $paginationView;
     }
 

@@ -18,7 +18,7 @@ class SortableSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'before' => array('before', 1)
+            'knp_pager.before' => array('before', 1)
         );
     }
 }

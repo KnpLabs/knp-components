@@ -29,8 +29,8 @@ class PaginationSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'before' => array('before', 0),
-            'pagination' => array('pagination', 0)
+            'knp_pager.before' => array('before', 0),
+            'knp_pager.pagination' => array('pagination', 0)
         );
     }
 }
