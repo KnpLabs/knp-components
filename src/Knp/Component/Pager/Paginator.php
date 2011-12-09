@@ -70,21 +70,27 @@ class Paginator
         $beforeEvent = new Event\BeforeEvent($this->eventDispatcher);
         $this->eventDispatcher->dispatch('before', $beforeEvent);
         // count
-        $countEvent = new Event\CountEvent($target, $options);
+        $countEvent = new Event\CountEvent;
+        $countEvent->target = &$target;
+        $countEvent->options = &$options;
         $this->eventDispatcher->dispatch('count', $countEvent);
         if (!$countEvent->isPropagationStopped()) {
             throw new \RuntimeException('Some listener must count the given data');
         }
-        $count = $countEvent->getCount();
+        $count = $countEvent->count;
         // items
-        $itemsEvent = new Event\ItemsEvent($target, $offset, $limit, $options);
+        $itemsEvent = new Event\ItemsEvent($offset, $limit);
+        $itemsEvent->options = &$options;
+        $itemsEvent->target = &$target;
         $this->eventDispatcher->dispatch('items', $itemsEvent);
         if (!$itemsEvent->isPropagationStopped()) {
             throw new \RuntimeException('Some listener must slice the given data');
         }
-        $items = $itemsEvent->getItems();
+        $items = $itemsEvent->items;
         // pagination initialization event
-        $paginationEvent = new Event\PaginationEvent($target, $options);
+        $paginationEvent = new Event\PaginationEvent;
+        $paginationEvent->target = &$target;
+        $paginationEvent->options = &$options;
         $this->eventDispatcher->dispatch('pagination', $paginationEvent);
         if (!$paginationEvent->isPropagationStopped()) {
             throw new \RuntimeException('Some listener must create pagination view');

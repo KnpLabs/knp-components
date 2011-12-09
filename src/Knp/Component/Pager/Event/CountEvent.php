@@ -9,48 +9,24 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class CountEvent extends Event
 {
-    private $target;
-    private $count;
-    private $options;
-
-    public function __construct($target, array $options)
-    {
-        $this->target = $target;
-        $this->options = $options;
-    }
-
-    public function getTarget()
-    {
-        return $this->target;
-    }
-
-    public function setTarget($target)
-    {
-        $this->target = $target;
-    }
-
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
-    public function getOption($name)
-    {
-        return isset($this->options[$name]) ? $this->options[$name] : null;
-    }
+    /**
+     * A target being paginated
+     *
+     * @var mixed
+     */
+    public $target;
 
     /**
-     * @todo: maybe a closure to lazy load
+     * List of options
      *
-     * @param unknown_type $count
+     * @var array
      */
-    public function setCount($count)
-    {
-        $this->count = intval($count);
-    }
+    public $options;
 
-    public function getCount()
-    {
-        return $this->count;
-    }
+    /**
+     * Count result
+     *
+     * @var integer
+     */
+    public $count;
 }

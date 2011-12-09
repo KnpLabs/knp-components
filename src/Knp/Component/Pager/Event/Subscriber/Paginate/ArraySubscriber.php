@@ -5,25 +5,26 @@ namespace Knp\Component\Pager\Event\Subscriber\Paginate;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\CountEvent;
 use Knp\Component\Pager\Event\ItemsEvent;
+use Traversable, Countable;
 
 class ArraySubscriber implements EventSubscriberInterface
 {
     public function count(CountEvent $event)
     {
-        if (is_array($event->getTarget())) {
-            $event->setCount(count($event->getTarget()));
+        if (is_array($event->target)) {
+            $event->count = count($event->target);
             $event->stopPropagation();
         }
     }
 
     public function items(ItemsEvent $event)
     {
-        if (is_array($event->getTarget())) {
-            $event->setItems(array_slice(
-                $event->getTarget(),
+        if (is_array($event->target)) {
+            $event->items = array_slice(
+                $event->target,
                 $event->getOffset(),
                 $event->getLimit()
-            ));
+            );
             $event->stopPropagation();
         }
     }

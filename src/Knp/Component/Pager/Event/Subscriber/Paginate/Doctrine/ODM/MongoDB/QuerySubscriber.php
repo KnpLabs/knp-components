@@ -14,34 +14,35 @@ class QuerySubscriber implements EventSubscriberInterface
      */
     public function count(CountEvent $event)
     {
-        $query = $event->getTarget();
-        if ($query instanceof Query) {
-            $event->setCount($query->count());
+        if ($event->target instanceof Query) {
+            $event->count = $event->target->count();
             $event->stopPropagation();
         }
     }
 
     public function items(ItemsEvent $event)
     {
-        $query = $event->getTarget();
-        if ($query instanceof Query) {
-            $type = $query->getType();
+        if ($event->target instanceof Query) {
+            $type = $event->target->getType();
             if ($type !== Query::TYPE_FIND) {
                 throw new \UnexpectedValueException('ODM query must be a FIND type query');
             }
-            $reflClass = new \ReflectionClass('Doctrine\MongoDB\Query\Query');
-            $reflProp = $reflClass->getProperty('query');
-            $reflProp->setAccessible(true);
-            $queryOptions = $reflProp->getValue($query);
+            static $reflectionProperty;
+            if (is_null($reflectionProperty)) {
+                $reflectionClass = new \ReflectionClass('Doctrine\MongoDB\Query\Query');
+                $reflectionProperty = $reflectionClass->getProperty('query');
+                $reflectionProperty->setAccessible(true);
+            }
+            $queryOptions = $reflectionProperty->getValue($event->target);
 
             $queryOptions['limit'] = $event->getLimit();
             $queryOptions['skip'] = $event->getOffset();
 
-            $resultQuery = clone $query;
-            $reflProp->setValue($resultQuery, $queryOptions);
+            $resultQuery = clone $event->target;
+            $reflectionProperty->setValue($resultQuery, $queryOptions);
             $cursor = $resultQuery->execute();
 
-            $event->setItems($cursor->toArray());
+            $event->items = $cursor->toArray();
             $event->stopPropagation();
         }
     }

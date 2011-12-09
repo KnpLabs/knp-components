@@ -18,32 +18,30 @@ class QuerySubscriber implements EventSubscriberInterface
      */
     public function count(CountEvent $event)
     {
-        $query = $event->getTarget();
-        if ($query instanceof Query) {
-            $countQuery = QueryHelper::cloneQuery($query);
+        if ($event->target instanceof Query) {
+            $countQuery = QueryHelper::cloneQuery($event->target);
             QueryHelper::addCustomTreeWalker(
                 $countQuery,
                 'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\CountWalker'
             );
             $countQuery
-                ->setHint(CountWalker::HINT_PAGINATOR_COUNT_DISTINCT, $event->getOption('distinct'))
+                ->setHint(CountWalker::HINT_PAGINATOR_COUNT_DISTINCT, $event->options['distinct'])
                 ->setFirstResult(null)
                 ->setMaxResults(null)
             ;
 
             $countResult = $countQuery->getResult(Query::HYDRATE_ARRAY);
-            $event->setCount(count($countResult) > 1 ? count($countResult) : current(current($countResult)));
+            $event->count = count($countResult) > 1 ? count($countResult) : current(current($countResult));
             $event->stopPropagation();
         }
     }
 
     public function items(ItemsEvent $event)
     {
-        $query = $event->getTarget();
-        if ($query instanceof Query) {
+        if ($event->target instanceof Query) {
             $result = null;
-            if ($event->getOption('distinct')) {
-                $limitSubQuery = QueryHelper::cloneQuery($query);
+            if ($event->options['distinct']) {
+                $limitSubQuery = QueryHelper::cloneQuery($event->target);
                 $limitSubQuery
                     ->setFirstResult($event->getOffset())
                     ->setMaxResults($event->getLimit())
@@ -56,7 +54,7 @@ class QuerySubscriber implements EventSubscriberInterface
 
                 $ids = array_map('current', $limitSubQuery->getScalarResult());
                 // create where-in query
-                $whereInQuery = QueryHelper::cloneQuery($query);
+                $whereInQuery = QueryHelper::cloneQuery($event->target);
                 QueryHelper::addCustomTreeWalker(
                     $whereInQuery,
                     'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\WhereInWalker'
@@ -83,7 +81,7 @@ class QuerySubscriber implements EventSubscriberInterface
                 ;
                 $result = $query->execute();
             }
-            $event->setItems($result);
+            $event->items = $result;
             $event->stopPropagation();
         }
     }

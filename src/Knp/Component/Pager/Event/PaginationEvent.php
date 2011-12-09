@@ -10,30 +10,21 @@ use Knp\Component\Pager\Pagination\PaginationInterface;
  */
 class PaginationEvent extends Event
 {
-    private $target;
+    /**
+     * A target being paginated
+     *
+     * @var mixed
+     */
+    public $target;
+
+    /**
+     * List of options
+     *
+     * @var array
+     */
+    public $options;
+
     private $pagination;
-    private $options;
-
-    public function __construct($target, array $options)
-    {
-        $this->target = $target;
-        $this->options = $options;
-    }
-
-    public function getTarget()
-    {
-        return $this->target;
-    }
-
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
-    public function getOption($name)
-    {
-        return isset($this->options[$name]) ? $this->options[$name] : null;
-    }
 
     public function setPagination(PaginationInterface $pagination)
     {

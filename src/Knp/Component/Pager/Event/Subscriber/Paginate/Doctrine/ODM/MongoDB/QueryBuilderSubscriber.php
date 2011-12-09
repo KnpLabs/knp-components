@@ -32,10 +32,9 @@ class QueryBuilderSubscriber implements EventSubscriberInterface
 
     private function handle($event)
     {
-        $qb = $event->getTarget();
-        if ($qb instanceof Builder) {
+        if ($event->target instanceof Builder) {
             // change target into query
-            $event->setTarget($qb->getQuery());
+            $event->target = $event->target->getQuery();
         }
     }
 }

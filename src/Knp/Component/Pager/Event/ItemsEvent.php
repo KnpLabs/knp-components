@@ -9,38 +9,34 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class ItemsEvent extends Event
 {
-    private $target;
+    /**
+     * A target being paginated
+     *
+     * @var mixed
+     */
+    public $target;
+
+    /**
+     * List of options
+     *
+     * @var array
+     */
+    public $options;
+
+    /**
+     * Items result
+     *
+     * @var mixed
+     */
+    public $items;
+
     private $offset;
     private $limit;
-    private $items;
-    private $options;
 
-    public function __construct($target, $offset, $limit, array $options)
+    public function __construct($offset, $limit)
     {
-        $this->target = $target;
         $this->offset = $offset;
         $this->limit = $limit;
-        $this->options = $options;
-    }
-
-    public function getTarget()
-    {
-        return $this->target;
-    }
-
-    public function setTarget($target)
-    {
-        $this->target = $target;
-    }
-
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
-    public function getOption($name)
-    {
-        return isset($this->options[$name]) ? $this->options[$name] : null;
     }
 
     public function getLimit()
@@ -51,20 +47,5 @@ class ItemsEvent extends Event
     public function getOffset()
     {
         return $this->offset;
-    }
-
-    /**
-     * @todo: maybe a closure to lazy load
-     *
-     * @param mixed $items
-     */
-    public function setItems($items)
-    {
-        $this->items = $items;
-    }
-
-    public function getItems()
-    {
-        return $this->items;
     }
 }
