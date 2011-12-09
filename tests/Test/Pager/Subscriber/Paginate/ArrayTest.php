@@ -62,4 +62,16 @@ class ArrayTest extends BaseTestCase
         $view = $p->paginate($items, 1, 10);
         $this->assertTrue($view instanceof PaginationInterface);
     }
+
+    /**
+     * @test
+     */
+    function shouldPaginateArrayObject()
+    {
+        $items = array('first', 'second');
+        $array = new \ArrayObject($items);
+        $p = new Paginator;
+        $view = $p->paginate($array, 1, 10);
+        $this->assertTrue($view instanceof PaginationInterface);
+    }
 }
