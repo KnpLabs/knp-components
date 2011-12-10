@@ -75,11 +75,11 @@ class QuerySubscriber implements EventSubscriberInterface
                 }
                 $result = $whereInQuery->execute();
             } else {
-                $query
+                $event->target
                     ->setFirstResult($event->getOffset())
                     ->setMaxResults($event->getLimit())
                 ;
-                $result = $query->execute();
+                $result = $event->target->execute();
             }
             $event->items = $result;
             $event->stopPropagation();
