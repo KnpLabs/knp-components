@@ -98,7 +98,10 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                         $item->expression->field
                     );
                     $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
-                    $AST->selectClause->selectExpressions[] = new SelectExpression($pathExpression, '_dctrn_ord' . $this->_aliasCounter++);
+                    $AST->selectClause->selectExpressions[] = new SelectExpression(
+                        $pathExpression,
+                    	'_dctrn_ord' . $this->_aliasCounter++
+                    );
                 }
             }
         }

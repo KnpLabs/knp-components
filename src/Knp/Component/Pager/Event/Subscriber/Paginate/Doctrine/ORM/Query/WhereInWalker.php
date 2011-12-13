@@ -17,6 +17,8 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query;
 
+use Doctrine\ORM\Query\AST\ArithmeticExpression;
+use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\TreeWalkerAdapter,
     Doctrine\ORM\Query\AST\SelectStatement,
     Doctrine\ORM\Query\AST\PathExpression,
@@ -84,7 +86,16 @@ class WhereInWalker extends TreeWalkerAdapter
         $count = $this->_getQuery()->getHint(self::HINT_PAGINATOR_ID_COUNT);
 
         if ($count > 0) {
-            $expression = new InExpression($pathExpression);
+            // in new doctrine 2.2 version theres a different expression
+            if (property_exists('Doctrine\ORM\Query\AST\InExpression', 'expression')) {
+                $arithmeticExpression = new ArithmeticExpression();
+                $arithmeticExpression->simpleArithmeticExpression = new SimpleArithmeticExpression(
+                    array($pathExpression)
+                );
+                $expression = new InExpression($arithmeticExpression);
+            } else {
+                $expression = new InExpression($pathExpression);
+            }
             $ns = self::PAGINATOR_ID_ALIAS;
 
             for ($i = 1; $i <= $count; $i++) {
