@@ -30,11 +30,11 @@ class ArraySubscriber implements EventSubscriberInterface
             );
             $event->stopPropagation();
         } elseif ($event->target instanceof ArrayObject) {
-            $event->items = array_slice(
-                iterator_to_array($event->target->getIterator()),
+            $event->items = new \ArrayObject(array_slice(
+                $event->target->getArrayCopy(),
                 $event->getOffset(),
                 $event->getLimit()
-            );
+            ));
             $event->stopPropagation();
         }
     }

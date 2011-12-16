@@ -129,11 +129,10 @@ abstract class AbstractPagination implements PaginationInterface, Countable, Ite
 
     /**
      * {@inheritDoc}
-     * @todo: support Traversable objects
      */
     public function setItems($items)
     {
-        if (!is_array($items)) {
+        if (!is_array($items) && !$items instanceof \Traversable) {
             throw new \UnexpectedValueException("Items must be an array type");
         }
         $this->items = $items;
