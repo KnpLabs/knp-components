@@ -3,26 +3,15 @@
 namespace Knp\Component\Pager\Event\Subscriber\Paginate;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Knp\Component\Pager\Event\CountEvent;
 use Knp\Component\Pager\Event\ItemsEvent;
 use ArrayObject;
 
 class ArraySubscriber implements EventSubscriberInterface
 {
-    public function count(CountEvent $event)
-    {
-        if (is_array($event->target)) {
-            $event->count = count($event->target);
-            $event->stopPropagation();
-        } elseif ($event->target instanceof ArrayObject) {
-            $event->count = $event->target->count();
-            $event->stopPropagation();
-        }
-    }
-
     public function items(ItemsEvent $event)
     {
         if (is_array($event->target)) {
+            $event->count = count($event->target);
             $event->items = array_slice(
                 $event->target,
                 $event->getOffset(),
@@ -30,7 +19,8 @@ class ArraySubscriber implements EventSubscriberInterface
             );
             $event->stopPropagation();
         } elseif ($event->target instanceof ArrayObject) {
-            $event->items = new \ArrayObject(array_slice(
+            $event->count = $event->target->count();
+            $event->items = new ArrayObject(array_slice(
                 $event->target->getArrayCopy(),
                 $event->getOffset(),
                 $event->getLimit()
@@ -42,8 +32,7 @@ class ArraySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'knp_pager.items' => array('items', 0),
-            'knp_pager.count' => array('count', 0)
+            'knp_pager.items' => array('items', 0)
         );
     }
 }

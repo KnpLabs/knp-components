@@ -3,26 +3,17 @@
 namespace Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ODM\MongoDB;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Knp\Component\Pager\Event\CountEvent;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Doctrine\ODM\MongoDB\Query\Query;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
-    /**
-     * @param CountEvent $event
-     */
-    public function count(CountEvent $event)
-    {
-        if ($event->target instanceof Query) {
-            $event->count = $event->target->count();
-            $event->stopPropagation();
-        }
-    }
-
     public function items(ItemsEvent $event)
     {
         if ($event->target instanceof Query) {
+            // count
+            $event->count = $event->target->count();
+            // items
             $type = $event->target->getType();
             if ($type !== Query::TYPE_FIND) {
                 throw new \UnexpectedValueException('ODM query must be a FIND type query');
@@ -50,8 +41,7 @@ class QuerySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'knp_pager.items' => array('items', 0),
-            'knp_pager.count' => array('count', 0)
+            'knp_pager.items' => array('items', 0)
         );
     }
 }

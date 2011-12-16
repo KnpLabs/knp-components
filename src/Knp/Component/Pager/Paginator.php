@@ -69,39 +69,29 @@ class Paginator
         // before pagination start
         $beforeEvent = new Event\BeforeEvent($this->eventDispatcher);
         $this->eventDispatcher->dispatch('knp_pager.before', $beforeEvent);
-        // count
-        $countEvent = new Event\CountEvent;
-        $countEvent->target = &$target;
-        $countEvent->options = &$options;
-        $this->eventDispatcher->dispatch('knp_pager.count', $countEvent);
-        if (!$countEvent->isPropagationStopped()) {
-            throw new \RuntimeException('Some listener must count the given data');
-        }
-        $count = $countEvent->count;
         // items
         $itemsEvent = new Event\ItemsEvent($offset, $limit);
         $itemsEvent->options = &$options;
         $itemsEvent->target = &$target;
         $this->eventDispatcher->dispatch('knp_pager.items', $itemsEvent);
         if (!$itemsEvent->isPropagationStopped()) {
-            throw new \RuntimeException('Some listener must slice the given data');
+            throw new \RuntimeException('One of listeners must count and slice given target');
         }
-        $items = $itemsEvent->items;
         // pagination initialization event
         $paginationEvent = new Event\PaginationEvent;
         $paginationEvent->target = &$target;
         $paginationEvent->options = &$options;
         $this->eventDispatcher->dispatch('knp_pager.pagination', $paginationEvent);
         if (!$paginationEvent->isPropagationStopped()) {
-            throw new \RuntimeException('Some listener must create pagination view');
+            throw new \RuntimeException('One of listeners must create pagination view');
         }
         // pagination class can be diferent, with diferent rendering methods
         $paginationView = $paginationEvent->getPagination();
         $paginationView->setCurrentPageNumber($page);
         $paginationView->setItemNumberPerPage($limit);
-        $paginationView->setTotalItemCount($count);
+        $paginationView->setTotalItemCount($itemsEvent->count);
         $paginationView->setAlias($options['alias']);
-        $paginationView->setItems($items);
+        $paginationView->setItems($itemsEvent->items);
 
         // after
         $afterEvent = new Event\AfterEvent($paginationView);

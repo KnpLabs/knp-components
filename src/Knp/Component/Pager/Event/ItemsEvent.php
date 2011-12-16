@@ -30,6 +30,13 @@ class ItemsEvent extends Event
      */
     public $items;
 
+    /**
+     * Count result
+     *
+     * @var integer
+     */
+    public $count;
+
     private $offset;
     private $limit;
 
