@@ -36,6 +36,35 @@ ___SQL;
     /**
      * @test
      */
+    function shouldBeAbleToPaginateMultiFromClause()
+    {
+        $this->populate();
+
+        $dql = <<<___SQL
+        SELECT t
+          FROM
+            Test\Fixture\Entity\Shop\Product p,
+            Test\Fixture\Entity\Shop\Tag t
+          WHERE
+            t MEMBER OF p.tags
+            AND p.title LIKE :keyword
+          GROUP BY t.id
+___SQL;
+        $q = $this->em->createQuery($dql);
+        $q->setParameter('keyword', 'Star%');
+        $q->setHydrationMode(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+
+        $p = new Paginator;
+        $view = $p->paginate($q, 1, 10);
+        $items = $view->getItems();
+        $this->assertEquals(2, count($view));
+        $this->assertEquals('Special', $items[0]['name']);
+        $this->assertEquals('New', $items[1]['name']);
+    }
+
+    /**
+     * @test
+     */
     function shouldBeAbleToPaginateMixedKeyArray()
     {
         $this->populate();

@@ -15,7 +15,7 @@ use Test\Fixture\Entity\Article;
 class QueryTest extends BaseTestCaseORM
 {
     /**
-     * test
+     * @test
      */
     function shouldSortSimpleDoctrineQuery()
     {
@@ -55,7 +55,7 @@ class QueryTest extends BaseTestCaseORM
     }
 
     /**
-     * test
+     * @test
      * @expectedException UnexpectedValueException
      */
     function shouldValidateSortableParameters()
