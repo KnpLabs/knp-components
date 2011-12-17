@@ -22,6 +22,11 @@ class Product
     private $title;
 
     /**
+     * @ORM\Column(length=255, nullable=true)
+     */
+    private $description;
+
+    /**
      * @ORM\Column(type="float", nullable=false)
      */
     private $price;
@@ -44,6 +49,16 @@ class Product
     public function getTitle()
     {
         return $this->title;
+    }
+
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
     }
 
     public function setPrice($price)

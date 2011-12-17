@@ -55,6 +55,51 @@ ___SQL;
         $this->assertTrue(isset($items[0]['title']));
     }
 
+    /**
+     * @test
+     */
+    function shouldBeAbleToPaginateCaseBasedQuery()
+    {
+        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.2.0-DEV', '<')) {
+            $this->markTestSkipped('Only recent orm version can test against this query.');
+        }
+        $this->populate();
+
+        $dql = <<<___SQL
+            SELECT p,
+              CASE
+                WHEN p.title LIKE :keyword
+                  AND p.description LIKE :keyword
+                THEN 0
+
+                WHEN p.title LIKE :keyword
+                THEN 1
+
+                WHEN p.description LIKE :keyword
+                THEN 2
+
+                ELSE 3
+              END AS relevance
+            FROM Test\Fixture\Entity\Shop\Product p
+            WHERE (
+              p.title LIKE :keyword
+              OR p.description LIKE :keyword
+            )
+            GROUP BY p.id
+            ORDER BY relevance ASC, p.id DESC
+___SQL;
+        $q = $this->em->createQuery($dql);
+        $q->setParameter('keyword', '%Star%');
+        $q->setHydrationMode(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+        $p = new Paginator;
+        $view = $p->paginate($q, 1, 10);
+        $this->assertEquals(1, count($view));
+        $items = $view->getItems();
+        // and should be hydrated as array
+        $this->assertEquals('Starship', $items[0][0]['title']);
+        $this->assertEquals(1, $items[0]['relevance']);
+    }
+
     protected function getUsedEntityFixtures()
     {
         return array(

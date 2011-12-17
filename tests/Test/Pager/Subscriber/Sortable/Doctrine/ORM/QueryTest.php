@@ -15,7 +15,7 @@ use Test\Fixture\Entity\Article;
 class QueryTest extends BaseTestCaseORM
 {
     /**
-     * @test
+     * test
      */
     function shouldSortSimpleDoctrineQuery()
     {
@@ -55,7 +55,7 @@ class QueryTest extends BaseTestCaseORM
     }
 
     /**
-     * @test
+     * test
      * @expectedException UnexpectedValueException
      */
     function shouldValidateSortableParameters()
@@ -76,6 +76,29 @@ class QueryTest extends BaseTestCaseORM
      */
     function shouldWorkWithInitialPaginatorEventDispatcher()
     {
+        $this->populate();
+        $_GET['sort'] = 'a.title';
+        $_GET['direction'] = 'asc';
+        $query = $this
+            ->em
+            ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
+        ;
+
+        $p = new Paginator;
+        $this->startQueryLog();
+        $view = $p->paginate($query, 1, 10);
+        $this->assertTrue($view instanceof SlidingPagination);
+
+        $this->assertEquals(3, $this->queryAnalyzer->getNumExecutedQueries());
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+        $this->assertEquals('SELECT DISTINCT a0_.id AS id0, a0_.title AS title1 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10 OFFSET 0', $executed[1]);
+    }
+
+    /**
+     * @test
+     */
+    function shouldNotExecuteExtraQueriesWhenCountIsZero()
+    {
         $_GET['sort'] = 'a.title';
         $_GET['direction'] = 'asc';
         $query = $this
@@ -88,9 +111,7 @@ class QueryTest extends BaseTestCaseORM
         $view = $p->paginate($query, 1, 10);
         $this->assertTrue($view instanceof SlidingPagination);
 
-        $this->assertEquals(3, $this->queryAnalyzer->getNumExecutedQueries());
-        $executed = $this->queryAnalyzer->getExecutedQueries();
-        $this->assertEquals('SELECT DISTINCT a0_.id AS id0, a0_.title AS title1 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10 OFFSET 0', $executed[1]);
+        $this->assertEquals(1, $this->queryAnalyzer->getNumExecutedQueries());
     }
 
     protected function getUsedEntityFixtures()
