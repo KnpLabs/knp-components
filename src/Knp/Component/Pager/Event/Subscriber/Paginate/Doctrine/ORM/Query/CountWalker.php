@@ -33,7 +33,7 @@ class CountWalker extends TreeWalkerAdapter
     /**
      * Distinct mode hint name
      */
-    const HINT_PAGINATOR_COUNT_DISTINCT = 'knp_paginator.distinct';
+    const HINT_DISTINCT = 'knp_paginator.distinct';
 
     /**
      * Walks down a SelectStatement AST node, modifying it to retrieve a COUNT
@@ -66,7 +66,7 @@ class CountWalker extends TreeWalkerAdapter
         );
         $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
 
-        $distinct = $this->_getQuery()->getHint(self::HINT_PAGINATOR_COUNT_DISTINCT);
+        $distinct = $this->_getQuery()->getHint(self::HINT_DISTINCT);
         $AST->selectClause->selectExpressions = array(
             new SelectExpression(
                 new AggregateExpression('count', $pathExpression, $distinct), null

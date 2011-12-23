@@ -12,29 +12,38 @@ use Doctrine\ORM\Query;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
+    /**
+     * Used if user set the count manually
+     */
+    const HINT_COUNT = 'knp_paginator.count';
+
     public function items(ItemsEvent $event)
     {
         if ($event->target instanceof Query) {
             // process count
-            $countQuery = QueryHelper::cloneQuery($event->target);
-            QueryHelper::addCustomTreeWalker(
-                $countQuery,
-                'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\CountWalker'
-            );
-            $countQuery
-                ->setHint(CountWalker::HINT_PAGINATOR_COUNT_DISTINCT, $event->options['distinct'])
-                ->setFirstResult(null)
-                ->setMaxResults(null)
-            ;
-
-            $countResult = $countQuery->getResult(Query::HYDRATE_ARRAY);
-            if (count($countResult) > 1) {
-                $countResult = count($countResult);
+            if (($count = $event->target->getHint(self::HINT_COUNT)) !== false) {
+                $event->count = intval($count);
             } else {
-                $countResult = current($countResult);
-                $countResult = $countResult ? current($countResult) : 0;
+                $countQuery = QueryHelper::cloneQuery($event->target);
+                QueryHelper::addCustomTreeWalker(
+                    $countQuery,
+                    'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\CountWalker'
+                );
+                $countQuery
+                    ->setHint(CountWalker::HINT_DISTINCT, $event->options['distinct'])
+                    ->setFirstResult(null)
+                    ->setMaxResults(null)
+                ;
+
+                $countResult = $countQuery->getResult(Query::HYDRATE_ARRAY);
+                if (count($countResult) > 1) {
+                    $countResult = count($countResult);
+                } else {
+                    $countResult = current($countResult);
+                    $countResult = $countResult ? current($countResult) : 0;
+                }
+                $event->count = intval($countResult);
             }
-            $event->count = intval($countResult);
             // process items
             $result = null;
             if ($event->count) {
