@@ -43,19 +43,22 @@ class CountWalker extends TreeWalkerAdapter
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
-        $parent = null;
-        $parentName = null;
+        $rootComponents = array();
         foreach ($this->_getQueryComponents() AS $dqlAlias => $qComp) {
             $isParent = array_key_exists('parent', $qComp)
                 && $qComp['parent'] === null
                 && $qComp['nestingLevel'] == 0
             ;
             if ($isParent) {
-                $parent = $qComp;
-                $parentName = $dqlAlias;
-                break;
+                $rootComponents[] = array($dqlAlias => $qComp);
             }
         }
+        if (count($rootComponents) > 1) {
+            throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
+        }
+        $root = reset($rootComponents);
+        $parentName = key($root);
+        $parent = current($root);
 
         $pathExpression = new PathExpression(
             PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $parentName,
