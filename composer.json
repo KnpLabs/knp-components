@@ -1,0 +1,30 @@
+{
+    "name":        "knplabs/knp-components",
+    "type":        "library",
+    "keywords":    ["components", "pager"],
+    "homepage":    "http://github.com/KnpLabs/knp-components",
+    "license":     "MIT",
+
+    "authors": [
+        {
+            "name": "KnpLabs Team",
+            "homepage": "http://knplabs.com"
+        },
+        {
+            "name": "Symfony Community",
+            "homepage": "http://github.com/KnpLabs/knp-components/contributors"
+        }
+    ],
+
+    "require": {
+        "php": ">=5.3.0"
+    },
+
+    "autoload": {
+        "psr-0": {
+            "Knp\\Component": ""
+        }
+    }
+  
+    "target-dir": "knp-components"
+}
