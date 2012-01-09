@@ -1,7 +1,8 @@
 {
     "name":        "knplabs/knp-components",
     "type":        "library",
-    "keywords":    ["components", "pager"],
+    "description": "Knplabs component library",
+    "keywords":    ["components", "pager", "knp", "knplabs", "paginator"],
     "homepage":    "http://github.com/KnpLabs/knp-components",
     "license":     "MIT",
 
