@@ -25,7 +25,7 @@
         "psr-0": {
             "Knp\\Component": ""
         }
-    }
+    },
   
     "target-dir": "knp-components"
 }
