@@ -23,9 +23,7 @@
 
     "autoload": {
         "psr-0": {
-            "Knp\\Component": ""
+            "Knp\\Component": "src/"
         }
-    },
-  
-    "target-dir": "knp-components"
+    }
 }
