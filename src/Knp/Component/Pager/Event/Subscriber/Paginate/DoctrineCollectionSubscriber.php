@@ -5,23 +5,15 @@ namespace Knp\Component\Pager\Event\Subscriber\Paginate;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 use ArrayObject;
+use Doctrine\Common\Collections\Collection;
 
-class ArraySubscriber implements EventSubscriberInterface
+class DoctrineCollectionSubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
-        if (is_array($event->target)) {
-            $event->count = count($event->target);
-            $event->items = array_slice(
-                $event->target,
-                $event->getOffset(),
-                $event->getLimit()
-            );
-            $event->stopPropagation();
-        } elseif ($event->target instanceof ArrayObject) {
+        if ($event->target instanceof Collection) {
             $event->count = $event->target->count();
-            $event->items = new ArrayObject(array_slice(
-                $event->target->getArrayCopy(),
+            $event->items = new ArrayObject($event->target->slice(
                 $event->getOffset(),
                 $event->getLimit()
             ));
