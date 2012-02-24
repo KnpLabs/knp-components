@@ -25,6 +25,7 @@ class PaginationSubscriber implements EventSubscriberInterface
         $disp->addSubscriber(new Doctrine\ODM\MongoDB\QueryBuilderSubscriber);
         $disp->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber);
         $disp->addSubscriber(new PropelQuerySubscriber);
+        $disp->addSubscriber(new SolariumQuerySubscriber());
     }
 
     public static function getSubscribedEvents()
