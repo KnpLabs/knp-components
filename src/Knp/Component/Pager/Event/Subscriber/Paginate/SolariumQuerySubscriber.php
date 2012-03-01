@@ -17,16 +17,16 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
         if (is_array($event->target) && 2 === count($event->target)) {
             list($client, $query) = $event->target;
             if ($client instanceof \Solarium_Client && $query instanceof \Solarium_Query_Select) {
-                $result = array();
+                $results = array();
                 $event->count = $client->select($query)->getNumFound();
                 if ($event->count) {
                     $query
                         ->setStart($event->getOffset())
                         ->setRows($event->getLimit())
                     ;
-                    $result = $client->select($query);
+                    $results = $client->select($query)->getIterator();
                 }
-                $event->items = $result;
+                $event->items = $results;
                 $event->stopPropagation();
             }
         }
@@ -35,7 +35,7 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'knp_pager.items' => array('items', 0)
+            'knp_pager.items' => array('items', 1)
         );
     }
 }
