@@ -9,6 +9,9 @@ use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\CountWalker
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\WhereInWalker;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\LimitSubqueryWalker;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Tools\Pagination\CountWalker as DoctrineCountWalker;
+use Doctrine\ORM\Tools\Pagination\WhereInWalker as DoctrineWhereInWalker;
+use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker as DoctrineLimitSubqueryWalker;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
@@ -21,16 +24,20 @@ class QuerySubscriber implements EventSubscriberInterface
     {
         if ($event->target instanceof Query) {
             // process count
+            $useDoctrineWalkers = version_compare(\Doctrine\ORM\Version::VERSION, '2.2.0', '>=');
             if (($count = $event->target->getHint(self::HINT_COUNT)) !== false) {
                 $event->count = intval($count);
             } else {
                 $countQuery = QueryHelper::cloneQuery($event->target);
-                QueryHelper::addCustomTreeWalker(
-                    $countQuery,
+                QueryHelper::addCustomTreeWalker($countQuery, $useDoctrineWalkers ?
+                    'Doctrine\ORM\Tools\Pagination\CountWalker' :
                     'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\CountWalker'
                 );
                 $countQuery
-                    ->setHint(CountWalker::HINT_DISTINCT, $event->options['distinct'])
+                    ->setHint($useDoctrineWalkers ?
+                        DoctrineCountWalker::HINT_DISTINCT :
+                        CountWalker::HINT_DISTINCT, $event->options['distinct']
+                    )
                     ->setFirstResult(null)
                     ->setMaxResults(null)
                 ;
@@ -54,28 +61,35 @@ class QuerySubscriber implements EventSubscriberInterface
                         ->setMaxResults($event->getLimit())
                         ->useQueryCache(false)
                     ;
-                    QueryHelper::addCustomTreeWalker(
-                        $limitSubQuery,
+                    QueryHelper::addCustomTreeWalker($limitSubQuery, $useDoctrineWalkers ?
+                        'Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker' :
                         'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\LimitSubqueryWalker'
                     );
 
                     $ids = array_map('current', $limitSubQuery->getScalarResult());
                     // create where-in query
                     $whereInQuery = QueryHelper::cloneQuery($event->target);
-                    QueryHelper::addCustomTreeWalker(
-                        $whereInQuery,
+                    QueryHelper::addCustomTreeWalker($whereInQuery, $useDoctrineWalkers ?
+                        'Doctrine\ORM\Tools\Pagination\WhereInWalker' :
                         'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\WhereInWalker'
                     );
                     $whereInQuery
-                        ->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids))
+                        ->setHint($useDoctrineWalkers ?
+                            DoctrineWhereInWalker::HINT_PAGINATOR_ID_COUNT :
+                            WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids)
+                        )
                         ->setFirstResult(null)
                         ->setMaxResults(null)
                     ;
 
-                    $type = $limitSubQuery->getHint(LimitSubqueryWalker::IDENTIFIER_TYPE);
+                    $type = $limitSubQuery->getHint($useDoctrineWalkers ?
+                        DoctrineLimitSubqueryWalker::IDENTIFIER_TYPE :
+                        LimitSubqueryWalker::IDENTIFIER_TYPE
+                    );
+                    $idAlias = $useDoctrineWalkers ? DoctrineWhereInWalker::PAGINATOR_ID_ALIAS : WhereInWalker::PAGINATOR_ID_ALIAS;
                     foreach ($ids as $i => $id) {
                         $whereInQuery->setParameter(
-                            WhereInWalker::PAGINATOR_ID_ALIAS . '_' . ++$i,
+                            $idAlias . '_' . ++$i,
                             $id,
                             $type->getName()
                         );

@@ -146,6 +146,11 @@ abstract class BaseTestCaseMongoODM extends \PHPUnit_Framework_TestCase
             ->method('getMongoCmd')
             ->will($this->returnValue('$'));
 
+        $config
+            ->expects($this->any())
+            ->method('getDefaultCommitOptions')
+            ->will($this->returnValue(array('safe' => true)))
+        ;
         $mappingDriver = $this->getMetadataDriverImplementation();
 
         $config->expects($this->any())
