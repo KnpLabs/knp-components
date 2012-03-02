@@ -7,7 +7,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Solarium query pagination.
- * 
+ *
  * @author Paweł Jędrzejewski <pjedrzejewski@diweb.pl>
  */
 class SolariumQuerySubscriber implements EventSubscriberInterface
@@ -35,7 +35,7 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'knp_pager.items' => array('items', 1)
+            'knp_pager.items' => array('items', 0) /* triggers before a standard array subscriber*/
         );
     }
 }

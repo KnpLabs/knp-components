@@ -32,7 +32,7 @@ class ArraySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'knp_pager.items' => array('items', 0)
+            'knp_pager.items' => array('items', -1/* other data arrays should be analized first*/)
         );
     }
 }
