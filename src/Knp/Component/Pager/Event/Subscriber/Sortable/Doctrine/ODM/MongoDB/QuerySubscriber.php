@@ -16,10 +16,6 @@ class QuerySubscriber implements EventSubscriberInterface
                 $field = $_GET[$alias.'sort'];
                 $dir = strtolower($_GET[$alias.'direction']) == 'asc' ? 1 : -1;
 
-                $meta = $event->target->getClass();
-                if (!$meta->hasField($field)) {
-                    throw new \UnexpectedValueException($meta->name.' query cannot be sorted, because does not contain field: '.$field);
-                }
                 if (isset($event->options['whitelist'])) {
                     if (!in_array($field, $event->options['whitelist'])) {
                         throw new \UnexpectedValueException("Cannot sort by: [{$field}] this field is not in whitelist");
