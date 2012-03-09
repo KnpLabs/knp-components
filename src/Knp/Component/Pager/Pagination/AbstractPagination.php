@@ -2,9 +2,9 @@
 
 namespace Knp\Component\Pager\Pagination;
 
-use Countable, Iterator;
+use Countable, Iterator, ArrayAccess;
 
-abstract class AbstractPagination implements PaginationInterface, Countable, Iterator
+abstract class AbstractPagination implements PaginationInterface, Countable, Iterator, ArrayAccess
 {
     protected $currentPageNumber;
     protected $numItemsPerPage;
@@ -146,5 +146,25 @@ abstract class AbstractPagination implements PaginationInterface, Countable, Ite
     public function getItems()
     {
         return $this->items;
+    }
+    
+    public function offsetExists($offset) 
+    {
+        return array_key_exists($offset, $this->items);
+    }
+    
+    public function offsetGet($offset) 
+    {
+        return $this->items[$offset];
+    }
+    
+    public function offsetSet($offset, $value) 
+    {
+        $this->items[$offset] = $value;
+    }
+    
+    public function offsetUnset($offset) 
+    {
+        unset($this->items[$offset]);
     }
 }
