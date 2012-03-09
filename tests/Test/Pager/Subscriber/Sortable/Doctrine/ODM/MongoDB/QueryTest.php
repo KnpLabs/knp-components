@@ -50,9 +50,8 @@ class QueryTest extends BaseTestCaseMongoODM
 
     /**
      * @test
-     * @expectedException UnexpectedValueException
      */
-    function shouldValidateSortableParameters()
+    function shouldSortOnAnyField()
     {
         $_GET['sort'] = '"title\'';
         $_GET['direction'] = 'asc';

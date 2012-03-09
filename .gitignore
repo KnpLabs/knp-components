@@ -1,3 +1,4 @@
 tests/phpunit.xml
 tests/temp/*.php
 vendor/*
+tags
