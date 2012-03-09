@@ -91,4 +91,16 @@ class SlidingTest extends BaseTestCase
         $this->assertEquals(3, $pagination['firstPageInRange']);
         $this->assertEquals(5, $pagination['lastPageInRange']);
     }
+
+    /**
+     * @test
+     */
+    function shouldNotFallbackToPageInCaseIfExceedsItemLimit()
+    {
+        $p = new Paginator;
+
+        $view = $p->paginate(range(1, 9), 2, 10);
+        $items = $view->getItems();
+        $this->assertTrue(empty($items));
+    }
 }
