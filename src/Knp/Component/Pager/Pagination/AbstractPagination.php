@@ -147,22 +147,26 @@ abstract class AbstractPagination implements PaginationInterface, Countable, Ite
     {
         return $this->items;
     }
-    
+
     public function offsetExists($offset) 
     {
         return array_key_exists($offset, $this->items);
     }
-    
+
     public function offsetGet($offset) 
     {
         return $this->items[$offset];
     }
-    
+
     public function offsetSet($offset, $value) 
     {
-        $this->items[$offset] = $value;
+        if (null === $offset) {
+            $this->items[] = $value;
+        } else {
+            $this->items[$offset] = $value;
+        }
     }
-    
+
     public function offsetUnset($offset) 
     {
         unset($this->items[$offset]);
