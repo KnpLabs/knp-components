@@ -34,7 +34,11 @@ class QuerySubscriber implements EventSubscriberInterface
             // set the count from the cursor
             $event->count = $cursor->count();
 
-            $event->items = $cursor->toArray();
+            $event->items = array();
+            // iterator_to_array for GridFS results in 1 item
+            foreach ($cursor as $item) {
+                $event->items[] = $item;
+            }
             $event->stopPropagation();
         }
     }
