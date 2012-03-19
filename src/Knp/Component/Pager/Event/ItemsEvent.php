@@ -31,6 +31,13 @@ class ItemsEvent extends Event
     public $items;
 
     /**
+     * Any tagging for item (facets, search info, etc)
+     *
+     * @var mixed
+     */
+    public $tag;
+
+    /**
      * Count result
      *
      * @var integer
