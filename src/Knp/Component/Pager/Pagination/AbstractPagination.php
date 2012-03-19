@@ -11,8 +11,25 @@ abstract class AbstractPagination implements PaginationInterface, Countable, Ite
     protected $items = array();
     protected $totalCount;
     protected $alias;
+    protected $tag;
 
     /**
+     * @return the $tag
+     */
+    public function getTag()
+    {
+        return $this->tag;
+    }
+
+	/**
+     * @param field_type $tag
+     */
+    public function setTag($tag)
+    {
+        $this->tag = $tag;
+    }
+
+	/**
      * {@inheritDoc}
      */
     public function rewind() {
@@ -148,17 +165,17 @@ abstract class AbstractPagination implements PaginationInterface, Countable, Ite
         return $this->items;
     }
 
-    public function offsetExists($offset) 
+    public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->items);
     }
 
-    public function offsetGet($offset) 
+    public function offsetGet($offset)
     {
         return $this->items[$offset];
     }
 
-    public function offsetSet($offset, $value) 
+    public function offsetSet($offset, $value)
     {
         if (null === $offset) {
             $this->items[] = $value;
@@ -167,7 +184,7 @@ abstract class AbstractPagination implements PaginationInterface, Countable, Ite
         }
     }
 
-    public function offsetUnset($offset) 
+    public function offsetUnset($offset)
     {
         unset($this->items[$offset]);
     }

@@ -92,6 +92,7 @@ class Paginator
         $paginationView->setTotalItemCount($itemsEvent->count);
         $paginationView->setAlias($options['alias']);
         $paginationView->setItems($itemsEvent->items);
+        $paginationView->setTag($itemsEvent->tag);
 
         // after
         $afterEvent = new Event\AfterEvent($paginationView);
