@@ -87,6 +87,7 @@ class Paginator
         }
         // pagination class can be diferent, with diferent rendering methods
         $paginationView = $paginationEvent->getPagination();
+        $paginationView->setCustomParameters($itemsEvent->getCustomPaginationParameters());
         $paginationView->setCurrentPageNumber($page);
         $paginationView->setItemNumberPerPage($limit);
         $paginationView->setTotalItemCount($itemsEvent->count);
