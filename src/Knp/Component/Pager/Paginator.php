@@ -51,6 +51,17 @@ class Paginator
     }
 
     /**
+     * Override the default paginator options
+     * to be reused for paginations
+     *
+     * @param array $options
+     */
+    public function setDefaultPaginatorOptions(array $options)
+    {
+        $this->defaultOptions = array_merge($this->defaultOptions, $options);
+    }
+
+    /**
      * Paginates anything (depending on event listeners)
      * into Pagination object, which is a view targeted
      * pagination object (might be aggregated helper object)

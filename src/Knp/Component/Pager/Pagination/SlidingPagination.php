@@ -75,6 +75,7 @@ class SlidingPagination extends AbstractPagination
             'pageCount' => $pageCount,
             'totalCount' => $this->totalCount,
         );
+        $viewData = array_merge($viewData, $this->paginatorOptions, $this->customParameters);
 
         if ($current - 1 > 0) {
             $viewData['previous'] = $current - 1;
