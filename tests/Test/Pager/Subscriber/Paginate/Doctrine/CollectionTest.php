@@ -24,13 +24,11 @@ class CollectionTest extends BaseTestCase
 
         $items = new ArrayCollection(array('first', 'second'));
         $view = $p->paginate($items, 1, 10);
-        $this->assertTrue($view instanceof PaginationInterface);
 
         $this->assertEquals(1, $view->getCurrentPageNumber());
         $this->assertEquals(10, $view->getItemNumberPerPage());
         $this->assertEquals(2, count($view->getItems()));
         $this->assertEquals(2, $view->getTotalItemCount());
-        $this->assertEquals('', $view->getAlias());
     }
 
     /**
@@ -44,13 +42,12 @@ class CollectionTest extends BaseTestCase
         $p = new Paginator($dispatcher);
 
         $items = new ArrayCollection(range('a', 'u'));
-        $view = $p->paginate($items, 2, 10, array('alias' => 'al'));
+        $view = $p->paginate($items, 2, 10);
 
         $this->assertEquals(2, $view->getCurrentPageNumber());
         $this->assertEquals(10, $view->getItemNumberPerPage());
         $this->assertEquals(10, count($view->getItems()));
         $this->assertEquals(21, $view->getTotalItemCount());
-        $this->assertEquals('al', $view->getAlias());
     }
 
     /**

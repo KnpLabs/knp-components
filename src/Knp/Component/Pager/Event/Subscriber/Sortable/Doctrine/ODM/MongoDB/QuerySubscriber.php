@@ -11,13 +11,12 @@ class QuerySubscriber implements EventSubscriberInterface
     public function items(ItemsEvent $event)
     {
         if ($event->target instanceof Query) {
-            $alias = $event->options['alias'];
-            if (isset($_GET[$alias.'sort'])) {
-                $field = $_GET[$alias.'sort'];
-                $dir = strtolower($_GET[$alias.'direction']) == 'asc' ? 1 : -1;
+            if (isset($_GET[$event->options['sortFieldParameterName']])) {
+                $field = $_GET[$event->options['sortFieldParameterName']];
+                $dir = strtolower($_GET[$event->options['sortDirectionParameterName']]) == 'asc' ? 1 : -1;
 
-                if (isset($event->options['whitelist'])) {
-                    if (!in_array($field, $event->options['whitelist'])) {
+                if (isset($event->options['sortFieldWhitelist'])) {
+                    if (!in_array($field, $event->options['sortFieldWhitelist'])) {
                         throw new \UnexpectedValueException("Cannot sort by: [{$field}] this field is not in whitelist");
                     }
                 }

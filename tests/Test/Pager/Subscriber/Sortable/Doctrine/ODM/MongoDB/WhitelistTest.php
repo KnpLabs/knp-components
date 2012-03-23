@@ -28,15 +28,15 @@ class WhitelistTest extends BaseTestCaseMongoODM
         ;
 
         $p = new Paginator;
-        $whitelist = array('title');
-        $view = $p->paginate($query, 1, 10, compact('whitelist'));
+        $sortFieldWhitelist = array('title');
+        $view = $p->paginate($query, 1, 10, compact('sortFieldWhitelist'));
 
         $items = array_values($view->getItems());
         $this->assertEquals(4, count($items));
         $this->assertEquals('autumn', $items[0]->getTitle());
 
         $_GET['sort'] = 'id';
-        $view = $p->paginate($query, 1, 10, compact('whitelist'));
+        $view = $p->paginate($query, 1, 10, compact('sortFieldWhitelist'));
     }
 
     /**

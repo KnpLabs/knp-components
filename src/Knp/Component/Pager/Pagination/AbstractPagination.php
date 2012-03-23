@@ -10,7 +10,7 @@ abstract class AbstractPagination implements PaginationInterface, Countable, Ite
     protected $numItemsPerPage;
     protected $items = array();
     protected $totalCount;
-    protected $alias;
+    protected $paginatorOptions;
     protected $customParameters;
 
     /**
@@ -56,7 +56,7 @@ abstract class AbstractPagination implements PaginationInterface, Countable, Ite
         return count($this->items);
     }
 
-    public function setCustomParameters($parameters)
+    public function setCustomParameters(array $parameters)
     {
         $this->customParameters = $parameters;
     }
@@ -123,9 +123,9 @@ abstract class AbstractPagination implements PaginationInterface, Countable, Ite
     /**
      * {@inheritDoc}
      */
-    public function setAlias($paginationAlias)
+    public function setPaginatorOptions($options)
     {
-        $this->alias = $paginationAlias;
+        $this->paginatorOptions = $options;
     }
 
     /**
@@ -133,9 +133,9 @@ abstract class AbstractPagination implements PaginationInterface, Countable, Ite
      *
      * @return string
      */
-    public function getAlias()
+    public function getPaginatorOption($name)
     {
-        return $this->alias;
+        return isset($this->paginatorOptions[$name]) ? $this->paginatorOptions[$name] : null;
     }
 
     /**

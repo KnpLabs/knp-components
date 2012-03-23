@@ -26,15 +26,15 @@ class WhitelistTest extends BaseTestCaseORM
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
         $p = new Paginator;
-        $whitelist = array('a.title');
-        $view = $p->paginate($query, 1, 10, compact('whitelist'));
+        $sortFieldWhitelist = array('a.title');
+        $view = $p->paginate($query, 1, 10, compact('sortFieldWhitelist'));
 
         $items = $view->getItems();
         $this->assertEquals(4, count($items));
         $this->assertEquals('autumn', $items[0]->getTitle());
 
         $_GET['sort'] = 'a.id';
-        $view = $p->paginate($query, 1, 10, compact('whitelist'));
+        $view = $p->paginate($query, 1, 10, compact('sortFieldWhitelist'));
     }
 
     /**

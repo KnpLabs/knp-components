@@ -13,17 +13,16 @@ class QuerySubscriber implements EventSubscriberInterface
     public function items(ItemsEvent $event)
     {
         if ($event->target instanceof Query) {
-            $alias = $event->options['alias'];
-            if (isset($_GET[$alias.'sort'])) {
-                $dir = strtolower($_GET[$alias.'direction']) === 'asc' ? 'asc' : 'desc';
-                $parts = explode('.', $_GET[$alias.'sort']);
+            if (isset($_GET[$event->options['sortFieldParameterName']])) {
+                $dir = strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc';
+                $parts = explode('.', $_GET[$event->options['sortFieldParameterName']]);
                 if (count($parts) != 2) {
                     throw new \UnexpectedValueException('Invalid sort key came by request, should be example "entityAlias.field" like: "article.title"');
                 }
 
-                if (isset($event->options['whitelist'])) {
-                    if (!in_array($_GET[$alias.'sort'], $event->options['whitelist'])) {
-                        throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$alias.'sort']}] this field is not in whitelist");
+                if (isset($event->options['sortFieldWhitelist'])) {
+                    if (!in_array($_GET[$event->options['sortFieldParameterName']], $event->options['sortFieldWhitelist'])) {
+                        throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options['sortFieldParameterName']]}] this field is not in whitelist");
                     }
                 }
 

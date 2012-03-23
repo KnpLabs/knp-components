@@ -30,7 +30,12 @@ interface PaginationInterface
     function setItems($items);
 
     /**
-     * @param string $paginationAlias
+     * @param string $options
      */
-    function setAlias($paginationAlias);
+    function setPaginatorOptions($options);
+
+    /**
+     * @param array $parameters
+     */
+    function setCustomParameters(array $parameters);
 }

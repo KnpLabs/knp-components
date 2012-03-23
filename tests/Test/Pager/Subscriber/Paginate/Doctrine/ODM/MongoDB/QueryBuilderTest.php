@@ -23,7 +23,6 @@ class QueryBuilderTest extends BaseTestCaseMongoODM
         $this->assertEquals(1, $pagination->getCurrentPageNumber());
         $this->assertEquals(2, $pagination->getItemNumberPerPage());
         $this->assertEquals(4, $pagination->getTotalItemCount());
-        $this->assertEquals('', $pagination->getAlias());
 
         $items = array_values($pagination->getItems());
         $this->assertEquals(2, count($items));

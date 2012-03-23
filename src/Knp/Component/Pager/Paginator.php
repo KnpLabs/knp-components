@@ -22,6 +22,18 @@ class Paginator
     protected $eventDispatcher;
 
     /**
+     * Default options of paginator
+     *
+     * @var array
+     */
+    protected $defaultOptions = array(
+        'pageParameterName' => 'page',
+        'sortFieldParameterName' => 'sort',
+        'sortDirectionParameterName' => 'direction',
+        'distinct' => true
+    );
+
+    /**
      * Initialize paginator with event dispatcher
      * Can be a service in concept. By default it
      * hooks standard pagination subscriber
@@ -61,11 +73,7 @@ class Paginator
             throw new \LogicException("Invalid item per page number, must be a positive number");
         }
         $offset = abs($page - 1) * $limit;
-        $defaultOptions = array(
-            'alias' => '',
-            'distinct' => true
-        );
-        $options = array_merge($defaultOptions, $options);
+        $options = array_merge($this->defaultOptions, $options);
         // before pagination start
         $beforeEvent = new Event\BeforeEvent($this->eventDispatcher);
         $this->eventDispatcher->dispatch('knp_pager.before', $beforeEvent);
@@ -91,7 +99,7 @@ class Paginator
         $paginationView->setCurrentPageNumber($page);
         $paginationView->setItemNumberPerPage($limit);
         $paginationView->setTotalItemCount($itemsEvent->count);
-        $paginationView->setAlias($options['alias']);
+        $paginationView->setPaginatorOptions($options);
         $paginationView->setItems($itemsEvent->items);
 
         // after

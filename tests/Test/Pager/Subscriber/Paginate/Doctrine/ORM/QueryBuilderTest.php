@@ -26,7 +26,6 @@ class QueryBuilderTest extends BaseTestCaseORM
         $this->assertEquals(1, $view->getCurrentPageNumber());
         $this->assertEquals(2, $view->getItemNumberPerPage());
         $this->assertEquals(4, $view->getTotalItemCount());
-        $this->assertEquals('', $view->getAlias());
 
         $items = $view->getItems();
         $this->assertEquals(2, count($items));
