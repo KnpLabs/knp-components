@@ -14,9 +14,9 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
-        if (is_array($event->target) && 2 === count($event->target)) {
-            list($client, $query) = $event->target;
-            if ($client instanceof \Solarium_Client && $query instanceof \Solarium_Query_Select) {
+        if (is_array($event->target) && 2 === count($event->target) && isset($event->target[0], $event->target[1]) &&
+            $event->target[0] instanceof \Solarium_Client && $event->target[1] instanceof \Solarium_Query_Select) {
+                list($client, $query) = $event->target;
                 $results = array();
                 $event->count = $client->select($query)->getNumFound();
                 if ($event->count) {
@@ -28,7 +28,6 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
                 }
                 $event->items = $results;
                 $event->stopPropagation();
-            }
         }
     }
 
