@@ -74,6 +74,30 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
+    function shouldSortByAnyAvailableAlias()
+    {
+        $this->populate();
+
+        $_GET['sort'] = 'counter';
+        $_GET['direction'] = 'asc';
+        $dql = <<<___SQL
+        SELECT a, COUNT(a) AS counter
+        FROM Test\Fixture\Entity\Article a
+___SQL;
+        $query = $this->em->createQuery($dql);
+
+        $p = new Paginator;
+        $this->startQueryLog();
+        $view = $p->paginate($query, 1, 10, array('distinct' => false));
+
+        $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+        $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, COUNT(a0_.id) AS sclr2 FROM Article a0_ ORDER BY sclr2 ASC LIMIT 10 OFFSET 0', $executed[1]);
+    }
+
+    /**
+     * @test
+     */
     function shouldWorkWithInitialPaginatorEventDispatcher()
     {
         $this->populate();

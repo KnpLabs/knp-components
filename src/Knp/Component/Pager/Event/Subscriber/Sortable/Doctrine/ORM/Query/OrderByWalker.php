@@ -43,17 +43,27 @@ class OrderByWalker extends TreeWalkerAdapter
         $alias = $query->getHint(self::HINT_PAGINATOR_SORT_ALIAS);
 
         $components = $this->_getQueryComponents();
-        if (!array_key_exists($alias, $components)) {
-            throw new \UnexpectedValueException("There is no component aliased by [{$alias}] in the given Query");
-        }
-        $meta = $components[$alias];
-        if (!$meta['metadata']->hasField($field)) {
-            throw new \UnexpectedValueException("There is no such field [{$field}] in the given Query component, aliased by [$alias]");
+        if ($alias !== false) {
+            if (!array_key_exists($alias, $components)) {
+                throw new \UnexpectedValueException("There is no component aliased by [{$alias}] in the given Query");
+            }
+            $meta = $components[$alias];
+            if (!$meta['metadata']->hasField($field)) {
+                throw new \UnexpectedValueException("There is no such field [{$field}] in the given Query component, aliased by [$alias]");
+            }
+        } else {
+            if (!array_key_exists($field, $components)) {
+                throw new \UnexpectedValueException("There is no component field [{$field}] in the given Query");
+            }
         }
 
         $direction = $query->getHint(self::HINT_PAGINATOR_SORT_DIRECTION);
-        $pathExpression = new PathExpression(PathExpression::TYPE_STATE_FIELD, $alias, $field);
-        $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
+        if ($alias !== false) {
+            $pathExpression = new PathExpression(PathExpression::TYPE_STATE_FIELD, $alias, $field);
+            $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
+        } else {
+            $pathExpression = $field;
+        }
 
         $orderByItem = new OrderByItem($pathExpression);
         $orderByItem->type = $direction;

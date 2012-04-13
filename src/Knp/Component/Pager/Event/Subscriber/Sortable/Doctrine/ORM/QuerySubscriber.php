@@ -16,9 +16,6 @@ class QuerySubscriber implements EventSubscriberInterface
             if (isset($_GET[$event->options['sortFieldParameterName']])) {
                 $dir = strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc';
                 $parts = explode('.', $_GET[$event->options['sortFieldParameterName']]);
-                if (count($parts) != 2) {
-                    throw new \UnexpectedValueException('Invalid sort key came by request, should be example "entityAlias.field" like: "article.title"');
-                }
 
                 if (isset($event->options['sortFieldWhitelist'])) {
                     if (!in_array($_GET[$event->options['sortFieldParameterName']], $event->options['sortFieldWhitelist'])) {
@@ -27,10 +24,12 @@ class QuerySubscriber implements EventSubscriberInterface
                 }
 
                 $event->target
-                    ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_ALIAS, current($parts))
                     ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_DIRECTION, $dir)
                     ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_FIELD, end($parts))
                 ;
+                if (2 <= count($parts)) {
+                    $event->target->setHint(OrderByWalker::HINT_PAGINATOR_SORT_ALIAS, reset($parts));
+                }
                 QueryHelper::addCustomTreeWalker($event->target, 'Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\Query\OrderByWalker');
             }
         }
