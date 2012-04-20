@@ -11,6 +11,7 @@ use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Test\Fixture\Entity\Shop\Product;
 use Test\Fixture\Entity\Shop\Tag;
+use Doctrine\ORM\Query;
 
 class AdvancedQueryTest extends BaseTestCaseORM
 {
@@ -35,6 +36,27 @@ ___SQL;
         $p = new Paginator;
         $this->startQueryLog();
         $view = $p->paginate($q, 1, 2);
+    }
+
+    /**
+     * @test
+     */
+    function shouldBeAbleToPaginateWithHavingClause()
+    {
+        $this->populate();
+
+        $dql = <<<___SQL
+        SELECT p, t
+        FROM Test\Fixture\Entity\Shop\Product p
+        INNER JOIN p.tags t
+        GROUP BY p.id
+        HAVING p.numTags = COUNT(t)
+___SQL;
+        $q = $this->em->createQuery($dql);
+        $q->setHydrationMode(Query::HYDRATE_ARRAY);
+        $p = new Paginator;
+        $view = $p->paginate($q, 1, 10);
+        $this->assertEquals(3, count($view));
     }
 
     /**

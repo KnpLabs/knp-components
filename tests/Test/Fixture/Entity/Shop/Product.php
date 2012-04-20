@@ -3,6 +3,7 @@
 namespace Test\Fixture\Entity\Shop;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity
@@ -35,6 +36,16 @@ class Product
      * @ORM\ManyToMany(targetEntity="Tag")
      */
     private $tags;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $numTags = 0;
+
+    public function __construct()
+    {
+        $this->tags = new ArrayCollection;
+    }
 
     public function getId()
     {
@@ -73,6 +84,7 @@ class Product
 
     public function addTag(Tag $tag)
     {
+        $this->numTags++;
         $this->tags[] = $tag;
     }
 
