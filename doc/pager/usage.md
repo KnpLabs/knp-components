@@ -92,7 +92,7 @@ foreach ($pagination as $item) {
 
 ### Rendering pagination
 
-**$paginator->pagenate($target...)** will return pagination class, which is by
+**$paginator->paginate($target...)** will return pagination class, which is by
 default **SlidingPagination** it executes a **$pagination->renderer** callback
 with all arguments reguired in view template. Its your decision to implement
 it whatever way you like.
