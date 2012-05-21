@@ -4,7 +4,6 @@ namespace Knp\Component\Pager\Event\Subscriber\Paginate;
 
 use Knp\Component\Pager\Event\ItemsEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use FOQ\ElasticaBundle\Finder\TransformedFinder;
 
 /**
  * Elastica query pagination.
