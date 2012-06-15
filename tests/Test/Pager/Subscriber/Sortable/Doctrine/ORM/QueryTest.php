@@ -17,9 +17,52 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
+    function shouldHandleApcQueryCache()
+    {
+        if (!extension_loaded('apc') || !ini_get('apc.enable_cli')) {
+            $this->markTestSkipped('APC extension is not loaded.');
+        }
+        $config = new \Doctrine\ORM\Configuration();
+        $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcCache);
+        $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcCache);
+        $config->setProxyDir(__DIR__);
+        $config->setProxyNamespace('Gedmo\Mapping\Proxy');
+        $config->getAutoGenerateProxyClasses(false);
+        $config->setMetadataDriverImpl($this->getMetadataDriverImplementation());
+
+        $conn = array(
+            'driver' => 'pdo_sqlite',
+            'memory' => true,
+        );
+
+        $em = \Doctrine\ORM\EntityManager::create($conn, $config);
+        $schema = array_map(function($class) use ($em) {
+            return $em->getClassMetadata($class);
+        }, (array)$this->getUsedEntityFixtures());
+
+        $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($em);
+        $schemaTool->dropSchema(array());
+        $schemaTool->createSchema($schema);
+        $this->populate($em);
+
+        $_GET['sort'] = 'a.title';
+        $_GET['direction'] = 'asc';
+        $query = $em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+
+        $p = new Paginator;
+        $view = $p->paginate($query, 1, 10);
+
+        $query = $em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+        $view = $p->paginate($query, 1, 10);
+    }
+
+    /**
+     * @test
+     */
     function shouldSortSimpleDoctrineQuery()
     {
-        $this->populate();
+        $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
 
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new PaginationSubscriber);
@@ -76,7 +119,8 @@ class QueryTest extends BaseTestCaseORM
      */
     function shouldSortByAnyAvailableAlias()
     {
-        $this->populate();
+        $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
 
         $_GET['sort'] = 'counter';
         $_GET['direction'] = 'asc';
@@ -100,7 +144,8 @@ ___SQL;
      */
     function shouldWorkWithInitialPaginatorEventDispatcher()
     {
-        $this->populate();
+        $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
         $_GET['sort'] = 'a.title';
         $_GET['direction'] = 'asc';
         $query = $this
@@ -143,9 +188,8 @@ ___SQL;
         return array('Test\Fixture\Entity\Article');
     }
 
-    private function populate()
+    private function populate($em)
     {
-        $em = $this->getMockSqliteEntityManager();
         $summer = new Article;
         $summer->setTitle('summer');
 
@@ -163,5 +207,24 @@ ___SQL;
         $em->persist($autumn);
         $em->persist($spring);
         $em->flush();
+    }
+
+    private function getApcEntityManager()
+    {
+        $config = new \Doctrine\ORM\Configuration();
+        $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcCache);
+        $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcCache);
+        $config->setProxyDir(__DIR__);
+        $config->setProxyNamespace('Gedmo\Mapping\Proxy');
+        $config->setAutoGenerateProxyClasses(false);
+        $config->setMetadataDriverImpl($this->getMetadataDriverImplementation());
+
+        $conn = array(
+            'driver' => 'pdo_sqlite',
+            'memory' => true,
+        );
+
+        $em = \Doctrine\ORM\EntityManager::create($conn, $config);
+        return $em;
     }
 }
