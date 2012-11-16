@@ -81,19 +81,7 @@ class QuerySubscriber implements EventSubscriberInterface
                         ->setFirstResult(null)
                         ->setMaxResults(null)
                     ;
-
-                    $type = $limitSubQuery->getHint($useDoctrineWalkers ?
-                        DoctrineLimitSubqueryWalker::IDENTIFIER_TYPE :
-                        LimitSubqueryWalker::IDENTIFIER_TYPE
-                    );
-                    $idAlias = $useDoctrineWalkers ? DoctrineWhereInWalker::PAGINATOR_ID_ALIAS : WhereInWalker::PAGINATOR_ID_ALIAS;
-                    foreach ($ids as $i => $id) {
-                        $whereInQuery->setParameter(
-                            $idAlias . '_' . ++$i,
-                            $id,
-                            $type->getName()
-                        );
-                    }
+                    $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $ids);
                     $result = $whereInQuery->execute();
                 } else {
                     $event->target
