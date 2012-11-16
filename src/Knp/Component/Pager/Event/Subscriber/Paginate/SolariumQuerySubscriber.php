@@ -14,16 +14,15 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
-        if (is_array($event->target) && 2 === count($event->target) && isset($event->target[0], $event->target[1]) &&
-            $event->target[0] instanceof \Solarium_Client && $event->target[1] instanceof \Solarium_Query_Select) {
-                list($client, $query) = $event->target;
+        if (is_array($event->target) && 2 === count($event->target) && reset($event->target) instanceof \Solarium_Client && end($event->target) instanceof \Solarium_Query_Select) {
+            list($client, $query) = $event->target;
 
-                $query->setStart($event->getOffset())->setRows($event->getLimit());
-                $solrResult = $client->select($query);
+            $query->setStart($event->getOffset())->setRows($event->getLimit());
+            $solrResult = $client->select($query);
 
-                $event->items = $solrResult->getIterator();
-                $event->count = $solrResult->getNumFound();
-                $event->stopPropagation();
+            $event->items = $solrResult->getIterator();
+            $event->count = $solrResult->getNumFound();
+            $event->stopPropagation();
         }
     }
 

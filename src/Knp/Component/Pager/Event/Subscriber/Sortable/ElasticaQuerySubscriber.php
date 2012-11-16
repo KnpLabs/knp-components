@@ -11,21 +11,18 @@ class ElasticaQuerySubscriber implements EventSubscriberInterface
     {
         if (is_array($event->target) && 2 === count($event->target) && reset($event->target) instanceof \Elastica_Searchable && end($event->target) instanceof \Elastica_Query) {
             list($searchable, $query) = $event->target;
-            
+
             if (isset($_GET[$event->options['sortFieldParameterName']])) {
                 $field = $_GET[$event->options['sortFieldParameterName']];
-                $dir   = isset($_GET[$event->options['sortDirectionParameterName']]) && strtolower($_GET[$event->options['sortDirectionParameterName']]) == 'asc' 
-                    ? 'asc' 
-                    : 'desc'
-                    ;
+                $dir   = isset($_GET[$event->options['sortDirectionParameterName']]) && strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc';
 
                 if (isset($event->options['sortFieldWhitelist']) && !in_array($field, $event->options['sortFieldWhitelist'])) {
                     throw new \UnexpectedValueException(sprintf('Cannot sort by: [%s] this field is not in whitelist',$field));
                 }
-                
+
                 $query->setSort(array(
-    				$field => array('order' => $dir),
-    	        ));
+                    $field => array('order' => $dir),
+                ));
             }
         }
     }
