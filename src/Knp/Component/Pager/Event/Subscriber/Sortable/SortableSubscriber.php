@@ -13,6 +13,7 @@ class SortableSubscriber implements EventSubscriberInterface
         // hook all standard sortable subscribers
         $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber);
         $disp->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber);
+        $disp->addSubscriber(new ElasticaQuerySubscriber());
     }
 
     public static function getSubscribedEvents()
