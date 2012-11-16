@@ -4,15 +4,15 @@ This is a PHP 5.3 paginator with a totally diferent core concept.
 
 **Note:** it is still experimental, any ideas on structural design are very welcome
 
-How is it diferent? First of all, it uses **event dispatcher** to paginate whatever is needed.
-Pagination process involves triggering events which hits the **subscribers** and if the subscriber
-knows how to paginate the given object it does. Finally, some subscriber must initialize the
+How is it different? First of all, it uses Symfony's **event dispatcher** to paginate whatever is needed.
+The pagination process involves triggering events which hit the **subscribers**. If the subscriber
+knows how to paginate the given object, it does. Finally, some subscriber must initialize the
 **pagination view** object, which will be the result of pagination request. Pagination view
-can be anything which will be responsible on how to render the pagination.
+can be anything which will be responsible for how to render the pagination.
 
 **Magic?** no! only KISS principle
 
-Why reinventing the wheel? Can someone tell what is the definition of **wheel** in software world? 
+Why reinvent the wheel? Can someone me tell what the definition of **wheel** is in the software world? 
 
 ## Requirements:
 
