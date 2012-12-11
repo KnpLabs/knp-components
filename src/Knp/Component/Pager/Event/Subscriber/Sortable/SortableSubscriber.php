@@ -14,6 +14,7 @@ class SortableSubscriber implements EventSubscriberInterface
         $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber);
         $disp->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber);
         $disp->addSubscriber(new ElasticaQuerySubscriber());
+        $disp->addSubscriber(new SolariumQuerySubscriber);
     }
 
     public static function getSubscribedEvents()
