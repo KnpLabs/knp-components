@@ -11,10 +11,11 @@ class SortableSubscriber implements EventSubscriberInterface
     {
         $disp = $event->getEventDispatcher();
         // hook all standard sortable subscribers
-        $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber);
-        $disp->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber);
+        $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber());
+        $disp->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber());
         $disp->addSubscriber(new ElasticaQuerySubscriber());
-        $disp->addSubscriber(new SolariumQuerySubscriber);
+        $disp->addSubscriber(new PropelQuerySubscriber());
+        $disp->addSubscriber(new SolariumQuerySubscriber());
     }
 
     public static function getSubscribedEvents()
