@@ -24,20 +24,38 @@ class QuerySubscriber implements EventSubscriberInterface
     {
         if ($event->target instanceof Query) {
             // process count
-            $useDoctrineWalkers = version_compare(\Doctrine\ORM\Version::VERSION, '2.2.0', '>=');
+            $useDoctrineWalkers      = false;
+            $useDoctrineOutputWalker = false;
+            if (version_compare(\Doctrine\ORM\Version::VERSION, '2.3.0', '>=')) {
+                $useDoctrineWalkers      = true;
+                $useDoctrineOutputWalker = true;
+            } else if (version_compare(\Doctrine\ORM\Version::VERSION, '2.2.0', '>=')) {
+                $useDoctrineWalkers      = true;
+            }
             if (($count = $event->target->getHint(self::HINT_COUNT)) !== false) {
                 $event->count = intval($count);
             } else {
                 $countQuery = QueryHelper::cloneQuery($event->target);
-                QueryHelper::addCustomTreeWalker($countQuery, $useDoctrineWalkers ?
-                    'Doctrine\ORM\Tools\Pagination\CountWalker' :
-                    'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\CountWalker'
-                );
+                $treeWalker = 'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\CountWalker';
+                if ($useDoctrineOutputWalker) {
+                    $treeWalker = 'Doctrine\ORM\Tools\Pagination\CountOutputWalker';
+                } else if ($useDoctrineWalkers) {
+                    $treeWalker = 'Doctrine\ORM\Tools\Pagination\CountWalker';
+                }
+                QueryHelper::addCustomTreeWalker($countQuery, $treeWalker);
+                # Add Distinct Mode hint if not using the DoctrineCountOutputWalker
+                if ($useDoctrineWalkers && ! $useDoctrineOutputWalker) {
+                    $countQuery->setHint(
+                        DoctrineCountWalker::HINT_DISTINCT,
+                        $event->options['distinct']
+                    );
+                } else {
+                    $countQuery->setHint(
+                        CountWalker::HINT_DISTINCT,
+                        $event->options['distinct']
+                    );
+                }
                 $countQuery
-                    ->setHint($useDoctrineWalkers ?
-                        DoctrineCountWalker::HINT_DISTINCT :
-                        CountWalker::HINT_DISTINCT, $event->options['distinct']
-                    )
                     ->setFirstResult(null)
                     ->setMaxResults(null)
                 ;
