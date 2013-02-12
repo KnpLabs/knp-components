@@ -61,7 +61,7 @@ class QuerySubscriber implements EventSubscriberInterface
                 ;
 
                 $countResult = $countQuery->getResult(Query::HYDRATE_ARRAY);
-                if (count($countResult) > 1) {
+                if (count($countResult) >= 1) {
                     $countResult = count($countResult);
                 } else {
                     $countResult = current($countResult);
