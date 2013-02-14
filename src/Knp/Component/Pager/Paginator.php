@@ -4,6 +4,7 @@ namespace Knp\Component\Pager;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
 use Knp\Component\Pager\Event;
@@ -22,6 +23,11 @@ class Paginator
     protected $eventDispatcher;
 
     /**
+     * @var \Symfony\Component\HttpFoundation\Request
+     */
+    protected $request;
+
+    /**
      * Default options of paginator
      *
      * @var array
@@ -32,6 +38,8 @@ class Paginator
         'sortDirectionParameterName' => 'direction',
         'filterFieldParameterName' => 'filterParam',
         'filterValueParameterName' => 'filterValue',
+        'limitParameterName' => 'limit',
+        'limitDefaultValue' => 10,
         'distinct' => true
     );
 
@@ -42,9 +50,11 @@ class Paginator
      *
      * @param Symfony\Component\EventDispatcher\EventDispatcher $eventDispatcher
      */
-    public function __construct(EventDispatcher $eventDispatcher = null)
+    public function __construct(Request $request, EventDispatcher $eventDispatcher = null)
     {
         $this->eventDispatcher = $eventDispatcher;
+        $this->request = $request;
+
         if (is_null($this->eventDispatcher)) {
             $this->eventDispatcher = new EventDispatcher;
             $this->eventDispatcher->addSubscriber(new PaginationSubscriber);
@@ -61,6 +71,42 @@ class Paginator
     public function setDefaultPaginatorOptions(array $options)
     {
         $this->defaultOptions = array_merge($this->defaultOptions, $options);
+    }
+
+    /**
+     * Get the page number.
+     *
+     * @param int $default
+     *
+     * @return int
+     */
+    public function getPageValue($default = 1)
+    {
+        if (null === ($page = $this->request->get($this->defaultOptions['pageParameterName']))) {
+            $page = $default;
+        }
+
+        return intval(abs($page));
+    }
+
+    /**
+     * Get the number of items per page
+     *
+     * @param null $default
+     *
+     * @return int
+     */
+    public function getLimitValue($default = null)
+    {
+        if (null === ($limit = $this->request->get($this->defaultOptions['limitParameterName']))) {
+            if ($default !== null) {
+                   $limit = $default;
+               } else {
+                $limit = $this->defaultOptions['limitDefaultValue'];
+            }
+        }
+
+        return intval(abs($limit));
     }
 
     /**
@@ -81,7 +127,8 @@ class Paginator
      */
     public function paginate($target, $page = 1, $limit = 10, $options = array())
     {
-        $limit = intval(abs($limit));
+        $limit = $this->getLimitValue($limit);
+        $page  = $this->getPageValue($page);
         if (!$limit) {
             throw new \LogicException("Invalid item per page number, must be a positive number");
         }
