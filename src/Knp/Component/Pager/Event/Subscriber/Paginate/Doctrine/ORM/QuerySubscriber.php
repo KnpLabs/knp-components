@@ -65,7 +65,7 @@ class QuerySubscriber implements EventSubscriberInterface
                     $countResult = count($countResult);
                 } else {
                     $countResult = current($countResult);
-                    $countResult = $countResult ? current($countResult) : 0;
+                    $countResult = $countResult ? $countResult : 0;
                 }
                 $event->count = intval($countResult);
             }
