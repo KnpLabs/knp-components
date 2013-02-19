@@ -30,6 +30,8 @@ class Paginator
         'pageParameterName' => 'page',
         'sortFieldParameterName' => 'sort',
         'sortDirectionParameterName' => 'direction',
+        'filterFieldParameterName' => 'filterParam',
+        'filterValueParameterName' => 'filterValue',
         'distinct' => true
     );
 

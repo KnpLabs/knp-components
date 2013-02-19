@@ -24,32 +24,44 @@ class QuerySubscriber implements EventSubscriberInterface
     {
         if ($event->target instanceof Query) {
             // process count
-            $useDoctrineWalkers = version_compare(\Doctrine\ORM\Version::VERSION, '2.2.0', '>=');
+            $useDoctrineWalkers      = false;
+            $useDoctrineOutputWalker = false;
+            if (version_compare(\Doctrine\ORM\Version::VERSION, '2.3.0', '>=')) {
+                $useDoctrineWalkers      = true;
+                $useDoctrineOutputWalker = true;
+            } else if (version_compare(\Doctrine\ORM\Version::VERSION, '2.2.0', '>=')) {
+                $useDoctrineWalkers      = true;
+            }
             if (($count = $event->target->getHint(self::HINT_COUNT)) !== false) {
                 $event->count = intval($count);
             } else {
                 $countQuery = QueryHelper::cloneQuery($event->target);
-                QueryHelper::addCustomTreeWalker($countQuery, $useDoctrineWalkers ?
-                    'Doctrine\ORM\Tools\Pagination\CountWalker' :
-                    'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\CountWalker'
-                );
+                $treeWalker = 'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\CountWalker';
+                if ($useDoctrineOutputWalker) {
+                    $treeWalker = 'Doctrine\ORM\Tools\Pagination\CountOutputWalker';
+                } else if ($useDoctrineWalkers) {
+                    $treeWalker = 'Doctrine\ORM\Tools\Pagination\CountWalker';
+                }
+                QueryHelper::addCustomTreeWalker($countQuery, $treeWalker);
+                # Add Distinct Mode hint if not using the DoctrineCountOutputWalker
+                if ($useDoctrineWalkers && ! $useDoctrineOutputWalker) {
+                    $countQuery->setHint(
+                        DoctrineCountWalker::HINT_DISTINCT,
+                        $event->options['distinct']
+                    );
+                } else {
+                    $countQuery->setHint(
+                        CountWalker::HINT_DISTINCT,
+                        $event->options['distinct']
+                    );
+                }
                 $countQuery
-                    ->setHint($useDoctrineWalkers ?
-                        DoctrineCountWalker::HINT_DISTINCT :
-                        CountWalker::HINT_DISTINCT, $event->options['distinct']
-                    )
                     ->setFirstResult(null)
                     ->setMaxResults(null)
                 ;
 
-                $countResult = $countQuery->getResult(Query::HYDRATE_ARRAY);
-                if (count($countResult) > 1) {
-                    $countResult = count($countResult);
-                } else {
-                    $countResult = current($countResult);
-                    $countResult = $countResult ? current($countResult) : 0;
-                }
-                $event->count = intval($countResult);
+                $countResult  = $countQuery->getResult(Query::HYDRATE_ARRAY);
+                $event->count = count($countResult);
             }
             // process items
             $result = null;
@@ -81,7 +93,27 @@ class QuerySubscriber implements EventSubscriberInterface
                         ->setFirstResult(null)
                         ->setMaxResults(null)
                     ;
-                    $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $ids);
+                        
+                    if(version_compare(\Doctrine\ORM\Version::VERSION, '2.3.0', '>=')) {
+                        $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $ids);
+                    }
+                    else {
+                        $type = $limitSubQuery->getHint($useDoctrineWalkers ?
+                            DoctrineLimitSubqueryWalker::IDENTIFIER_TYPE :
+                            LimitSubqueryWalker::IDENTIFIER_TYPE
+                        );
+                        $idAlias = $useDoctrineWalkers ? 
+                            DoctrineWhereInWalker::PAGINATOR_ID_ALIAS : 
+                            WhereInWalker::PAGINATOR_ID_ALIAS
+                        ;
+                        foreach ($ids as $i => $id) {
+                            $whereInQuery->setParameter(
+                                $idAlias . '_' . ++$i,
+                                $id,
+                                $type->getName()
+                            );
+                        }
+                    }
                     $result = $whereInQuery->execute();
                 } else {
                     $event->target
