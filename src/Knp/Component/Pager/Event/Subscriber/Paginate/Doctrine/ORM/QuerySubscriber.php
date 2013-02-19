@@ -60,12 +60,8 @@ class QuerySubscriber implements EventSubscriberInterface
                     ->setMaxResults(null)
                 ;
 
-                $countResult = $countQuery->getResult(Query::HYDRATE_ARRAY);
-                
+                $countResult  = $countQuery->getResult(Query::HYDRATE_ARRAY);
                 $event->count = count($countResult);
-                if ($event->count === 1) {
-                    $event->count = current($countResult) ?: 0;
-                }
             }
             // process items
             $result = null;
