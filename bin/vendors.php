@@ -14,9 +14,9 @@ $deps = array(
     array('Symfony/Component/EventDispatcher', 'http://github.com/symfony/EventDispatcher.git', 'v2.0.10'),
 
     // doctrine 2.3.x
-    array('doctrine-orm', 'http://github.com/doctrine/doctrine2.git', '6cd82d77f5'),
-    array('doctrine-dbal', 'http://github.com/doctrine/dbal.git', 'c8835edf74'),
-    array('doctrine-common', 'http://github.com/doctrine/common.git', 'fc26d10d97'),
+    array('doctrine-orm', 'http://github.com/doctrine/doctrine2.git', '304acf0a1a'),
+    array('doctrine-dbal', 'http://github.com/doctrine/dbal.git', 'fd45c6f6ba'),
+    array('doctrine-common', 'http://github.com/doctrine/common.git', 'bb0aebbf23'),
     array('doctrine-mongodb', 'http://github.com/doctrine/mongodb.git', 'd7fdcff25b'),
     array('doctrine-mongodb-odm', 'http://github.com/doctrine/mongodb-odm.git', 'e8c0bfb975'),
 
