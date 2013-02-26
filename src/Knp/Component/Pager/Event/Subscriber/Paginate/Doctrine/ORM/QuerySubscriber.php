@@ -66,16 +66,16 @@ class QuerySubscriber implements EventSubscriberInterface
                 $conn = $countQuery->getEntityManager()->getConnection();
                 $params = $countQuery->getParameters()->toArray();
 
-                list($types, $params) = array_reduce($params, function ($res, Parameter $par) {
-                    $res[0][] = $par->getType();
-                    $res[1][] = $par->getValue();
-
-                    return $res;
-                }, array(array(), array()));
+                $processedParams = array();
+                $types = array();
+                foreach( $params as $key => $param ) {
+                    $processedParams[ $key ] = $countQuery->processParameterValue( $param->getValue() );
+                    $types[ $key ] = $param->getType();
+                }
 
                 $countResult = $conn
                     ->executeQuery($countQuery->getSQL(),
-                        $params,
+                        $processedParams,
                         $types)
                     ->fetchColumn();
 
