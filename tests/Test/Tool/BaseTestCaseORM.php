@@ -3,6 +3,8 @@
 namespace Test\Tool;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Common\EventManager;
@@ -231,6 +233,24 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('getDefaultRepositoryClassName')
             ->will($this->returnValue('Doctrine\\ORM\\EntityRepository'))
+        ;
+
+        $config
+            ->expects($this->any())
+            ->method('getQuoteStrategy')
+            ->will($this->returnValue(new DefaultQuoteStrategy()))
+        ;
+
+        $config
+            ->expects($this->any())
+            ->method('getNamingStrategy')
+            ->will($this->returnValue(new DefaultNamingStrategy()))
+        ;
+
+        $config
+            ->expects($this->any())
+            ->method('getCustomHydrationMode')
+            ->will($this->returnValue('Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\AsIsHydrator'))
         ;
 
         return $config;

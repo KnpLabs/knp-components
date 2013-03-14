@@ -63,23 +63,11 @@ class QuerySubscriber implements EventSubscriberInterface
                     ->setMaxResults(null)
                 ;
 
-                $conn = $countQuery->getEntityManager()->getConnection();
-                $params = $countQuery->getParameters()->toArray();
+                $countQuery->getEntityManager()->getConfiguration()->addCustomHydrationMode('asIs',
+                            'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\AsIsHydrator');
+                $countResult = $countQuery->getResult('asIs');
 
-                list($types, $params) = array_reduce($params, function ($res, Parameter $par) {
-                    $res[0][] = $par->getType();
-                    $res[1][] = $par->getValue();
-
-                    return $res;
-                }, array(array(), array()));
-
-                $countResult = $conn
-                    ->executeQuery($countQuery->getSQL(),
-                        $params,
-                        $types)
-                    ->fetchColumn();
-
-                $event->count = intval($countResult);
+                $event->count = intval(current(current($countResult)));
             }
             // process items
             $result = null;
