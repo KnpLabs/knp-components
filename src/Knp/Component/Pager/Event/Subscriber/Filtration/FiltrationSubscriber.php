@@ -11,6 +11,7 @@ class FiltrationSubscriber implements EventSubscriberInterface
     {
         $disp = $event->getEventDispatcher();
         // hook all standard sortable subscribers
+        $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber());
         $disp->addSubscriber(new PropelQuerySubscriber());
     }
 
