@@ -11,8 +11,8 @@ class PropelQuerySubscriber implements EventSubscriberInterface
     {
         $query = $event->target;
         if ($query instanceof \ModelCriteria) {
-            if (!empty($_GET[$event->options['filterFieldParameterName']])
-                && !empty($_GET[$event->options['filterValueParameterName']])) {
+            if (isset($_GET[$event->options['filterFieldParameterName']])
+                && isset($_GET[$event->options['filterValueParameterName']])) {
 
                 $value   = $_GET[$event->options['filterValueParameterName']];
                 $columns = $_GET[$event->options['filterFieldParameterName']];
