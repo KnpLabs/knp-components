@@ -29,6 +29,7 @@ class PaginationSubscriber implements EventSubscriberInterface
         $disp->addSubscriber(new PropelQuerySubscriber);
         $disp->addSubscriber(new SolariumQuerySubscriber());
         $disp->addSubscriber(new ElasticaQuerySubscriber());
+        $disp->addSubscriber(new Callback\CallbackSubscriber());
     }
 
     public static function getSubscribedEvents()
