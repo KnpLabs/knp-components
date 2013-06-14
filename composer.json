@@ -18,7 +18,18 @@
     ],
 
     "require": {
-        "php": ">=5.3.2"
+        "php": ">=5.3.2",
+        "symfony/event-dispatcher": "~2.0"
+    },
+
+    "require-dev": {
+        "symfony/class-loader":   "~2.0",
+        "doctrine/orm":           "~2.0",
+        "doctrine/common":        "~2.0",
+        "doctrine/mongodb-odm":   "dev-master",
+        "ruflin/Elastica":        "dev-master",
+        "propel/propel1":         "dev-master",
+        "solarium/solarium":      "dev-master"
     },
 
     "suggest": {
