@@ -19,12 +19,12 @@ class Target {
 
     public function count()
     {
-        return call_user_func_array($this->countCallback, []);
+        return call_user_func_array($this->countCallback, array());
     }
 
     public function items($limit, $offset)
     {
-        return call_user_func_array($this->itemCallback, [$limit, $offset]);
+        return call_user_func_array($this->itemCallback, array($limit, $offset));
     }
 
 }
