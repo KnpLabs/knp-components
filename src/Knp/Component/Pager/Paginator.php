@@ -32,7 +32,10 @@ class Paginator
         'sortDirectionParameterName' => 'direction',
         'filterFieldParameterName' => 'filterParam',
         'filterValueParameterName' => 'filterValue',
-        'distinct' => true
+        'distinct' => true,
+        'cssClassNameAsc' => 'asc',
+        'cssClassNameDesc' => 'desc',
+        'cssClassNameSortable' => 'sortable',
     );
 
     /**
