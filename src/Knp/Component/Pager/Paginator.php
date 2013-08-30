@@ -64,6 +64,23 @@ class Paginator
     }
 
     /**
+     * @return array
+     */
+    public function getDefaultOptions()
+    {
+        return $this->defaultOptions;
+    }
+
+    /**
+     * @param $option
+     * @return mixed
+     */
+    public function getDefaultOption($option)
+    {
+        return $this->defaultOptions[$option];
+    }
+
+    /**
      * Paginates anything (depending on event listeners)
      * into Pagination object, which is a view targeted
      * pagination object (might be aggregated helper object)
