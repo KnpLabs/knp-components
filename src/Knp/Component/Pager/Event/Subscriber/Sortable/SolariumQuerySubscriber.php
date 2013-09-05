@@ -41,6 +41,6 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
     private function getSortDirection($event)
     {
         return isset($_GET[$event->options['sortDirectionParameterName']]) &&
-        strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc';
+            strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc';
     }
 }
