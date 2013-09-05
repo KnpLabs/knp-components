@@ -20,8 +20,9 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
             $query->setStart($event->getOffset())->setRows($event->getLimit());
             $solrResult = $client->select($query);
 
-            $event->items = $solrResult->getIterator();
-            $event->count = $solrResult->getNumFound();
+            $event->items  = $solrResult->getIterator();
+            $event->count  = $solrResult->getNumFound();
+            $event->setCustomPaginationParameter('result', $solrResult);
             $event->stopPropagation();
         }
     }
