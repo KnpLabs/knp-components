@@ -15,7 +15,9 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
     public function items(ItemsEvent $event)
     {
         if (is_array($event->target) && 2 == count($event->target)) {
-            list($client, $query) = $event->target;
+            $values = array_values($event->target);
+            list($client, $query) = $values;
+
             if ($client instanceof \Solarium\Client && $query instanceof \Solarium\QueryType\Select\Query\Query) {
                 $query->setStart($event->getOffset())->setRows($event->getLimit());
                 $solrResult = $client->select($query);
