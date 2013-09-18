@@ -3,6 +3,7 @@
 namespace Knp\Component\Pager;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
@@ -17,7 +18,7 @@ use Knp\Component\Pager\Event;
 class Paginator
 {
     /**
-     * @var Symfony\Component\EventDispatcher\EventDispatcher
+     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
      */
     protected $eventDispatcher;
 
@@ -40,9 +41,9 @@ class Paginator
      * Can be a service in concept. By default it
      * hooks standard pagination subscriber
      *
-     * @param Symfony\Component\EventDispatcher\EventDispatcher $eventDispatcher
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(EventDispatcher $eventDispatcher = null)
+    public function __construct(EventDispatcherInterface $eventDispatcher = null)
     {
         $this->eventDispatcher = $eventDispatcher;
         if (is_null($this->eventDispatcher)) {
