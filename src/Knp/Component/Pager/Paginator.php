@@ -77,8 +77,8 @@ class Paginator
      *     boolean $distinct - default true for distinction of results
      *     string $alias - pagination alias, default none
      *     array $whitelist - sortable whitelist for target fields being paginated
-     * @throws LogicException
-     * @return Knp\Component\Pager\Pagination\PaginationInterface
+     * @throws \LogicException
+     * @return \Knp\Component\Pager\Pagination\PaginationInterface
      */
     public function paginate($target, $page = 1, $limit = 10, $options = array())
     {
@@ -125,7 +125,7 @@ class Paginator
     /**
      * Hooks in the given event subscriber
      *
-     * @param Symfony\Component\EventDispatcher\EventSubscriberInterface $subscriber
+     * @param \Symfony\Component\EventDispatcher\EventSubscriberInterface $subscriber
      */
     public function subscribe(EventSubscriberInterface $subscriber)
     {
