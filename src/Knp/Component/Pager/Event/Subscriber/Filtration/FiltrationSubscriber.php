@@ -12,6 +12,7 @@ class FiltrationSubscriber implements EventSubscriberInterface
         $disp = $event->getEventDispatcher();
         // hook all standard sortable subscribers
         $disp->addSubscriber(new PropelQuerySubscriber());
+        $disp->addSubscriber(new Propel2QuerySubscriber());
     }
 
     public static function getSubscribedEvents()
