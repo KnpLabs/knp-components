@@ -15,7 +15,7 @@ use Knp\Component\Pager\Event;
  * wanted target and finally it generates pagination view
  * which is only the result of paginator
  */
-class Paginator
+class Paginator implements PaginatorInterface
 {
     /**
      * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
@@ -80,7 +80,7 @@ class Paginator
      * @throws \LogicException
      * @return \Knp\Component\Pager\Pagination\PaginationInterface
      */
-    public function paginate($target, $page = 1, $limit = 10, $options = array())
+    public function paginate($target, $page = 1, $limit = 10, array $options = array())
     {
         $limit = intval(abs($limit));
         if (!$limit) {
