@@ -100,7 +100,7 @@ class QuerySubscriber implements EventSubscriberInterface
                         ->setMaxResults(null)
                     ;
 
-                    if (version_compare(\Doctrine\ORM\Version::VERSION, '2.3.0', '>=')) {
+                    if (version_compare(\Doctrine\ORM\Version::VERSION, '2.3.0', '>=') && count($ids) > 0) {
                         $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $ids);
                     } else {
                         $type = $limitSubQuery->getHint($useDoctrineWalkers ?
