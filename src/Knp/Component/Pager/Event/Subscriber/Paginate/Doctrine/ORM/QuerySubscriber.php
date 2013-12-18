@@ -60,7 +60,7 @@ class QuerySubscriber implements EventSubscriberInterface
                             'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\AsIsHydrator');
                 $countResult = $countQuery->getResult('asIs');
 
-                $event->count = intval(current(current($countResult)));
+                $event->count = intval(current($countResult));
             }
             // process items
             $result = null;
