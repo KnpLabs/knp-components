@@ -88,6 +88,16 @@ class Paginator implements PaginatorInterface
         }
         $offset = abs($page - 1) * $limit;
         $options = array_merge($this->defaultOptions, $options);
+        
+        // default sort field and direction are set based on options (if available)
+        if (!isset($_GET[$options['sortFieldParameterName']]) && isset($options['defaultSortFieldName'])) {
+            $_GET[$options['sortFieldParameterName']] = $options['defaultSortFieldName'];
+            
+            if (!isset($_GET[$options['sortDirectionParameterName']])) {
+                $_GET[$options['sortDirectionParameterName']] = isset($options['defaultSortDirection']) ? $options['defaultSortDirection'] : 'asc';
+            }
+        }
+        
         // before pagination start
         $beforeEvent = new Event\BeforeEvent($this->eventDispatcher);
         $this->eventDispatcher->dispatch('knp_pager.before', $beforeEvent);
