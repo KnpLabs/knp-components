@@ -26,14 +26,21 @@ class QuerySubscriber implements EventSubscriberInterface
         if ($event->target instanceof Query) {
             // process count
             $useDoctrineWalkers = false;
-            if (version_compare(\Doctrine\ORM\Version::VERSION, '2.2.0', '>=')) {
+            $useDoctrineOutputWalker = false;
+            if (version_compare(\Doctrine\ORM\Version::VERSION, '2.3.0', '>=')) {
+                $useDoctrineWalkers = true;
+                $useDoctrineOutputWalker = true;
+            } else if (version_compare(\Doctrine\ORM\Version::VERSION, '2.2.0', '>=')) {
                 $useDoctrineWalkers = true;
             }
             if (($count = $event->target->getHint(self::HINT_COUNT)) !== false) {
                 $event->count = intval($count);
             } else {
                 $countQuery = QueryHelper::cloneQuery($event->target);
-                if ($useDoctrineWalkers) {
+                if ($useDoctrineOutputWalker) {
+                    $treeWalker = 'Doctrine\ORM\Tools\Pagination\CountOutputWalker';
+                    $countQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, $treeWalker);
+                } else if ($useDoctrineWalkers) {
                     QueryHelper::addCustomTreeWalker($countQuery, 'Doctrine\ORM\Tools\Pagination\CountWalker');
                 } else {
                     $treeWalker = 'Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\CountWalker';
