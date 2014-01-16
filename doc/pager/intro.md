@@ -1,6 +1,6 @@
 # Intro to Knp Pager Component
 
-This is a PHP 5.3 paginator with a totally diferent core concept.
+This is a PHP 5.3 paginator with a totally different core concept.
 
 **Note:** it is still experimental, any ideas on structural design are very welcome
 
