@@ -81,7 +81,7 @@ abstract class AbstractPagination implements PaginationInterface, Countable, Ite
      */
     public function getCurrentPageNumber()
     {
-        return (int)$this->currentPageNumber;
+        return $this->currentPageNumber;
     }
 
     /**
@@ -99,7 +99,7 @@ abstract class AbstractPagination implements PaginationInterface, Countable, Ite
      */
     public function getItemNumberPerPage()
     {
-        return (int)$this->numItemsPerPage;
+        return $this->numItemsPerPage;
     }
 
     /**
@@ -117,7 +117,7 @@ abstract class AbstractPagination implements PaginationInterface, Countable, Ite
      */
     public function getTotalItemCount()
     {
-        return (int)$this->totalCount;
+        return $this->totalCount;
     }
 
     /**
