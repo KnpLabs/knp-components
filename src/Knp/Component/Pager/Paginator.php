@@ -86,7 +86,17 @@ class Paginator implements PaginatorInterface
         if (!$limit) {
             throw new \LogicException("Invalid item per page number, must be a positive number");
         }
-        $offset = abs($page - 1) * $limit;
+
+        if ($page === 'first') {
+            $page = 1;
+        }
+
+        if ($page !== 'last') {
+            $offset = abs($page - 1) * $limit;
+        } else {
+            $offset = 'last';
+        }
+
         $options = array_merge($this->defaultOptions, $options);
         
         // default sort field and direction are set based on options (if available)

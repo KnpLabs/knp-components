@@ -12,6 +12,9 @@ class ArraySubscriber implements EventSubscriberInterface
     {
         if (is_array($event->target)) {
             $event->count = count($event->target);
+            if ($event->getOffset() == 'last') {
+                $event->setOffset($event->count - $event->count % $event->getLimit());
+            }
             $event->items = array_slice(
                 $event->target,
                 $event->getOffset(),
@@ -20,6 +23,9 @@ class ArraySubscriber implements EventSubscriberInterface
             $event->stopPropagation();
         } elseif ($event->target instanceof ArrayObject) {
             $event->count = $event->target->count();
+            if ($event->getOffset() == 'last') {
+                $event->setOffset($event->count - $event->count % $event->getLimit());
+            }
             $event->items = new ArrayObject(array_slice(
                 $event->target->getArrayCopy(),
                 $event->getOffset(),
