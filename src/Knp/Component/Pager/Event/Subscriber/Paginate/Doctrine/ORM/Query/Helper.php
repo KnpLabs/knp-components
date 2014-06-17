@@ -20,7 +20,7 @@ class Helper
     public static function cloneQuery(Query $query)
     {
         $clonedQuery = clone $query;
-        $clonedQuery->setParameters($query->getParameters());
+        $clonedQuery->setParameters(clone $query->getParameters());
         // attach hints
         foreach ($query->getHints() as $name => $hint) {
             $clonedQuery->setHint($name, $hint);
