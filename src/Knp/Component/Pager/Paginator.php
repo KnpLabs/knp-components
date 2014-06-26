@@ -117,7 +117,7 @@ class Paginator implements PaginatorInterface
         if (!$paginationEvent->isPropagationStopped()) {
             throw new \RuntimeException('One of listeners must create pagination view');
         }
-        // pagination class can be diferent, with diferent rendering methods
+        // pagination class can be different, with different rendering methods
         $paginationView = $paginationEvent->getPagination();
         $paginationView->setCustomParameters($itemsEvent->getCustomPaginationParameters());
         $paginationView->setCurrentPageNumber($page);
