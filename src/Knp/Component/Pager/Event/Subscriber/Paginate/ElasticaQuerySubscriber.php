@@ -21,6 +21,7 @@ class ElasticaQuerySubscriber implements EventSubscriberInterface
             $results = $searchable->search($query);
 
             $event->count = $results->getTotalHits();
+            $event->setCustomPaginationParameter('totaltime', $results->getTotalTime());            
             if ($results->hasFacets()) {
                 $event->setCustomPaginationParameter('facets', $results->getFacets());
             }
