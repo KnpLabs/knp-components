@@ -13,7 +13,9 @@ class ElasticaQuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
-        if (is_array($event->target) && 2 === count($event->target) && reset($event->target) instanceof \Elastica_Searchable && end($event->target) instanceof \Elastica_Query) {
+        if (is_array($event->target) && 2 === count($event->target) &&
+            ((reset($event->target) instanceof \Elastica_Searchable && end($event->target) instanceof \Elastica_Query) ||
+            (reset($event->target) instanceof \Elastica\SearchableInterface && end($event->target) instanceof \Elastica\Query))) {
             list($searchable, $query) = $event->target;
 
             $query->setFrom($event->getOffset());
