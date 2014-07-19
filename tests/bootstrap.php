@@ -18,11 +18,35 @@ if (!class_exists('PHPUnit_Framework_MockObject_MockBuilder')) {
 define('TESTS_PATH', __DIR__);
 define('VENDOR_PATH', realpath(__DIR__ . '/../vendor'));
 
-$classLoaderFile = VENDOR_PATH . '/Symfony/Component/ClassLoader/UniversalClassLoader.php';
-if (!file_exists($classLoaderFile)) {
-    die('cannot find vendor, run: php bin/vendors.php');
+$optionsLoad = array(
+    array(
+        'autoload' => VENDOR_PATH . '/Symfony/Component/ClassLoader/UniversalClassLoader.php',
+        'annotation-orm' => VENDOR_PATH.'/doctrine-orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php',
+        'annotation-odm' => VENDOR_PATH.'/doctrine-mongodb-odm/lib/Doctrine/ODM/MongoDB/Mapping/Annotations/DoctrineAnnotations.php'
+    ),
+    array(
+        'autoload' => VENDOR_PATH . '/autoload.php',
+        'annotation-orm' => VENDOR_PATH.'/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php',
+        'annotation-odm' => VENDOR_PATH.'/doctrine/mongodb-odm/lib/Doctrine/ODM/MongoDB/Mapping/Annotations/DoctrineAnnotations.php'
+    )
+);
+
+$fileExists = false;
+foreach ($optionsLoad as $optionLoad) {
+    if (file_exists($optionLoad['autoload'])) {
+        $fileExists = true;
+        $loader        = $optionLoad['autoload'];
+        $annotationOrm = $optionLoad['annotation-orm'];
+        $annotationOdm = $optionLoad['annotation-odm'];
+        break;
+    }
 }
-require_once $classLoaderFile;
+
+if (!$fileExists) {
+    die('cannot find vendor, run: php bin/vendors.php or composer.json');
+}
+
+require_once $loader;
 $loader = new Symfony\Component\ClassLoader\UniversalClassLoader;
 $loader->registerNamespaces(array(
     'Symfony'                    => VENDOR_PATH,
@@ -36,13 +60,9 @@ $loader->registerNamespaces(array(
 ));
 $loader->register();
 
-\Doctrine\Common\Annotations\AnnotationRegistry::registerFile(
-    VENDOR_PATH.'/doctrine-orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php'
-);
+\Doctrine\Common\Annotations\AnnotationRegistry::registerFile($annotationOrm);
 
-\Doctrine\Common\Annotations\AnnotationRegistry::registerFile(
-    VENDOR_PATH.'/doctrine-mongodb-odm/lib/Doctrine/ODM/MongoDB/Mapping/Annotations/DoctrineAnnotations.php'
-);
+\Doctrine\Common\Annotations\AnnotationRegistry::registerFile($annotationOdm);
 
 $reader = new \Doctrine\Common\Annotations\AnnotationReader();
 $reader = new \Doctrine\Common\Annotations\CachedReader($reader, new \Doctrine\Common\Cache\ArrayCache());
