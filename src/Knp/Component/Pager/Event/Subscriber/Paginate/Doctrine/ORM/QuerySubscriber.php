@@ -37,7 +37,7 @@ class QuerySubscriber implements EventSubscriberInterface
                 $event->count = intval($count);
             } else {
                 $countQuery = QueryHelper::cloneQuery($event->target);
-                if ($useDoctrineOutputWalker) {
+                if ($useDoctrineOutputWalker AND null !== $countQuery->getAST()->havingClause) {
                     $treeWalker = 'Doctrine\ORM\Tools\Pagination\CountOutputWalker';
                     $countQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, $treeWalker);
                 } else if ($useDoctrineWalkers) {
