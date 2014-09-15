@@ -4,50 +4,7 @@ This tutorial will cover installation and usage examples.
 
 ## Installation
 
-Initially, all what is needed is:
-
-- >= php5.3.2
-- Symfony **EventDispatcher** component and if you do not have autoloader, I recommend
-**ClassLoader** from the same symfony components
-- this repository
-
-Now somewhere in you third party vendor directory download mentioned dependencies:
-**Note:** if you are in your project root and you have [git](http://help.github.com/set-up-git-redirect)
-installed, **vendor** directory is the location where these components will be installed.
-
-- run **git clone git://github.com/knplabs/knp-components.git vendor/knp-components**
-- run **git clone git://github.com/symfony/EventDispatcher.git vendor/Symfony/Component/EventDispatcher**
-- run **git clone git://github.com/symfony/ClassLoader.git vendor/Symfony/Component/ClassLoader**
-
-To initially autoload these components, you will need to include
-**vendor/Symfony/Component/ClassLoader/UniversalClassLoader.php**
-
-``` php
-<?php
-// file: autoloader.php
-// taking into account that this autoloader is in the same directory as vendor folder
-require_once __DIR__.'/vendor/Symfony/Component/ClassLoader/UniversalClassLoader.php';
-
-$loader = new Symfony\Component\ClassLoader\UniversalClassLoader;
-$loader->registerNamespaces(array(
-    'Symfony\\Component' => __DIR__.'/vendor',
-    'Knp\\Component' => __DIR__.'/vendor/knp-components/src'
-));
-$loader->register();
-```
-
-Next, usually **index.php** file is the starting point. Lets create it in the same
-project root directory as **autoloader.php**
-
-``` php
-<?php
-// file: index.php
-include 'autoloader.php';
-
-// usage examples will continue here
-```
-
-In general now you can start using the paginator..
+    composer require "knplabs/knp-components:~1.2"
 
 ## Basic usage
 

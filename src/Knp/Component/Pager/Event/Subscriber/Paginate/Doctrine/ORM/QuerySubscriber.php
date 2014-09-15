@@ -14,6 +14,9 @@ use Doctrine\ORM\Tools\Pagination\CountWalker as DoctrineCountWalker;
 use Doctrine\ORM\Tools\Pagination\WhereInWalker as DoctrineWhereInWalker;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker as DoctrineLimitSubqueryWalker;
 
+/**
+ * @deprecated see UsesPaginator
+ **/
 class QuerySubscriber implements EventSubscriberInterface
 {
     /**

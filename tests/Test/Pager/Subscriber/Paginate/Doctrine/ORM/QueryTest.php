@@ -8,8 +8,8 @@ use Knp\Component\Pager\Pagination\SlidingPagination;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Test\Fixture\Entity\Article;
+use Test\Mock\PaginationSubscriber;
 
 class QueryTest extends BaseTestCaseORM
 {
@@ -21,8 +21,8 @@ class QueryTest extends BaseTestCaseORM
         $this->populate();
 
         $dispatcher = new EventDispatcher;
-        $dispatcher->addSubscriber(new QuerySubscriber);
-        $dispatcher->addSubscriber(new PaginationSubscriber); // pagination view
+        $dispatcher->addSubscriber(new QuerySubscriber\UsesPaginator);
+        $dispatcher->addSubscriber(new PaginationSubscriber);
         $p = new Paginator($dispatcher);
 
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
