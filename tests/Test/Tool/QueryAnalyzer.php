@@ -193,7 +193,7 @@ class QueryAnalyzer implements SQLLogger
         if (is_int(key($params))) {
             $index = key($converted);
             $sql = preg_replace_callback('@\?@sm', function($match) use (&$index, $converted) {
-                return $converted[$index++];
+                return implode(' ', $converted[$index++]);
             }, $sql);
         } else {
             foreach ($converted as $key => $value) {

@@ -20,6 +20,13 @@
     "require": {
         "php": ">=5.3.2"
     },
+    "require-dev": {
+        "symfony/class-loader": "~2.5",
+        "symfony/event-dispatcher": "~2.5",
+        "doctrine/orm": "~2.4",
+        "doctrine/mongodb-odm": "~1.0@beta",
+        "phpunit/phpunit": "~4.2"
+    },
 
     "suggest": {
         "doctrine/orm" : "to allow usage pagination with Doctrine ORM",
@@ -38,7 +45,12 @@
 
     "autoload": {
         "psr-0": {
-            "Knp\\Component": "src/"
+            "Knp\\Component": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-0": {
+            "Test": "tests"
         }
     }
 }

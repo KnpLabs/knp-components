@@ -1,4 +1,5 @@
-tests/phpunit.xml
-tests/temp/*.php
-vendor/*
+/tests/phpunit.xml
+/tests/temp/*.php
+/vendor
 tags
+/composer.lock
