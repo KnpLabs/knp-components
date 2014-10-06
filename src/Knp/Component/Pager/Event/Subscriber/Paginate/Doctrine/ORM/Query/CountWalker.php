@@ -27,6 +27,7 @@ use Doctrine\ORM\Query\TreeWalkerAdapter,
  * @author      David Abdemoulaie <dave@hobodave.com>
  * @copyright   Copyright (c) 2010 David Abdemoulaie (http://hobodave.com/)
  * @license     http://hobodave.com/license.txt New BSD License
+ * @deprecated
  */
 class CountWalker extends TreeWalkerAdapter
 {
