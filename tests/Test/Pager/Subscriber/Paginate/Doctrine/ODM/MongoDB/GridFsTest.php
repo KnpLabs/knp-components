@@ -29,7 +29,7 @@ class GridFsTest extends BaseTestCaseMongoODM
 
     private function populate()
     {
-        $mockFile = realpath(TESTS_PATH.'/temp/summer.gif');
+        $mockFile = __DIR__.'/summer.gif';
         $dm = $this->getMockDocumentManager();
         $summer = new Image;
         $summer->setTitle('summer');

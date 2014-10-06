@@ -29,6 +29,7 @@ Why reinvent the wheel? Can someone me tell what the definition of **wheel** is 
 - Separation of conserns, paginator is responsible for generating the pagination view only,
 pagination view - for representation purposes.
 - Does not require initializing specific adapters
+- [configurable](config.md)
 
 ## Usage examples:
 
