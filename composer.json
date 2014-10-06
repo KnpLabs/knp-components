@@ -24,7 +24,8 @@
         "symfony/event-dispatcher": "~2.5",
         "doctrine/orm": "~2.4",
         "doctrine/mongodb-odm": "~1.0@beta",
-        "phpunit/phpunit": "~4.2"
+        "phpunit/phpunit": "~4.2",
+        "ruflin/elastica": "~1.0"
     },
 
     "suggest": {
