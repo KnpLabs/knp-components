@@ -40,7 +40,11 @@ class UsesPaginator implements EventSubscriberInterface
 
         $paginator = new Paginator($event->target, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $event->count = count($paginator);
+        if (($count = $event->target->getHint(QuerySubscriber::HINT_COUNT)) !== false) {
+            $event->count = intval($count);
+        } else {
+            $event->count = count($paginator);
+        }
         $event->items = iterator_to_array($paginator);
     }
 
