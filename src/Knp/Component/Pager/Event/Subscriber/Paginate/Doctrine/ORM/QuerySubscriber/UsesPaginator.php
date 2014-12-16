@@ -4,6 +4,7 @@ namespace Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscr
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
+use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\ORM\Tools\Pagination\CountWalker;
