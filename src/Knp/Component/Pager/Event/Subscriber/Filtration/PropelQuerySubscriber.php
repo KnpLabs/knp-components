@@ -11,30 +11,38 @@ class PropelQuerySubscriber implements EventSubscriberInterface
     {
         $query = $event->target;
         if ($query instanceof \ModelCriteria) {
-            if (!empty($_GET[$event->options['filterFieldParameterName']])
-                && !empty($_GET[$event->options['filterValueParameterName']])) {
-
-                $value   = $_GET[$event->options['filterValueParameterName']];
+            if (empty($_GET[$event->options['filterValueParameterName']])) {
+                return;
+            }
+            if (!empty($_GET[$event->options['filterFieldParameterName']])) {
                 $columns = $_GET[$event->options['filterFieldParameterName']];
-
-                if (isset($event->options['filterFieldWhitelist'])) {
-                    if (!in_array($_GET[$event->options['filterFieldParameterName']], $event->options['filterFieldWhitelist'])) {
-                        throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options['filterFieldParameterName']]}] this field is not in whitelist");
+            } elseif (!empty($event->options['defaultFilterFields'])) {
+                $columns = $event->options['defaultFilterFields'];
+            } else {
+                return;
+            }
+            if (is_string($columns) && false !== strpos($columns, ',')) {
+                $columns = explode(',', $columns);
+            }
+            $columns = (array) $columns;
+            if (isset($event->options['filterFieldWhitelist'])) {
+                foreach ($columns as $column) {
+                    if (!in_array($column, $event->options['filterFieldWhitelist'])) {
+                        throw new \UnexpectedValueException("Cannot filter by: [{$column}] this field is not in whitelist");
                     }
                 }
-
-                $criteria = \Criteria::EQUAL;
-                if (false !== strpos($value, '*')) {
-                    $value = str_replace('*', '%', $value);
-                    $criteria = \Criteria::LIKE;
-                }
-
-                foreach ((array) $columns as $column) {
-                    if (false !== strpos($column, '.')) {
-                        $query->where($column . $criteria . '?', $value);
-                    } else {
-                        $query->{'filterBy' . $column}($value, $criteria);
-                    }
+            }
+            $value = $_GET[$event->options['filterValueParameterName']];
+            $criteria = \Criteria::EQUAL;
+            if (false !== strpos($value, '*')) {
+                $value = str_replace('*', '%', $value);
+                $criteria = \Criteria::LIKE;
+            }
+            foreach ($columns as $column) {
+                if (false !== strpos($column, '.')) {
+                    $query->where($column.$criteria.'?', $value);
+                } else {
+                    $query->{'filterBy'.$column}($value, $criteria);
                 }
             }
         }
@@ -43,7 +51,7 @@ class PropelQuerySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'knp_pager.items' => array('items', 0)
+            'knp_pager.items' => array('items', 0),
         );
     }
 }
