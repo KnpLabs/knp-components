@@ -4,6 +4,7 @@ namespace Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscr
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
+use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\ORM\Tools\Pagination\CountWalker;
@@ -40,7 +41,11 @@ class UsesPaginator implements EventSubscriberInterface
 
         $paginator = new Paginator($event->target, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $event->count = count($paginator);
+        if (($count = $event->target->getHint(QuerySubscriber::HINT_COUNT)) !== false) {
+            $event->count = intval($count);
+        } else {
+            $event->count = count($paginator);
+        }
         $event->items = iterator_to_array($paginator);
     }
 
