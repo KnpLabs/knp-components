@@ -15,7 +15,6 @@ class QuerySubscriber implements EventSubscriberInterface
         if ($event->target instanceof Query) {
             if (isset($_GET[$event->options['sortFieldParameterName']])) {
                 $dir = isset($_GET[$event->options['sortDirectionParameterName']]) && strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc';
-                $parts = explode('.', $_GET[$event->options['sortFieldParameterName']]);
 
                 if (isset($event->options['sortFieldWhitelist'])) {
                     if (!in_array($_GET[$event->options['sortFieldParameterName']], $event->options['sortFieldWhitelist'])) {
@@ -23,13 +22,24 @@ class QuerySubscriber implements EventSubscriberInterface
                     }
                 }
 
+                $sortFieldParameterNames = $_GET[$event->options['sortFieldParameterName']];
+                $fields = array();
+                $aliases = array();
+                foreach (explode('+', $sortFieldParameterNames) as $sortFieldParameterName) {
+                    $parts = explode('.', $sortFieldParameterName);
+
+                    // We have to prepend the field. Otherwise OrderByWalker will add
+                    // the order-by items in the wrong order
+                    array_unshift($fields, end($parts));
+                    array_unshift($aliases, 2 <= count($parts) ? reset($parts) : false);
+                }
+
                 $event->target
                     ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_DIRECTION, $dir)
-                    ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_FIELD, end($parts))
+                    ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_FIELD, $fields)
+                    ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_ALIAS, $aliases)
                 ;
-                if (2 <= count($parts)) {
-                    $event->target->setHint(OrderByWalker::HINT_PAGINATOR_SORT_ALIAS, reset($parts));
-                }
+
                 QueryHelper::addCustomTreeWalker($event->target, 'Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\Query\OrderByWalker');
             }
         }

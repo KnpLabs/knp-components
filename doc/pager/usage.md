@@ -78,3 +78,20 @@ $pagination->renderer = function($data) {
 };
 echo $pagination; // outputs: "page range: 1 2 3"
 ```
+
+## Sorting database query results by multiple columns (only Doctrine ORM)
+
+It is not uncommonly that the result of a database query should be sorted by multiple columns.
+For example users should be sorted by lastname and by firstname:
+
+```php
+$query = $entityManager->createQuery('SELECT u FROM User');
+
+$pagination = $paginator->paginate($query, 1/*page number*/, 20/*limit per page*/, array(
+    'defaultSortFieldName' => array('u.lastname', 'u.firstname'),
+    'defaultSortDirection' => 'asc',
+));
+```
+
+The Paginator will add an `ORDER BY` automatically for each attribute for the
+`defaultSortFieldName` option.

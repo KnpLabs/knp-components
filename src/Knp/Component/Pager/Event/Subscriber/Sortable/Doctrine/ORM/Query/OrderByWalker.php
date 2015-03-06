@@ -39,51 +39,58 @@ class OrderByWalker extends TreeWalkerAdapter
     public function walkSelectStatement(SelectStatement $AST)
     {
         $query = $this->_getQuery();
-        $field = $query->getHint(self::HINT_PAGINATOR_SORT_FIELD);
-        $alias = $query->getHint(self::HINT_PAGINATOR_SORT_ALIAS);
+        $fields = (array)$query->getHint(self::HINT_PAGINATOR_SORT_FIELD);
+        $aliases = (array)$query->getHint(self::HINT_PAGINATOR_SORT_ALIAS);
 
         $components = $this->_getQueryComponents();
-        if ($alias !== false) {
-            if (!array_key_exists($alias, $components)) {
-                throw new \UnexpectedValueException("There is no component aliased by [{$alias}] in the given Query");
+        foreach ($fields as $index => $field) {
+            if (!$field) {
+                continue;
             }
-            $meta = $components[$alias];
-            if (!$meta['metadata']->hasField($field)) {
-                throw new \UnexpectedValueException("There is no such field [{$field}] in the given Query component, aliased by [$alias]");
-            }
-        } else {
-            if (!array_key_exists($field, $components)) {
-                throw new \UnexpectedValueException("There is no component field [{$field}] in the given Query");
-            }
-        }
 
-        $direction = $query->getHint(self::HINT_PAGINATOR_SORT_DIRECTION);
-        if ($alias !== false) {
-            $pathExpression = new PathExpression(PathExpression::TYPE_STATE_FIELD, $alias, $field);
-            $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
-        } else {
-            $pathExpression = $field;
-        }
-
-        $orderByItem = new OrderByItem($pathExpression);
-        $orderByItem->type = $direction;
-
-        if ($AST->orderByClause) {
-            $set = false;
-            foreach ($AST->orderByClause->orderByItems as $item) {
-                if ($item->expression instanceof PathExpression) {
-                    if ($item->expression->identificationVariable === $alias && $item->expression->field === $field) {
-                        $item->type = $direction;
-                        $set = true;
-                        break;
-                    }
+            $alias = $aliases[$index];
+            if ($alias !== false) {
+                if (!array_key_exists($alias, $components)) {
+                    throw new \UnexpectedValueException("There is no component aliased by [{$alias}] in the given Query");
+                }
+                $meta = $components[$alias];
+                if (!$meta['metadata']->hasField($field)) {
+                    throw new \UnexpectedValueException("There is no such field [{$field}] in the given Query component, aliased by [$alias]");
+                }
+            } else {
+                if (!array_key_exists($field, $components)) {
+                    throw new \UnexpectedValueException("There is no component field [{$field}] in the given Query");
                 }
             }
-            if (!$set) {
-                array_unshift($AST->orderByClause->orderByItems, $orderByItem);
+
+            $direction = $query->getHint(self::HINT_PAGINATOR_SORT_DIRECTION);
+            if ($alias !== false) {
+                $pathExpression = new PathExpression(PathExpression::TYPE_STATE_FIELD, $alias, $field);
+                $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
+            } else {
+                $pathExpression = $field;
             }
-        } else {
-            $AST->orderByClause = new OrderByClause(array($orderByItem));
+
+            $orderByItem = new OrderByItem($pathExpression);
+            $orderByItem->type = $direction;
+
+            if ($AST->orderByClause) {
+                $set = false;
+                foreach ($AST->orderByClause->orderByItems as $item) {
+                    if ($item->expression instanceof PathExpression) {
+                        if ($item->expression->identificationVariable === $alias && $item->expression->field === $field) {
+                            $item->type = $direction;
+                            $set = true;
+                            break;
+                        }
+                    }
+                }
+                if (!$set) {
+                    array_unshift($AST->orderByClause->orderByItems, $orderByItem);
+                }
+            } else {
+                $AST->orderByClause = new OrderByClause(array($orderByItem));
+            }
         }
     }
 }
