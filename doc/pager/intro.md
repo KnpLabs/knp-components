@@ -12,7 +12,7 @@ can be anything which will be responsible for how to render the pagination.
 
 **Magic?** no! only KISS principle
 
-Why reinvent the wheel? Can someone me tell what the definition of **wheel** is in the software world? 
+Why reinvent the wheel? Can someone tell me what's the definition of **wheel** in the software world? 
 
 ## Requirements:
 
@@ -26,7 +26,7 @@ Why reinvent the wheel? Can someone me tell what the definition of **wheel** is 
 - Pagination view extensions based on event.
 - Paginator extensions based on events, etc.: another object pagination compatibilities.
 - Supports multiple paginations during one request
-- Separation of conserns, paginator is responsible for generating the pagination view only,
+- Separation of concern, paginator is responsible for generating the pagination view only,
 pagination view - for representation purposes.
 - Does not require initializing specific adapters
 - [configurable](config.md)
