@@ -35,3 +35,7 @@ If set to true, will add a distinct sql keyword on orm queries to ensuire unicit
 If set to true, will take advantage of doctrine 2.3 output walkers by using subqueries to handle composite keys and HAVING queries.  
 This can considerably impact performances depending on the query and the platform, you will have to consider it at some point.
 
+If you want to order your results by a column from a fetch joined t-many association,
+you have to set `wrap-queries` to `true`. Otherwise you will get an exception with this warning:
+*"Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers."*
+
