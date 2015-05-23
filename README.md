@@ -1,5 +1,7 @@
 # Knp Component library
 
+[![Build Status](https://secure.travis-ci.org/KnpLabs/knp-components.png)](http://travis-ci.org/KnpLabs/knp-components)
+
 ## Components in this library:
 
 - [Pager](https://github.com/knplabs/knp-components/tree/master/doc/pager/intro.md)
