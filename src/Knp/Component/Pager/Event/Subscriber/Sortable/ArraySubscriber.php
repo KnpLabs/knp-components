@@ -24,8 +24,7 @@ class ArraySubscriber implements EventSubscriberInterface
     {
         if (is_array($event->target) && count($event->target) > 1)
         {
-            if (isset($_GET[$event->options['sortFieldParameterName']]))
-            {
+            if (isset($_GET[$event->options['sortFieldParameterName']])) {
                 $this->sortDirection = isset($_GET[$event->options['sortDirectionParameterName']]) && strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc';
 
                 // TODO add whitelist
@@ -36,8 +35,7 @@ class ArraySubscriber implements EventSubscriberInterface
 //                }
 
                 $sortFieldParameterName = explode('.', $_GET[$event->options['sortFieldParameterName']]);
-                if(isset($sortFieldParameterName[1]))
-                {
+                if(isset($sortFieldParameterName[1])) {
                     // Capitalize first letter in order to prepare getter construction
                     $sortFieldName = ucfirst($sortFieldParameterName[1]);
 
@@ -45,8 +43,7 @@ class ArraySubscriber implements EventSubscriberInterface
 
                     // Getter detection
                     $class = new ReflectionClass(get_class($event->target[0]));
-                    if($class->hasMethod($this->currentSortingFieldGetter))
-                    {
+                    if($class->hasMethod($this->currentSortingFieldGetter)) {
                         // Sort
                         usort($event->target, array($this, "sort" . ucfirst($this->sortDirection)));
                     }
