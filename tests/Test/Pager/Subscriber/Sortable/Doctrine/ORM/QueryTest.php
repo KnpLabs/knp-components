@@ -95,8 +95,8 @@ class QueryTest extends BaseTestCaseORM
 
         $this->assertEquals(4, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
-        $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10 OFFSET 0', $executed[1]);
-        $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1 FROM Article a0_ ORDER BY a0_.title DESC LIMIT 10 OFFSET 0', $executed[3]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10 OFFSET 0', $executed[1]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1 FROM Article a0_ ORDER BY a0_.title DESC LIMIT 10 OFFSET 0', $executed[3]);
     }
 
     /**
@@ -139,7 +139,7 @@ ___SQL;
 
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
-        $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, COUNT(a0_.id) AS sclr2 FROM Article a0_ ORDER BY sclr2 ASC LIMIT 10 OFFSET 0', $executed[1]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, COUNT(a0_.id) AS sclr_2 FROM Article a0_ ORDER BY sclr_2 ASC LIMIT 10 OFFSET 0', $executed[1]);
     }
 
     /**
@@ -164,7 +164,7 @@ ___SQL;
 
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
-        $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10 OFFSET 0', $executed[1]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10 OFFSET 0', $executed[1]);
     }
 
     /**

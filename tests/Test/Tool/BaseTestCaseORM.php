@@ -253,6 +253,12 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue('Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\AsIsHydrator'))
         ;
 
+        $config
+            ->expects($this->any())
+            ->method('getDefaultQueryHints')
+            ->will($this->returnValue(array()))
+        ;
+
         return $config;
     }
 }
