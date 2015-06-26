@@ -88,6 +88,11 @@ class Paginator implements PaginatorInterface
         }
         $offset = abs($page - 1) * $limit;
         $options = array_merge($this->defaultOptions, $options);
+
+        // normalize default sort field
+        if (isset($options['defaultSortFieldName']) && is_array($options['defaultSortFieldName'])) {
+            $options['defaultSortFieldName'] = implode('+', $options['defaultSortFieldName']);
+        }
         
         // default sort field and direction are set based on options (if available)
         if (!isset($_GET[$options['sortFieldParameterName']]) && isset($options['defaultSortFieldName'])) {
