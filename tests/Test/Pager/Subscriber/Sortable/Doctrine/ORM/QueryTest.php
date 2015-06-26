@@ -96,7 +96,7 @@ class QueryTest extends BaseTestCaseORM
         $this->assertEquals(4, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version (according to PHP version)
+        // Different aliases separators according to Doctrine version
         if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
             $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10 OFFSET 0', $executed[1]);
             $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1 FROM Article a0_ ORDER BY a0_.title DESC LIMIT 10 OFFSET 0', $executed[3]);
@@ -147,7 +147,7 @@ ___SQL;
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version (according to PHP version)
+        // Different aliases separators according to Doctrine version
         if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
             $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, COUNT(a0_.id) AS sclr2 FROM Article a0_ ORDER BY sclr2 ASC LIMIT 10 OFFSET 0', $executed[1]);
         } else {
@@ -178,7 +178,7 @@ ___SQL;
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version (according to PHP version)
+        // Different aliases separators according to Doctrine version
         if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
             $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10 OFFSET 0', $executed[1]);
         } else {
