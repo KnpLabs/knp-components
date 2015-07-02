@@ -35,27 +35,27 @@ pagination view - for representation purposes.
 
 ### Controller
 
-    $paginator = new Knp\Component\Pager\Paginator;
-    $target = range('a', 'u');
-    // uses event subscribers to paginate $target
-    $pagination = $paginator->paginate($target, 2/*page*/, 10/*limit*/);
-    
-    // iterate paginated items
-    foreach ($pagination as $item) {
-        //...
-    }
-    echo $pagination; // renders pagination
-    
-    // overriding view rendering
-    
-    $pagination->renderer = function($data) use ($template) {
-        return $twig->render($template, $data);
-    };
-    
-    echo $pagination;
-    
-    // or paginate Doctrine ORM query
-    
-    $pagination = $paginator->paginate($em->createQuery('SELECT a FROM Entity\Article a'), 1, 10);
+```php
+$paginator = new Knp\Component\Pager\Paginator;
+$target = range('a', 'u');
+// uses event subscribers to paginate $target
+$pagination = $paginator->paginate($target, 2/*page*/, 10/*limit*/);
 
+// iterate paginated items
+foreach ($pagination as $item) {
+    //...
+}
+echo $pagination; // renders pagination
 
+// overriding view rendering
+
+$pagination->renderer = function($data) use ($template) {
+    return $twig->render($template, $data);
+};
+
+echo $pagination;
+
+// or paginate Doctrine ORM query
+
+$pagination = $paginator->paginate($em->createQuery('SELECT a FROM Entity\Article a'), 1, 10);
+```
