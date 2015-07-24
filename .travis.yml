@@ -16,6 +16,6 @@ matrix:
 
 before_script:
     - echo 'extension=mongo.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
-    - composer install --prefer-dist
+    - travis_wait composer install --prefer-dist
 
 script: phpunit -c tests
