@@ -15,6 +15,7 @@ To setup and run tests follow these steps:
 - go to the root directory of components
 - run: 
 
+```bash
     composer install
     vendor/bin/phpunit -c tests
-
+```
