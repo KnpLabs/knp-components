@@ -95,3 +95,19 @@ $pagination = $paginator->paginate($query, 1/*page number*/, 20/*limit per page*
 
 The Paginator will add an `ORDER BY` automatically for each attribute for the
 `defaultSortFieldName` option.
+
+## Filtering database query results by multiple columns (only Doctrine ORM and Propel)
+
+You can also filter the result of a database query by multiple columns.
+For example users should be filtered by lastname or by firstname:
+
+```php
+$query = $entityManager->createQuery('SELECT u FROM User');
+
+$pagination = $paginator->paginate($query, 1/*page number*/, 20/*limit per page*/, array(
+    'defaultFilterFields' => array('u.lastname', 'u.firstname'),
+));
+```
+
+If the `filterValue` parameter is set, the Paginator will add an `WHERE` condition automatically 
+for each attribute for the `defaultFilterFields` option. The conditions are `OR`-linked.

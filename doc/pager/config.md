@@ -19,6 +19,8 @@ The list of existing options are:
 | sortFieldWhitelist         | array          | []            | SortableSubscriber                              |
 | sortFieldParameterName     | string         | sort          | SortableSubscriber                              |
 | sortDirectionParameterName | string         | sort          | SortableSubscriber                              |
+| defaultFilterFields        | string\|array* |               | FiltrationSubscriber                            |
+| filterFieldWhitelist       | array          |               | FiltrationSubscriber                            |
 | filterFieldParameterName   | string         | filterParam   | FiltrationSubscriber                            |
 | filterValueParameterName   | string         | filterValue   | FiltrationSubscriber                            |
 
@@ -45,3 +47,8 @@ you have to set `wrap-queries` to `true`. Otherwise you will get an exception wi
 Used as default field name for the sorting. It can take an array for sorting by multiple fields.
 
 \* **Attention**: Arrays are only supported for *Doctrine's ORM*.
+
+
+### `defaultFilterFields`
+
+Used as default field names for the filtration. It can take an array for filtering by multiple fields.
