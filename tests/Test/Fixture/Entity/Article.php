@@ -21,6 +21,11 @@ class Article
      */
     private $title;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $enabled = true;
+
     public function getId()
     {
         return $this->id;
@@ -34,5 +39,15 @@ class Article
     public function getTitle()
     {
         return $this->title;
+    }
+
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+    }
+
+    public function isEnabled()
+    {
+        return $this->enabled;
     }
 }

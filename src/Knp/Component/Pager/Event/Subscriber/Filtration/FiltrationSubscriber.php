@@ -10,14 +10,15 @@ class FiltrationSubscriber implements EventSubscriberInterface
     public function before(BeforeEvent $event)
     {
         $disp = $event->getEventDispatcher();
-        // hook all standard sortable subscribers
+        // hook all standard filtration subscribers
+        $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber());
         $disp->addSubscriber(new PropelQuerySubscriber());
     }
 
     public static function getSubscribedEvents()
     {
         return array(
-            'knp_pager.before' => array('before', 1)
+            'knp_pager.before' => array('before', 1),
         );
     }
 }
