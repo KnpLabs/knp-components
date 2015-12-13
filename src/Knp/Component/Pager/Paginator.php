@@ -7,6 +7,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
+use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber;
 use Knp\Component\Pager\Event;
 
 /**
@@ -49,6 +50,7 @@ class Paginator implements PaginatorInterface
         if (is_null($this->eventDispatcher)) {
             $this->eventDispatcher = new EventDispatcher;
             $this->eventDispatcher->addSubscriber(new PaginationSubscriber);
+            $this->eventDispatcher->addSubscriber(new FiltrationSubscriber);
             $this->eventDispatcher->addSubscriber(new SortableSubscriber);
         }
     }
