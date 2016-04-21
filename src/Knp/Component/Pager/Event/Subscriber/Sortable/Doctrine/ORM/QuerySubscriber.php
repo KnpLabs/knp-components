@@ -26,7 +26,7 @@ class QuerySubscriber implements EventSubscriberInterface
                 $fields = array();
                 $aliases = array();
                 foreach (explode('+', $sortFieldParameterNames) as $sortFieldParameterName) {
-                    $parts = explode('.', $sortFieldParameterName);
+                    $parts = explode('.', $sortFieldParameterName, 2);
 
                     // We have to prepend the field. Otherwise OrderByWalker will add
                     // the order-by items in the wrong order
