@@ -18,7 +18,7 @@ The list of existing options are:
 | defaultSortDirection       | string         | asc           | SortableSubscriber                              |
 | sortFieldWhitelist         | array          | []            | SortableSubscriber                              |
 | sortFieldParameterName     | string         | sort          | SortableSubscriber                              |
-| sortDirectionParameterName | string         | sort          | SortableSubscriber                              |
+| sortDirectionParameterName | string         | direction     | SortableSubscriber                              |
 | defaultFilterFields        | string\|array* |               | FiltrationSubscriber                            |
 | filterFieldWhitelist       | array          |               | FiltrationSubscriber                            |
 | filterFieldParameterName   | string         | filterParam   | FiltrationSubscriber                            |
