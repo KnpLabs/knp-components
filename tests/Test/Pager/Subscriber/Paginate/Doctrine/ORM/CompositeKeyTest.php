@@ -17,6 +17,7 @@ class CompositeKeyTest extends BaseTestCaseORM
     {
         $p = new Paginator;
         $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
 
         $count = $em
             ->createQuery('SELECT COUNT(c) FROM Test\Fixture\Entity\Composite c')
@@ -27,15 +28,45 @@ class CompositeKeyTest extends BaseTestCaseORM
             ->createQuery('SELECT c FROM Test\Fixture\Entity\Composite c')
             ->setHint('knp_paginator.count', $count)
         ;
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, false);
+        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10, array('wrap-queries' => true));
 
         $items = $view->getItems();
-        $this->assertEquals(0, count($items));
+        $this->assertEquals(4, count($items));
     }
 
     protected function getUsedEntityFixtures()
     {
         return array('Test\Fixture\Entity\Composite');
     }
+
+    private function populate($em)
+    {
+        $summer = new Composite;
+        $summer->setId(1);
+        $summer->setTitle('summer');
+        $summer->setUid(100);
+
+        $winter = new Composite;
+        $winter->setId(2);
+        $winter->setTitle('winter');
+        $winter->setUid(200);
+
+        $autumn = new Composite;
+        $autumn->setId(3);
+        $autumn->setTitle('autumn');
+        $autumn->setUid(300);
+
+        $spring = new Composite;
+        $spring->setId(4);
+        $spring->setTitle('spring');
+        $spring->setUid(400);
+
+        $em->persist($summer);
+        $em->persist($winter);
+        $em->persist($autumn);
+        $em->persist($spring);
+        $em->flush();
+    }
+
 }
