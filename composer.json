@@ -24,6 +24,8 @@
         "symfony/event-dispatcher": "~2.5",
         "doctrine/orm": "~2.4",
         "doctrine/mongodb-odm": "~1.0@beta",
+        "doctrine/phpcr-odm": "~1.2",
+        "jackalope/jackalope-doctrine-dbal": "~1.2",
         "phpunit/phpunit": "~4.2",
         "ruflin/elastica": "~1.0"
     },
@@ -32,6 +34,7 @@
         "doctrine/orm" : "to allow usage pagination with Doctrine ORM",
         "doctrine/common" : "to allow usage pagination with Doctrine ArrayCollection",
         "doctrine/mongodb-odm" : "to allow usage pagination with Doctrine ODM MongoDB",
+        "doctrine/phpcr-odm" : "to allow usage pagination with Doctrine ODM PHPCR",
         "ruflin/Elastica" : "to allow usage pagination with ElasticSearch Client",
         "propel/propel1" : "to allow usage pagination with Propel ORM",
         "solarium/solarium" : "to allow usage pagination with Solarium Client"
