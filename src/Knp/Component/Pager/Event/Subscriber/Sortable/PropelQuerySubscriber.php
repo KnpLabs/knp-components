@@ -12,8 +12,11 @@ class PropelQuerySubscriber implements EventSubscriberInterface
         $query = $event->target;
         if ($query instanceof \ModelCriteria) {
             if (isset($_GET[$event->options['sortFieldParameterName']])) {
-                $direction = strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc';
                 $part = $_GET[$event->options['sortFieldParameterName']];
+                $directionParam = $event->options['sortDirectionParameterName'];
+
+                $direction = (isset($_GET[$directionParam]) && strtolower($_GET[$directionParam]) === 'asc')
+                                ? 'asc' : 'desc';
 
                 if (isset($event->options['sortFieldWhitelist'])) {
                     if (!in_array($_GET[$event->options['sortFieldParameterName']], $event->options['sortFieldWhitelist'])) {
