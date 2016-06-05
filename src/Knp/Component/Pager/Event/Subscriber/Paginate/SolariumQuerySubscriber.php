@@ -3,6 +3,7 @@
 namespace Knp\Component\Pager\Event\Subscriber\Paginate;
 
 use Knp\Component\Pager\Event\ItemsEvent;
+use Solarium\QueryType\Select\Query\Query;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -19,11 +20,23 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
             list($client, $query) = $values;
 
             if ($client instanceof \Solarium\Client && $query instanceof \Solarium\QueryType\Select\Query\Query) {
+
+                if ($grouping = $query->getComponent(Query::COMPONENT_GROUPING, false)) {
+                    $grouping->setNumberOfGroups(true);
+                }
+
                 $query->setStart($event->getOffset())->setRows($event->getLimit());
                 $solrResult = $client->select($query);
 
                 $event->items  = $solrResult->getIterator();
                 $event->count  = $solrResult->getNumFound();
+
+                if ($event->count === null && $grouping) {
+                    $groups = $solrResult->getComponent('grouping')->getGroups();
+                    $firstGroup = reset($groups);
+                    $event->count = $firstGroup->getNumberOfGroups();
+                }
+
                 $event->setCustomPaginationParameter('result', $solrResult);
                 $event->stopPropagation();
             }
