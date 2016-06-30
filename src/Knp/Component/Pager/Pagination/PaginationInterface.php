@@ -23,6 +23,11 @@ interface PaginationInterface
      * @param integer $numTotal
      */
     function setTotalItemCount($numTotal);
+    
+    /**
+     * @return integer
+     */
+    function getTotalItemCount();
 
     /**
      * @param mixed $items
