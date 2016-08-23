@@ -19,11 +19,17 @@ class DBALQueryBuilderSubscriber implements EventSubscriberInterface
             /** @var $target QueryBuilder */
             $target = $event->target;
         
-            // get the query
-            $sql = $target->getSQL();
-
             // count results
             $qb = clone $target;
+            
+            //reset count orderBy since it can break query and slow it down
+            $qb
+                ->resetQueryPart('orderBy')
+            ;
+            
+            // get the query
+            $sql = $qb->getSQL();
+            
             $qb
                 ->resetQueryParts()
                 ->select('count(*) as cnt')
