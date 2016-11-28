@@ -37,6 +37,8 @@ class UsesPaginator implements EventSubscriberInterface
         $fetchJoinCollection = true;
         if ($event->target->hasHint(self::HINT_FETCH_JOIN_COLLECTION)) {
             $fetchJoinCollection = $event->target->getHint(self::HINT_FETCH_JOIN_COLLECTION);
+        } else if (isset($event->options['distinct'])) {
+            $fetchJoinCollection = $event->options['distinct'];
         }
 
         $paginator = new Paginator($event->target, $fetchJoinCollection);
