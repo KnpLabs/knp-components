@@ -33,7 +33,7 @@ class DBALQueryBuilderSubscriber implements EventSubscriberInterface
             $qb
                 ->resetQueryParts()
                 ->select('count(*) as cnt')
-                ->from('(' . $sql . ')', 'ololoshke_trololoshke')
+                ->from('(' . $sql . ')', 'dbal_count_tbl')
             ;
 
             $event->count = $qb
