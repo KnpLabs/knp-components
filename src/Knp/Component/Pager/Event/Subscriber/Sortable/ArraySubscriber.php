@@ -42,7 +42,7 @@ class ArraySubscriber implements EventSubscriberInterface
                     $this->currentSortingFieldGetter = "get{$sortFieldName}";
 
                     // Getter detection
-                    $class = new ReflectionClass(get_class($event->target[0]));
+                    $class = new ReflectionClass(get_class(current($event->target)));
                     if($class->hasMethod($this->currentSortingFieldGetter)) {
                         // Sort
                         usort($event->target, array($this, "sort" . ucfirst($this->sortDirection)));
