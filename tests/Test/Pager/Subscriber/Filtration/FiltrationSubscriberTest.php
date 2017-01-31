@@ -2,7 +2,6 @@
 
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Knp\Component\Pager\Event\BeforeEvent;
 
 class FiltrationSubscriberTest extends BaseTestCase
@@ -12,7 +11,7 @@ class FiltrationSubscriberTest extends BaseTestCase
      */
     function shouldRegisterExpectedSubscribersOnlyOnce()
     {
-        $dispatcher = $this->getMockBuilder(EventDispatcherInterface::class)->getMock();
+        $dispatcher = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcherInterface')->getMock();
         $dispatcher->expects($this->exactly(2))->method('addSubscriber');
 
         $subscriber = new FiltrationSubscriber;
