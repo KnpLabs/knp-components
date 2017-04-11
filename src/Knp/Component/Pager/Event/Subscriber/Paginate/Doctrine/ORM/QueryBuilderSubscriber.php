@@ -12,7 +12,14 @@ class QueryBuilderSubscriber implements EventSubscriberInterface
     {
         if ($event->target instanceof QueryBuilder) {
             // change target into query
-            $event->target = $event->target->getQuery();
+            $queryBuilder = $event->target;
+
+            // Remove "order by" part for the count query for performance purpose
+            $countQueryBuilder = clone $queryBuilder;
+            $countQueryBuilder->resetDQLPart('orderBy');
+
+            $event->target = $queryBuilder->getQuery();
+            $event->countTarget = $countQueryBuilder->getQuery();
         }
     }
 

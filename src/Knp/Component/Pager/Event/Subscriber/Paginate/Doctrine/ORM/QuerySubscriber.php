@@ -39,7 +39,12 @@ class QuerySubscriber implements EventSubscriberInterface
             if (($count = $event->target->getHint(self::HINT_COUNT)) !== false) {
                 $event->count = intval($count);
             } else {
-                $countQuery = QueryHelper::cloneQuery($event->target);
+                if (isset($event->countTarget)) {
+                    $countQuery = $event->countTarget;
+                } else {
+                    $countQuery = QueryHelper::cloneQuery($event->target);
+                }
+                
                 if ($useDoctrineOutputWalker) {
                     $treeWalker = 'Doctrine\ORM\Tools\Pagination\CountOutputWalker';
                     $countQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, $treeWalker);

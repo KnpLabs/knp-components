@@ -17,6 +17,13 @@ class ItemsEvent extends Event
     public $target;
 
     /**
+     * An optional separated target for counting purpose
+     *
+     * @var mixed
+     */
+    public $countTarget;
+
+    /**
      * List of options
      *
      * @var array
