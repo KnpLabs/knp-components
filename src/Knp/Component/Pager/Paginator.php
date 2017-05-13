@@ -84,7 +84,7 @@ class Paginator implements PaginatorInterface
     {
         $limit = intval(abs($limit));
         if (!$limit) {
-            throw new \LogicException("Invalid item per page number, must be a positive number");
+            throw new \LogicException("Invalid item per page number.  limit must be a positive number");
         }
         $offset = abs($page - 1) * $limit;
         $options = array_merge($this->defaultOptions, $options);
@@ -112,7 +112,7 @@ class Paginator implements PaginatorInterface
         $itemsEvent->target = &$target;
         $this->eventDispatcher->dispatch('knp_pager.items', $itemsEvent);
         if (!$itemsEvent->isPropagationStopped()) {
-            throw new \RuntimeException('One of listeners must count and slice given target');
+            throw new \RuntimeException('One of the listeners must count and slice a given target');
         }
         // pagination initialization event
         $paginationEvent = new Event\PaginationEvent;
@@ -120,7 +120,7 @@ class Paginator implements PaginatorInterface
         $paginationEvent->options = &$options;
         $this->eventDispatcher->dispatch('knp_pager.pagination', $paginationEvent);
         if (!$paginationEvent->isPropagationStopped()) {
-            throw new \RuntimeException('One of listeners must create pagination view');
+            throw new \RuntimeException('One of the listeners must create pagination view');
         }
         // pagination class can be different, with different rendering methods
         $paginationView = $paginationEvent->getPagination();
