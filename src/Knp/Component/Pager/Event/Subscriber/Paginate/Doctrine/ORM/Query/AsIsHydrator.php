@@ -18,4 +18,12 @@ class AsIsHydrator extends AbstractHydrator
     {
         return $this->_stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
+    
+    /**
+     * Added to provide backwards compatibility 
+     */
+    protected function _hydrateAll ()
+    {
+        return $this->hydrateAllData();
+    }
 }
