@@ -16,7 +16,7 @@ class CollectionSubscriber implements EventSubscriberInterface
             $event->items = new ArrayObject($event->target->slice(
                 $event->getOffset(),
                 $event->getLimit()
-            ));
+            )->toArray());
             $event->stopPropagation();
         }
     }
