@@ -33,6 +33,8 @@ class Paginator implements PaginatorInterface
         'sortDirectionParameterName' => 'direction',
         'filterFieldParameterName' => 'filterParam',
         'filterValueParameterName' => 'filterValue',
+        'limitParameterName' => 'limit',
+        'limitDefaultValue' => 10,
         'distinct' => true
     );
 
