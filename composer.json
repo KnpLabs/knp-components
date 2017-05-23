@@ -27,10 +27,12 @@
         "doctrine/phpcr-odm": "~1.2",
         "jackalope/jackalope-doctrine-dbal": "~1.2",
         "phpunit/phpunit": "~4.2",
-        "ruflin/elastica": "~1.0"
+        "ruflin/elastica": "~1.0",
+        "symfony/property-access": ">=2.3"
     },
 
     "suggest": {
+        "symfony/property-access": "To allow sorting arrays",
         "doctrine/orm" : "to allow usage pagination with Doctrine ORM",
         "doctrine/common" : "to allow usage pagination with Doctrine ArrayCollection",
         "doctrine/mongodb-odm" : "to allow usage pagination with Doctrine ODM MongoDB",

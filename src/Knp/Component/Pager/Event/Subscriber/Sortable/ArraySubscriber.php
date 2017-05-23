@@ -2,82 +2,97 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 
-use \ReflectionClass;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
-use Doctrine\ORM\Query;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 class ArraySubscriber implements EventSubscriberInterface
 {
-
     /**
      * @var string the field used to sort current object array list
      */
-    private $currentSortingFieldGetter;
+    private $currentSortingField;
 
     /**
      * @var string the sorting direction
      */
     private $sortDirection;
 
+    /**
+     * @var PropertyAccessorInterface
+     */
+    private $propertyAccessor;
+
+    public function __construct(PropertyAccessorInterface $accessor = null)
+    {
+        if (!$accessor && class_exists('Symfony\Component\PropertyAccess\PropertyAccess')) {
+            $accessor = PropertyAccess::createPropertyAccessorBuilder()->enableMagicCall()->getPropertyAccessor();
+        }
+
+        $this->propertyAccessor = $accessor;
+    }
+
     public function items(ItemsEvent $event)
     {
-        if (is_array($event->target) && count($event->target) > 1)
-        {
-            if (isset($_GET[$event->options['sortFieldParameterName']])) {
-                $this->sortDirection = isset($_GET[$event->options['sortDirectionParameterName']]) && strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc';
-
-                // TODO add whitelist
-//                if (isset($event->options['sortFieldWhitelist'])) {
-//                    if (!in_array($_GET[$event->options['sortFieldParameterName']], $event->options['sortFieldWhitelist'])) {
-//                        throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options['sortFieldParameterName']]}] this field is not in whitelist");
-//                    }
-//                }
-
-                $sortFieldParameterName = explode('.', $_GET[$event->options['sortFieldParameterName']]);
-                if(isset($sortFieldParameterName[1])) {
-                    // Capitalize first letter in order to prepare getter construction
-                    $sortFieldName = ucfirst($sortFieldParameterName[1]);
-
-                    $this->currentSortingFieldGetter = "get{$sortFieldName}";
-
-                    // Getter detection
-                    $class = new ReflectionClass(get_class(current($event->target)));
-                    if($class->hasMethod($this->currentSortingFieldGetter)) {
-                        // Sort
-                        usort($event->target, array($this, "sort" . ucfirst($this->sortDirection)));
-                    }
-                }
-            }
+        if (!is_array($event->target) || empty($_GET[$event->options['sortFieldParameterName']])) {
+            return;
         }
+
+        if (isset($event->options['sortFieldWhitelist']) && !in_array($_GET[$event->options['sortFieldParameterName']], $event->options['sortFieldWhitelist'])) {
+            throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options['sortFieldParameterName']]}] this field is not in whitelist");
+        }
+
+        $sortFunction = isset($event->options['sortFunction']) ? $event->options['sortFunction'] : array($this, 'proxySortFunction');
+        $sortField = $_GET[$event->options['sortFieldParameterName']];
+
+        // compatibility layer
+        if ($sortField[0] === '.') {
+            $sortField = substr($sortField, 1);
+        }
+
+        call_user_func_array($sortFunction, array(
+            &$event->target,
+            $sortField,
+            isset($_GET[$event->options['sortDirectionParameterName']]) && strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc'
+        ));
+    }
+
+    private function proxySortFunction(&$target, $sortField, $sortDirection) {
+        $this->currentSortingField = $sortField;
+        $this->sortDirection = $sortDirection;
+
+        return usort($target, array($this, 'sortFunction'));
     }
 
     /**
-     * @param $object1 first object to compare
-     * @param $object2 second object to compare
+     * @param mixed $object1 first object to compare
+     * @param mixed $object2 second object to compare
+     *
+     * @return boolean
      */
-    private function sortAsc($object1, $object2)
+    private function sortFunction($object1, $object2)
     {
-        $fieldValue1 = strtolower($object1->{$this->currentSortingFieldGetter}());
-        $fieldValue2 = strtolower($object2->{$this->currentSortingFieldGetter}());
-        if ($fieldValue1 == $fieldValue2) {
-            return 0;
+        if (!$this->propertyAccessor) {
+            throw new \UnexpectedValueException('You need symfony/property-access component to use this sorting function');
         }
-        return ($fieldValue1 > $fieldValue2) ? +1 : -1;
-    }
 
-    /**
-     * @param $object1 first object to compare
-     * @param $object2 second object to compare
-     */
-    private function sortDesc($object1, $object2)
-    {
-        $fieldValue1 = strtolower($object1->{$this->currentSortingFieldGetter}());
-        $fieldValue2 = strtolower($object2->{$this->currentSortingFieldGetter}());
-        if ($fieldValue1 == $fieldValue2) {
+        $fieldValue1 = $this->propertyAccessor->getValue($object1, $this->currentSortingField);
+        $fieldValue2 = $this->propertyAccessor->getValue($object2, $this->currentSortingField);
+
+        if (is_string($fieldValue1)) {
+            $fieldValue1 = mb_strtolower($fieldValue1);
+        }
+
+        if (is_string($fieldValue2)) {
+            $fieldValue2 = mb_strtolower($fieldValue2);
+        }
+
+        if ($fieldValue1 === $fieldValue2) {
             return 0;
         }
-        return ($fieldValue1 > $fieldValue2) ? -1 : +1;
+
+        return ($fieldValue1 > $fieldValue2 ? 1 : -1) * ($this->sortDirection === 'asc' ? 1 : -1);
     }
 
     public static function getSubscribedEvents()
