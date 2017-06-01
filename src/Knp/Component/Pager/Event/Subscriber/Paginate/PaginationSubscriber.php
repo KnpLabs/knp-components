@@ -9,6 +9,12 @@ use Knp\Component\Pager\Pagination\SlidingPagination;
 
 class PaginationSubscriber implements EventSubscriberInterface
 {
+    /**
+     * Lazy-load state tracker
+     * @var bool
+     */
+    private $isLoaded = false;
+
     public function pagination(PaginationEvent $event)
     {
         $event->setPagination(new SlidingPagination);
@@ -17,6 +23,11 @@ class PaginationSubscriber implements EventSubscriberInterface
 
     public function before(BeforeEvent $event)
     {
+        // Do not lazy-load more than once
+        if ($this->isLoaded) {
+            return;
+        }
+
         $disp = $event->getEventDispatcher();
         // hook all standard subscribers
         $disp->addSubscriber(new ArraySubscriber);
@@ -32,6 +43,8 @@ class PaginationSubscriber implements EventSubscriberInterface
         $disp->addSubscriber(new PropelQuerySubscriber);
         $disp->addSubscriber(new SolariumQuerySubscriber());
         $disp->addSubscriber(new ElasticaQuerySubscriber());
+
+        $this->isLoaded = true;
     }
 
     public static function getSubscribedEvents()
