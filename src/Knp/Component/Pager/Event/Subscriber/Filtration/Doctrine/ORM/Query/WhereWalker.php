@@ -51,7 +51,7 @@ class WhereWalker extends TreeWalkerAdapter
             $parts = explode('.', $column);
             $field = end($parts);
             if (2 <= count($parts)) {
-                $alias = reset($parts);
+                $alias = trim(reset($parts));
                 if (!array_key_exists($alias, $components)) {
                     throw new \UnexpectedValueException("There is no component aliased by [{$alias}] in the given Query");
                 }
