@@ -77,8 +77,16 @@ class ArraySubscriber implements EventSubscriberInterface
             throw new \UnexpectedValueException('You need symfony/property-access component to use this sorting function');
         }
 
-        $fieldValue1 = $this->propertyAccessor->getValue($object1, $this->currentSortingField);
-        $fieldValue2 = $this->propertyAccessor->getValue($object2, $this->currentSortingField);
+        $fieldValue1  = $this->propertyAccessor->getValue($object1, $this->currentSortingField);
+        $fieldValue2  = $this->propertyAccessor->getValue($object2, $this->currentSortingField);	
+    	
+    	if ((is_object($fieldValue1) && get_class($fieldValue1) == 'DateTime') || 
+            (is_object($fieldValue2) && get_class($fieldValue2) == 'DateTime'))
+    	{    		
+    		$fieldValue1 = isset($fieldValue1)?$fieldValue1->format('Y-m-d H:i:s'):'0000-00-00 00:00:00';
+    		$fieldValue2 = isset($fieldValue2)?$fieldValue2->format('Y-m-d H:i:s'):'0000-00-00 00:00:00';    		    		
+    	}    	          
+ 
 
         if (is_string($fieldValue1)) {
             $fieldValue1 = mb_strtolower($fieldValue1);
