@@ -312,7 +312,14 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title = 1 LIMIT 10', $executed[1]);
+        // Different aliases separators according to Doctrine version
+        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
+            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title LIKE \'0\' LIMIT 10 OFFSET 0', $executed[1]);
+            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title LIKE \'1\' LIMIT 10 OFFSET 0', $executed[3]);
+        } else {
+            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'0\' LIMIT 10 OFFSET 0', $executed[1]);
+            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'1\' LIMIT 10 OFFSET 0', $executed[3]);
+        }
     }
 
     /**

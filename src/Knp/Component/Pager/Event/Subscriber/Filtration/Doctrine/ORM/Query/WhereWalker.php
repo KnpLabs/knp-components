@@ -2,6 +2,13 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM\Query;
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Query\TreeWalkerAdapter;
+use Doctrine\ORM\Query\AST\Node;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\AST\WhereClause;
+use Doctrine\ORM\Query\AST\PathExpression;
+use Doctrine\ORM\Query\AST\LikeExpression;
 use Doctrine\ORM\Query\AST\ComparisonExpression;
 use Doctrine\ORM\Query\AST\ConditionalExpression;
 use Doctrine\ORM\Query\AST\ConditionalFactor;
@@ -77,7 +84,21 @@ class WhereWalker extends TreeWalkerAdapter
                     continue;
                 }
                 unset($meta);
-            } elseif (is_numeric($queriedValue)) {
+            } elseif (is_numeric($queriedValue)
+                && (
+                    !isset($meta)
+                    || in_array(
+                        $meta['metadata']->getTypeOfField($field),
+                        array(
+                            Type::SMALLINT,
+                            Type::INTEGER,
+                            Type::BIGINT,
+                            Type::FLOAT,
+                            Type::DECIMAL,
+                        )
+                    )
+                )
+            ) {
                 $expression->simpleConditionalExpression = new ComparisonExpression($pathExpression, '=', new Literal(Literal::NUMERIC, $queriedValue));
             } else {
                 $expression->simpleConditionalExpression = new LikeExpression($pathExpression, new Literal(Literal::STRING, $queriedValue));
