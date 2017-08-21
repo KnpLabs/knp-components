@@ -2,6 +2,7 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM\Query;
 
+use Doctrine\ORM\Query\AST\Functions\LowerFunction;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\AST\SelectStatement;
@@ -32,6 +33,11 @@ class WhereWalker extends TreeWalkerAdapter
     const HINT_PAGINATOR_FILTER_VALUE = 'knp_paginator.filter.value';
 
     /**
+     * Filter strings in a case insensitive way
+     */
+    const HINT_PAGINATOR_FILTER_CASE_INSENSITIVE = 'knp_paginator.filter.case_insensitive';
+
+    /**
      * Walks down a SelectStatement AST node, modifying it to
      * filter the query like requested by url
      *
@@ -43,6 +49,7 @@ class WhereWalker extends TreeWalkerAdapter
         $query = $this->_getQuery();
         $queriedValue = $query->getHint(self::HINT_PAGINATOR_FILTER_VALUE);
         $columns = $query->getHint(self::HINT_PAGINATOR_FILTER_COLUMNS);
+        $filterCaseInsensitive = $query->getHint(self::HINT_PAGINATOR_FILTER_CASE_INSENSITIVE);
         $components = $this->_getQueryComponents();
         $filterExpressions = array();
         $expressions = array();
@@ -80,7 +87,17 @@ class WhereWalker extends TreeWalkerAdapter
             } elseif (is_numeric($queriedValue)) {
                 $expression->simpleConditionalExpression = new ComparisonExpression($pathExpression, '=', new Literal(Literal::NUMERIC, $queriedValue));
             } else {
-                $expression->simpleConditionalExpression = new LikeExpression($pathExpression, new Literal(Literal::STRING, $queriedValue));
+                $likePathExpression = $pathExpression;
+                $likeQueriedValue = $queriedValue;
+
+                if ($filterCaseInsensitive) {
+                    $lower = new LowerFunction('lower');
+                    $lower->stringPrimary = $pathExpression;
+                    $likePathExpression = $lower;
+                    $likeQueriedValue = strtolower($queriedValue);
+                }
+
+                $expression->simpleConditionalExpression = new LikeExpression($likePathExpression, new Literal(Literal::STRING, $likeQueriedValue));
             }
             $filterExpressions[] = $expression->simpleConditionalExpression;
             $expressions[] = $expression;
