@@ -15,7 +15,7 @@ interface PaginatorInterface
      *
      * @param mixed $target - anything what needs to be paginated
      * @param integer $page - page number, starting from 1
-     * @param integer $limit - number of items per page
+     * @param integer $itemsPerPage - number of items per page
      * @param array $options - less used options:
      *     boolean $distinct - default true for distinction of results
      *     string $alias - pagination alias, default none
@@ -23,5 +23,5 @@ interface PaginatorInterface
      * @throws \LogicException
      * @return \Knp\Component\Pager\Pagination\PaginationInterface
      */
-    function paginate($target, $page = 1, $limit = 10, array $options = array());
+    function paginate($target, $page = 1, $itemsPerPage, array $options = array());
 }
