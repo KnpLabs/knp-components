@@ -72,7 +72,7 @@ class Paginator implements PaginatorInterface
      *
      * @param mixed $target - anything what needs to be paginated
      * @param integer $page - page number, starting from 1
-     * @param integer $limit - number of items per page
+     * @param integer $itemsPerPage - number of items per page
      * @param array $options - less used options:
      *     boolean $distinct - default true for distinction of results
      *     string $alias - pagination alias, default none
@@ -80,14 +80,23 @@ class Paginator implements PaginatorInterface
      * @throws \LogicException
      * @return \Knp\Component\Pager\Pagination\PaginationInterface
      */
-    public function paginate($target, $page = 1, $limit = 10, array $options = array())
+    public function paginate($target, $page = 1, $itemsPerPage = null, array $options = array())
     {
-        $limit = intval(abs($limit));
-        if (!$limit) {
-            throw new \LogicException("Invalid item per page number, must be a positive number");
-        }
-        $offset = abs($page - 1) * $limit;
         $options = array_merge($this->defaultOptions, $options);
+
+        if ($itemsPerPage === null) {
+            $itemsPerPage = 10;
+            if (isset($options['itemsPerPage'])) {
+                $itemsPerPage = $options['itemsPerPage'];
+            }
+        }
+
+        $itemsPerPage = (int) abs($itemsPerPage);
+        if ($itemsPerPage === 0) {
+            throw new \LogicException('Invalid item per page number, must be a strictly positive number');
+        }
+
+        $offset = abs($page - 1) * $itemsPerPage;
 
         // normalize default sort field
         if (isset($options['defaultSortFieldName']) && is_array($options['defaultSortFieldName'])) {
@@ -107,7 +116,7 @@ class Paginator implements PaginatorInterface
         $beforeEvent = new Event\BeforeEvent($this->eventDispatcher);
         $this->eventDispatcher->dispatch('knp_pager.before', $beforeEvent);
         // items
-        $itemsEvent = new Event\ItemsEvent($offset, $limit);
+        $itemsEvent = new Event\ItemsEvent($offset, $itemsPerPage);
         $itemsEvent->options = &$options;
         $itemsEvent->target = &$target;
         $this->eventDispatcher->dispatch('knp_pager.items', $itemsEvent);
@@ -126,7 +135,7 @@ class Paginator implements PaginatorInterface
         $paginationView = $paginationEvent->getPagination();
         $paginationView->setCustomParameters($itemsEvent->getCustomPaginationParameters());
         $paginationView->setCurrentPageNumber($page);
-        $paginationView->setItemNumberPerPage($limit);
+        $paginationView->setItemNumberPerPage($itemsPerPage);
         $paginationView->setTotalItemCount($itemsEvent->count);
         $paginationView->setPaginatorOptions($options);
         $paginationView->setItems($itemsEvent->items);
