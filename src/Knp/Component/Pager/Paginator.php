@@ -86,6 +86,11 @@ class Paginator implements PaginatorInterface
         if (!$limit) {
             throw new \LogicException("Invalid item per page number, must be a positive number");
         }
+
+        if ($page == 0) {
+            throw new \LogicException("Page cannot be equals to 0.");
+        }
+
         $offset = abs($page - 1) * $limit;
         $options = array_merge($this->defaultOptions, $options);
 
