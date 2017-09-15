@@ -45,6 +45,11 @@ class DBALQueryBuilderSubscriber implements EventSubscriberInterface
             $event->items = array();
             if ($event->count) {
                 $qb = clone $target;
+
+                if ($event->getOffset() == 'last') {
+                    $event->setOffset($event->count - $event->count % $event->getLimit());
+                }
+
                 $qb
                     ->setFirstResult($event->getOffset())
                     ->setMaxResults($event->getLimit())

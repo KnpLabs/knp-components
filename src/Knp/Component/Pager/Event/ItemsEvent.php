@@ -66,4 +66,9 @@ class ItemsEvent extends Event
     {
         return $this->offset;
     }
+
+    public function setOffset($offset)
+    {
+        $this->offset = $offset;
+    }
 }

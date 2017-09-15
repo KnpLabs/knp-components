@@ -29,6 +29,11 @@ class PropelQuerySubscriber implements EventSubscriberInterface
                 if ($event->options['distinct']) {
                     $resultQuery->distinct();
                 }
+
+                if ($event->getOffset() == 'last') {
+                    $event->setOffset($event->count - $event->count % $event->getLimit());
+                }
+
                 $resultQuery
                     ->offset($event->getOffset())
                     ->limit($event->getLimit())

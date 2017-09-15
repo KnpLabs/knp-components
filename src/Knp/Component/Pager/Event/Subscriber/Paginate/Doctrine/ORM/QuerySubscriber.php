@@ -75,6 +75,10 @@ class QuerySubscriber implements EventSubscriberInterface
             // process items
             $result = null;
             if ($event->count) {
+                if ($event->getOffset() == 'last') {
+                    $event->setOffset($event->count - $event->count % $event->getLimit());
+                }
+
                 if ($event->options['distinct']) {
                     $limitSubQuery = QueryHelper::cloneQuery($event->target);
                     $limitSubQuery
