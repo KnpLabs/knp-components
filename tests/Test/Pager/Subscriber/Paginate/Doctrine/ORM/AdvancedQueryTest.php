@@ -4,11 +4,6 @@ namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
-use Knp\Component\Pager\Pagination\SlidingPagination;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Test\Fixture\Entity\Shop\Product;
 use Test\Fixture\Entity\Shop\Tag;
 use Doctrine\ORM\Query;
