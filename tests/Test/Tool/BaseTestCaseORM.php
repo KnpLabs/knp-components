@@ -2,7 +2,6 @@
 
 namespace Test\Tool;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
