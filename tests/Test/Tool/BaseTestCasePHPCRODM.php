@@ -2,14 +2,11 @@
 
 namespace Test\Tool;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ODM\PHPCR\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\PHPCR\DocumentManager;
 use Doctrine\Common\EventManager;
-use Doctrine\MongoDB\Connection;
 use Jackalope\RepositoryFactoryDoctrineDBAL;
-use Jackalope\Session;
 use Jackalope\Transport\DoctrineDBAL\RepositorySchema;
 
 /**
