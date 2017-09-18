@@ -4,7 +4,6 @@ namespace Test\Pager\Subscriber\Sortable;
 
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SolariumQuerySubscriber;
 
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
@@ -13,7 +12,7 @@ class SolariumQuerySubscriberTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      * @expectedExceptionMessage One of listeners must count and slice given target
      */
     function testArrayShouldNotBeHandled()
