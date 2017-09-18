@@ -4,79 +4,125 @@ namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
-use Knp\Component\Pager\Pagination\SlidingPagination;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
-use Test\Fixture\Entity\Article;
-use Test\Mock\PaginationSubscriber;
+use Test\Fixture\Entity\Shop\Product;
+use Test\Fixture\Entity\Shop\Tag;
+use Doctrine\ORM\Query;
 
 class QueryTest extends BaseTestCaseORM
 {
     /**
      * @test
      */
-    function shouldPaginateSimpleDoctrineQuery()
+    function shouldUseOutputWalkersIfAskedTo()
     {
         $this->populate();
 
-        $dispatcher = new EventDispatcher;
-        $dispatcher->addSubscriber(new QuerySubscriber\UsesPaginator);
-        $dispatcher->addSubscriber(new PaginationSubscriber);
-        $p = new Paginator($dispatcher);
-
-        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $view = $p->paginate($query, 1, 2);
-
-        $this->assertTrue($view instanceof PaginationInterface);
-        $this->assertEquals(1, $view->getCurrentPageNumber());
-        $this->assertEquals(2, $view->getItemNumberPerPage());
-        $this->assertEquals(4, $view->getTotalItemCount());
-
-        $items = $view->getItems();
-        $this->assertEquals(2, count($items));
-        $this->assertEquals('summer', $items[0]->getTitle());
-        $this->assertEquals('winter', $items[1]->getTitle());
+        $dql = <<<___SQL
+        SELECT p, t
+        FROM Test\Fixture\Entity\Shop\Product p
+        INNER JOIN p.tags t
+        GROUP BY p.id
+        HAVING p.numTags = COUNT(t)
+___SQL;
+        $q = $this->em->createQuery($dql);
+        $q->setHydrationMode(Query::HYDRATE_ARRAY);
+        $q->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, true);
+        $this->startQueryLog();
+        $p = new Paginator;
+        $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
+        $this->assertEquals(3, $this->queryAnalyzer->getNumExecutedQueries());
+        $this->assertEquals(3, count($view));
     }
 
     /**
      * @test
      */
-    function shouldSupportPaginateStrategySubscriber()
+    function shouldNotUseOutputWalkersByDefault()
     {
-        $query = $this
-            ->getMockSqliteEntityManager()
-            ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
-        ;
+        $this->populate();
+
+        $dql = <<<___SQL
+        SELECT p
+        FROM Test\Fixture\Entity\Shop\Product p
+        GROUP BY p.id
+___SQL;
+        $q = $this->em->createQuery($dql);
+        $q->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+        $q->setHydrationMode(Query::HYDRATE_ARRAY);
+        $this->startQueryLog();
         $p = new Paginator;
-        $view = $p->paginate($query, 1, 10);
-        $this->assertTrue($view instanceof PaginationInterface);
+        $view = $p->paginate($q, 1, 10, array('wrap-queries' => false));
+        $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
+        $this->assertEquals(3, count($view));
+    }
+
+    /**
+     * @test
+     */
+    function shouldFetchJoinCollectionsIfNeeded()
+    {
+        $this->populate();
+
+        $dql = <<<___SQL
+        SELECT p, t
+        FROM Test\Fixture\Entity\Shop\Product p
+        INNER JOIN p.tags t
+        GROUP BY p.id
+        HAVING p.numTags = COUNT(t)
+___SQL;
+        $q = $this->em->createQuery($dql);
+        $q->setHydrationMode(Query::HYDRATE_ARRAY);
+        $q->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, true);
+        $this->startQueryLog();
+        $p = new Paginator;
+        $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
+        $this->assertEquals(3, $this->queryAnalyzer->getNumExecutedQueries());
+        $this->assertEquals(3, count($view));
     }
 
     protected function getUsedEntityFixtures()
     {
-        return array('Test\Fixture\Entity\Article');
+        return array(
+            'Test\Fixture\Entity\Shop\Product',
+            'Test\Fixture\Entity\Shop\Tag'
+        );
     }
 
     private function populate()
     {
         $em = $this->getMockSqliteEntityManager();
-        $summer = new Article;
-        $summer->setTitle('summer');
+        $cheep = new Tag;
+        $cheep->setName('Cheep');
 
-        $winter = new Article;
-        $winter->setTitle('winter');
+        $new = new Tag;
+        $new->setName('New');
 
-        $autumn = new Article;
-        $autumn->setTitle('autumn');
+        $special = new Tag;
+        $special->setName('Special');
 
-        $spring = new Article;
-        $spring->setTitle('spring');
+        $starship = new Product;
+        $starship->setTitle('Starship');
+        $starship->setPrice(277.66);
+        $starship->addTag($new);
+        $starship->addTag($special);
 
-        $em->persist($summer);
-        $em->persist($winter);
-        $em->persist($autumn);
-        $em->persist($spring);
+        $cheese = new Product;
+        $cheese->setTitle('Cheese');
+        $cheese->setPrice(7.66);
+        $cheese->addTag($cheep);
+
+        $shoe = new Product;
+        $shoe->setTitle('Shoe');
+        $shoe->setPrice(2.66);
+        $shoe->addTag($special);
+
+        $em->persist($special);
+        $em->persist($cheep);
+        $em->persist($new);
+        $em->persist($starship);
+        $em->persist($cheese);
+        $em->persist($shoe);
         $em->flush();
     }
 }

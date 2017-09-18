@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Filtration\Doctrine\ORM;
 
+use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\Pagination\SlidingPagination;
@@ -9,7 +10,6 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber as Filtration;
 use Test\Fixture\Entity\Article;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber\UsesPaginator;
 
 class QueryTest extends BaseTestCaseORM
 {
@@ -72,7 +72,7 @@ class QueryTest extends BaseTestCaseORM
         $_GET['filterValue'] = '*er';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();
@@ -116,7 +116,7 @@ class QueryTest extends BaseTestCaseORM
         $_GET['filterParam'] = 'a.enabled';
         $_GET['filterValue'] = '1';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertEquals(2, count($items));
@@ -125,7 +125,7 @@ class QueryTest extends BaseTestCaseORM
 
         $_GET['filterValue'] = 'true';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertEquals(2, count($items));
@@ -180,10 +180,10 @@ class QueryTest extends BaseTestCaseORM
         $_GET['filterParam'] = 'a.enabled';
         $_GET['filterValue'] = 'invalid_boolean';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
 
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
@@ -213,18 +213,18 @@ class QueryTest extends BaseTestCaseORM
         $_GET['filterParam'] = 'a.title';
         $_GET['filterValue'] = '0';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('0', $items[0]->getTitle());
 
         $_GET['filterValue'] = '1';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('1', $items[0]->getTitle());
 
         $this->assertEquals(4, $this->queryAnalyzer->getNumExecutedQueries());
@@ -257,37 +257,37 @@ class QueryTest extends BaseTestCaseORM
         $_GET['filterValue'] = '*er';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a WHERE a.title <> \'\' AND (a.title LIKE \'summer\' OR a.title LIKE \'spring\')');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $_GET['filterParam'] = 'a.id,a.title';
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a WHERE a.title <> \'\' OR (a.title LIKE \'summer\' OR a.title LIKE \'spring\')');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a WHERE a.title <> \'\'');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
         $_GET['filterParam'] = 'a.title';
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
@@ -325,7 +325,7 @@ class QueryTest extends BaseTestCaseORM
         $_GET['filterValue'] = '*er';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertEquals(2, count($items));
@@ -367,7 +367,7 @@ class QueryTest extends BaseTestCaseORM
         $_GET['filterValue'] = '*er';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a WHERE a.title <> \'\' AND (a.title LIKE \'summer\' OR a.title LIKE \'spring\')');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertEquals(1, count($items));
@@ -385,7 +385,7 @@ class QueryTest extends BaseTestCaseORM
 
     /**
      * @test
-     * @expectedException UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      */
     public function shouldValidateFiltrationParameter()
     {
@@ -406,7 +406,7 @@ class QueryTest extends BaseTestCaseORM
 
     /**
      * @test
-     * @expectedException UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      */
     public function shouldValidateFiltrationParameterWithoutAlias()
     {
@@ -461,7 +461,7 @@ class QueryTest extends BaseTestCaseORM
         FROM Test\Fixture\Entity\Article a
 ___SQL;
         $query = $this->em->createQuery($dql);
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
@@ -498,7 +498,7 @@ ___SQL;
             ->em
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
         ;
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
         $p = new Paginator();
         $this->startQueryLog();
@@ -553,7 +553,7 @@ ___SQL;
         $_GET['filterValue'] = 'summer';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $defaultFilterFields = 'a.title';
         $view = $p->paginate($query, 1, 10, compact('defaultFilterFields'));
         $items = $view->getItems();
@@ -600,7 +600,7 @@ ___SQL;
         $_GET['filterValue'] = '';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertEquals(4, count($items));
