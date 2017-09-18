@@ -2,11 +2,10 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
+use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Composite;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber\UsesPaginator;
-use Doctrine\ORM\Query;
 
 class CompositeKeyTest extends BaseTestCaseORM
 {
@@ -28,7 +27,7 @@ class CompositeKeyTest extends BaseTestCaseORM
             ->createQuery('SELECT c FROM Test\Fixture\Entity\Composite c')
             ->setHint('knp_paginator.count', $count)
         ;
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10, array('wrap-queries' => true));
 
         $items = $view->getItems();

@@ -2,16 +2,14 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ORM;
 
+use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\Pagination\SlidingPagination;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\QuerySubscriber as Sortable;
 use Test\Fixture\Entity\Article;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber\UsesPaginator;
 
 class QueryTest extends BaseTestCaseORM
 {
@@ -74,7 +72,7 @@ class QueryTest extends BaseTestCaseORM
         $_GET['direction'] = 'asc';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();
@@ -138,7 +136,7 @@ class QueryTest extends BaseTestCaseORM
         FROM Test\Fixture\Entity\Article a
 ___SQL;
         $query = $this->em->createQuery($dql);
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
         $p = new Paginator;
         $this->startQueryLog();
@@ -168,7 +166,7 @@ ___SQL;
             ->em
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
         ;
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
         $p = new Paginator;
         $this->startQueryLog();
