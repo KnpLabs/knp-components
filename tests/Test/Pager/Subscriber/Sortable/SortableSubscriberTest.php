@@ -1,5 +1,6 @@
 <?php
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
 use Knp\Component\Pager\Event\BeforeEvent;
@@ -11,7 +12,7 @@ class SortableSubscriberTest extends BaseTestCase
      */
     function shouldRegisterExpectedSubscribersOnlyOnce()
     {
-        $dispatcher = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcherInterface')->getMock();
+        $dispatcher = $this->getMockBuilder(EventDispatcherInterface::class)->getMock();
         $dispatcher->expects($this->exactly(6))->method('addSubscriber');
 
         $subscriber = new SortableSubscriber;

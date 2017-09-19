@@ -3,12 +3,13 @@
 namespace Test\Pager\Subscriber\Sortable;
 
 use Knp\Component\Pager\Paginator;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SolariumQuerySubscriber;
 
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 
-class SolariumQuerySubscriberTest extends \PHPUnit_Framework_TestCase
+class SolariumQuerySubscriberTest extends TestCase
 {
     /**
      * @test
@@ -31,11 +32,11 @@ class SolariumQuerySubscriberTest extends \PHPUnit_Framework_TestCase
             'nbTotalResults' => 2
         );
 
-        $dispatcher = new EventDispatcher;
-        $dispatcher->addSubscriber(new SolariumQuerySubscriber);
-        $dispatcher->addSubscriber(new MockPaginationSubscriber);
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new SolariumQuerySubscriber());
+        $dispatcher->addSubscriber(new MockPaginationSubscriber());
 
-        $p = new Paginator($dispatcher);
-        $p->paginate($array, 1, 10);
+        $paginator = new Paginator($dispatcher);
+        $paginator->paginate($array, 1, 10);
     }
 }

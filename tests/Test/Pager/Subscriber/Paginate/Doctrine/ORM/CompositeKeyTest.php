@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
@@ -31,15 +32,15 @@ class CompositeKeyTest extends BaseTestCaseORM
         $view = $p->paginate($query, 1, 10, array('wrap-queries' => true));
 
         $items = $view->getItems();
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
-        return array('Test\Fixture\Entity\Composite');
+        return [Composite::class];
     }
 
-    private function populate($em)
+    private function populate(EntityManagerInterface $em)
     {
         $summer = new Composite;
         $summer->setId(1);

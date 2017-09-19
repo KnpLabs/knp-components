@@ -4,7 +4,6 @@ use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
-use Test\Mock\CustomParameterSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Paginate\ArraySubscriber;
 
 class AbstractPaginationTest extends BaseTestCase

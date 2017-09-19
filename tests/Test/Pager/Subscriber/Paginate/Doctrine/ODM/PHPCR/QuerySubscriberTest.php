@@ -24,18 +24,18 @@ class QuerySubscriberTest extends BaseTestCasePHPCRODM
         $dispatcher->addSubscriber(new PaginationSubscriber()); // pagination view
         $p = new Paginator($dispatcher);
 
-        $query = $this->dm->createQueryBuilder()->fromDocument('Test\Fixture\Document\PHPCR\Article', 'a')->getQuery();
+        $query = $this->dm->createQueryBuilder()->fromDocument(Article::class, 'a')->getQuery();
 
         $pagination = $p->paginate($query, 1, 2);
 
-        $this->assertTrue($pagination instanceof SlidingPagination);
+        $this->assertInstanceOf(SlidingPagination::class, $pagination);
         $this->assertEquals(1, $pagination->getCurrentPageNumber());
         $this->assertEquals(2, $pagination->getItemNumberPerPage());
         $this->assertEquals(4, $pagination->getTotalItemCount());
 
         $items = $pagination->getItems();
 
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items->first()->getTitle());
         $this->assertEquals('winter', $items->last()->getTitle());
     }
@@ -46,11 +46,11 @@ class QuerySubscriberTest extends BaseTestCasePHPCRODM
     function shouldSupportPaginateStrategySubscriber()
     {
         $this->getMockDocumentManager();
-        $query = $this->dm->createQueryBuilder()->fromDocument('Test\Fixture\Document\PHPCR\Article', 'a')->getQuery();
+        $query = $this->dm->createQueryBuilder()->fromDocument(Article::class, 'a')->getQuery();
 
         $p = new Paginator();
         $pagination = $p->paginate($query, 1, 10);
-        $this->assertTrue($pagination instanceof SlidingPagination);
+        $this->assertInstanceOf(SlidingPagination::class, $pagination);
     }
 
     private function populate()

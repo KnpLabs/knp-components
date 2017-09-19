@@ -3,7 +3,6 @@
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 
 class PaginatorTest extends BaseTestCase
@@ -14,8 +13,8 @@ class PaginatorTest extends BaseTestCase
      */
     function shouldNotBeAbleToPaginateWithoutListeners()
     {
-        $p = new Paginator(new EventDispatcher);
-        $p->paginate(array());
+        $paginator = new Paginator(new EventDispatcher());
+        $paginator->paginate(array());
     }
 
     /**
@@ -24,10 +23,10 @@ class PaginatorTest extends BaseTestCase
      */
     function shouldFailToPaginateUnsupportedValue()
     {
-        $dispatcher = new EventDispatcher;
-        $dispatcher->addSubscriber(new PaginationSubscriber);
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new PaginationSubscriber());
 
-        $p = new Paginator($dispatcher);
-        $view = $p->paginate(null, 1, 10);
+        $paginator = new Paginator($dispatcher);
+        $view = $paginator->paginate(null, 1, 10);
     }
 }
