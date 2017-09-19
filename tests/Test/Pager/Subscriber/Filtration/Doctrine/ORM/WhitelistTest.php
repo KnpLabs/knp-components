@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Filtration\Doctrine\ORM;
 
+use Knp\Component\Pager\ParametersResolver;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -22,10 +23,11 @@ class WhitelistTest extends BaseTestCaseORM
         $_GET['filterValue'] = 'summer';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
+        $parametersResolver = $this->createMock(ParametersResolver::class);
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $p = new Paginator($parametersResolver, $dispatcher);
         $filterFieldWhitelist = array('a.title');
         $view = $p->paginate($query, 1, 10, compact('filterFieldWhitelist'));
 
@@ -47,10 +49,11 @@ class WhitelistTest extends BaseTestCaseORM
         $_GET['filterValue'] = 'autumn';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
+        $parametersResolver = $this->createMock(ParametersResolver::class);
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $p = new Paginator($parametersResolver, $dispatcher);
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();

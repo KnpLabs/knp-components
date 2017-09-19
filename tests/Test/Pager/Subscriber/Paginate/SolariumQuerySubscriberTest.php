@@ -3,6 +3,7 @@
 namespace Test\Pager\Subscriber\Paginate;
 
 use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\ParametersResolver;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Knp\Component\Pager\Event\Subscriber\Paginate\SolariumQuerySubscriber;
@@ -20,11 +21,12 @@ class SolariumQuerySubscriberTest extends TestCase
     {
         $array = array(1 => 'foo', 2 => 'bar');
 
-        $dispatcher = new EventDispatcher;
-        $dispatcher->addSubscriber(new SolariumQuerySubscriber);
-        $dispatcher->addSubscriber(new MockPaginationSubscriber);
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new SolariumQuerySubscriber());
+        $dispatcher->addSubscriber(new MockPaginationSubscriber());
 
-        $p = new Paginator($dispatcher);
-        $p->paginate($array, 1, 10);
+        $paginator = new Paginator($parametersResolver, $dispatcher);
+        $paginator->paginate($array, 1, 10);
     }
 }

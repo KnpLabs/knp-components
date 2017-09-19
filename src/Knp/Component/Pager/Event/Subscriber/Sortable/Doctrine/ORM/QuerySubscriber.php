@@ -12,43 +12,57 @@ class QuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
-        if ($event->target instanceof Query) {
-            if (isset($_GET[$event->options['sortFieldParameterName']])) {
-                $dir = isset($_GET[$event->options['sortDirectionParameterName']]) && strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc';
-
-                if (isset($event->options['sortFieldWhitelist'])) {
-                    if (!in_array($_GET[$event->options['sortFieldParameterName']], $event->options['sortFieldWhitelist'])) {
-                        throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options['sortFieldParameterName']]}] this field is not in whitelist");
-                    }
-                }
-
-                $sortFieldParameterNames = $_GET[$event->options['sortFieldParameterName']];
-                $fields = array();
-                $aliases = array();
-                foreach (explode('+', $sortFieldParameterNames) as $sortFieldParameterName) {
-                    $parts = explode('.', $sortFieldParameterName, 2);
-
-                    // We have to prepend the field. Otherwise OrderByWalker will add
-                    // the order-by items in the wrong order
-                    array_unshift($fields, end($parts));
-                    array_unshift($aliases, 2 <= count($parts) ? reset($parts) : false);
-                }
-
-                $event->target
-                    ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_DIRECTION, $dir)
-                    ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_FIELD, $fields)
-                    ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_ALIAS, $aliases)
-                ;
-
-                QueryHelper::addCustomTreeWalker($event->target, 'Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\Query\OrderByWalker');
-            }
+        if (!$event->target instanceof Query) {
+            return;
         }
+
+        $parametersResolver = $event->getParametersResolver();
+        $field = $parametersResolver->getFieldToSort(
+            $event->options['sortFieldParameterName'],
+            $event->options['defaultSortFieldName'] ?? null
+        );
+
+        if ($field === null) {
+            return;
+        }
+
+        $direction = $parametersResolver->getDirection(
+            $event->options['sortDirectionParameterName'],
+            $event->options['defaultSortDirection'] ?? 'asc'
+        );
+
+        $whiteList = $event->options['sortFieldWhitelist'] ?? [];
+        if (count($whiteList) !== 0 && !in_array($field, $whiteList, true)) {
+            throw new \UnexpectedValueException(
+                sprintf('Cannot sort by: [%s] this field is not in whitelist', $field)
+            );
+        }
+
+        $fields = explode('+', $field);
+        $sortedFields = [];
+        $aliases = [];
+        foreach ($fields as $field) {
+            $parts = explode('.', $field, 2);
+
+            // We have to prepend the field. Otherwise OrderByWalker will add
+            // the order-by items in the wrong order
+            array_unshift($sortedFields, end($parts));
+            array_unshift($aliases, 2 <= count($parts) ? reset($parts) : false);
+        }
+
+        $event->target
+            ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_DIRECTION, $direction)
+            ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_FIELD, $sortedFields)
+            ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_ALIAS, $aliases)
+        ;
+
+        QueryHelper::addCustomTreeWalker($event->target, OrderByWalker::class);
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return array(
-            'knp_pager.items' => array('items', 1)
+            'knp_pager.items' => ['items', 1]
         );
     }
 }

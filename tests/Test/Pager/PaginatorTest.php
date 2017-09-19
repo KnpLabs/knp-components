@@ -1,5 +1,6 @@
 <?php
 
+use Knp\Component\Pager\ParametersResolver;
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -13,8 +14,11 @@ class PaginatorTest extends BaseTestCase
      */
     function shouldNotBeAbleToPaginateWithoutListeners()
     {
-        $paginator = new Paginator(new EventDispatcher());
-        $paginator->paginate(array());
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $eventDispatcher = new EventDispatcher();
+
+        $paginator = new Paginator($parametersResolver, $eventDispatcher);
+        $paginator->paginate([]);
     }
 
     /**
@@ -23,10 +27,11 @@ class PaginatorTest extends BaseTestCase
      */
     function shouldFailToPaginateUnsupportedValue()
     {
+        $parametersResolver = $this->createMock(ParametersResolver::class);
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
 
-        $paginator = new Paginator($dispatcher);
+        $paginator = new Paginator($parametersResolver, $dispatcher);
         $view = $paginator->paginate(null, 1, 10);
     }
 }

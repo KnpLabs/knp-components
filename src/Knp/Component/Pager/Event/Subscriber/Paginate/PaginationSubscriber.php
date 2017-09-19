@@ -17,7 +17,7 @@ class PaginationSubscriber implements EventSubscriberInterface
 
     public function pagination(PaginationEvent $event)
     {
-        $event->setPagination(new SlidingPagination);
+        $event->setPagination(new SlidingPagination());
         $event->stopPropagation();
     }
 

@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ORM;
 
+use Knp\Component\Pager\ParametersResolver;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Article;
@@ -19,16 +20,17 @@ class WhitelistTest extends BaseTestCaseORM
         $_GET['direction'] = 'asc';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
-        $p = new Paginator;
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver);
         $sortFieldWhitelist = array('a.title');
-        $view = $p->paginate($query, 1, 10, compact('sortFieldWhitelist'));
+        $view = $paginator->paginate($query, 1, 10, compact('sortFieldWhitelist'));
 
         $items = $view->getItems();
         $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
 
         $_GET['sort'] = 'a.id';
-        $view = $p->paginate($query, 1, 10, compact('sortFieldWhitelist'));
+        $view = $paginator->paginate($query, 1, 10, compact('sortFieldWhitelist'));
     }
 
     /**
@@ -41,14 +43,15 @@ class WhitelistTest extends BaseTestCaseORM
         $_GET['direction'] = 'asc';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
-        $p = new Paginator;
-        $view = $p->paginate($query, 1, 10);
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver);
+        $view = $paginator->paginate($query, 1, 10);
 
         $items = $view->getItems();
         $this->assertEquals('autumn', $items[0]->getTitle());
 
         $_GET['sort'] = 'a.id';
-        $view = $p->paginate($query, 1, 10);
+        $view = $paginator->paginate($query, 1, 10);
 
         $items = $view->getItems();
         $this->assertEquals('summer', $items[0]->getTitle());

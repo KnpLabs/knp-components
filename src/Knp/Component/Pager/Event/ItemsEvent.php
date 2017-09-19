@@ -2,6 +2,7 @@
 
 namespace Knp\Component\Pager\Event;
 
+use Knp\Component\Pager\ParametersResolver;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -39,12 +40,14 @@ class ItemsEvent extends Event
 
     private $offset;
     private $limit;
+    private $parametersResolver;
     private $customPaginationParams = array();
 
-    public function __construct($offset, $limit)
+    public function __construct($offset, $limit, ParametersResolver $parametersResolver)
     {
         $this->offset = $offset;
         $this->limit = $limit;
+        $this->parametersResolver = $parametersResolver;
     }
 
     public function setCustomPaginationParameter($name, $value)
@@ -65,5 +68,10 @@ class ItemsEvent extends Event
     public function getOffset()
     {
         return $this->offset;
+    }
+
+    public function getParametersResolver(): ParametersResolver
+    {
+        return $this->parametersResolver;
     }
 }

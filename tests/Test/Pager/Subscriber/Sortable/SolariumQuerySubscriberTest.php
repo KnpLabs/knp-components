@@ -3,6 +3,7 @@
 namespace Test\Pager\Subscriber\Sortable;
 
 use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\ParametersResolver;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SolariumQuerySubscriber;
@@ -32,11 +33,12 @@ class SolariumQuerySubscriberTest extends TestCase
             'nbTotalResults' => 2
         );
 
+        $parametersResolver = $this->createMock(ParametersResolver::class);
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new SolariumQuerySubscriber());
         $dispatcher->addSubscriber(new MockPaginationSubscriber());
 
-        $paginator = new Paginator($dispatcher);
+        $paginator = new Paginator($parametersResolver, $dispatcher);
         $paginator->paginate($array, 1, 10);
     }
 }

@@ -31,7 +31,7 @@ class PaginationEvent extends Event
         $this->pagination = $pagination;
     }
 
-    public function getPagination()
+    public function getPagination(): PaginationInterface
     {
         return $this->pagination;
     }

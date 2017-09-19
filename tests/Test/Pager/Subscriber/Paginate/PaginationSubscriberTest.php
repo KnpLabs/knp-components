@@ -15,7 +15,7 @@ class PaginationSubscriberTest extends BaseTestCase
         $dispatcher = $this->getMockBuilder(EventDispatcherInterface::class)->getMock();
         $dispatcher->expects($this->exactly(12))->method('addSubscriber');
 
-        $subscriber = new PaginationSubscriber;
+        $subscriber = new PaginationSubscriber();
 
         $beforeEvent = new BeforeEvent($dispatcher);
         $subscriber->before($beforeEvent);
