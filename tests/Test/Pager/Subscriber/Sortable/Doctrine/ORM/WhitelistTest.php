@@ -5,19 +5,13 @@ namespace Test\Pager\Subscriber\Sortable\Doctrine\ORM;
 use Knp\Component\Pager\PaginatorInterface;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
-use Knp\Component\Pager\Pagination\SlidingPagination;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
-use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\QuerySubscriber as Sortable;
 use Test\Fixture\Entity\Article;
 
 class WhitelistTest extends BaseTestCaseORM
 {
     /**
      * @test
-     * @expectedException UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      */
     function shouldWhitelistSortableFields()
     {
@@ -31,7 +25,7 @@ class WhitelistTest extends BaseTestCaseORM
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
         $items = $view->getItems();
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
 
         $_GET['sort'] = 'a.id';
@@ -63,7 +57,7 @@ class WhitelistTest extends BaseTestCaseORM
 
     protected function getUsedEntityFixtures()
     {
-        return array('Test\Fixture\Entity\Article');
+        return array(Article::class);
     }
 
     private function populate()

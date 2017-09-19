@@ -16,7 +16,7 @@ class QueryBuilderTest extends BaseTestCaseMongoODM
         $this->populate();
         $qb = $this
             ->getMockDocumentManager()
-            ->createQueryBuilder('Test\Fixture\Document\Article')
+            ->createQueryBuilder(Article::class)
         ;
         $p = new Paginator;
         $pagination = $p->paginate($qb, 1, 2);
@@ -25,7 +25,7 @@ class QueryBuilderTest extends BaseTestCaseMongoODM
         $this->assertEquals(4, $pagination->getTotalItemCount());
 
         $items = array_values($pagination->getItems());
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
     }

@@ -2,12 +2,20 @@
 
 namespace Test\Tool;
 
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Tools\SchemaTool;
+use PHPUnit\Framework\TestCase;
+use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Platforms\MySqlPlatform;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * Base test case contains common mock objects
@@ -20,7 +28,7 @@ use Doctrine\ORM\Tools\SchemaTool;
  * @link http://www.gediminasm.org
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
+abstract class BaseTestCaseORM extends TestCase
 {
     /**
      * @var EntityManager
@@ -101,18 +109,22 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
      */
     protected function getMockMappedEntityManager(EventManager $evm = null)
     {
-        $driver = $this->getMock('Doctrine\DBAL\Driver');
+        $driver = $this->createMock(Driver::class);
         $driver->expects($this->once())
             ->method('getDatabasePlatform')
-            ->will($this->returnValue($this->getMock('Doctrine\DBAL\Platforms\MySqlPlatform')));
+            ->will($this->returnValue($this->createMock(MySqlPlatform::class)));
 
-        $conn = $this->getMock('Doctrine\DBAL\Connection', array(), array(array(), $driver));
-        $conn->expects($this->once())
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setConstructorArgs([[], $driver])
+            ->getMock();
+
+        $connection->expects($this->once())
             ->method('getEventManager')
             ->will($this->returnValue($evm ?: $this->getEventManager()));
 
         $config = $this->getMockAnnotatedConfig();
-        $this->em = EntityManager::create($conn, $config);
+        $this->em = EntityManager::create($connection, $config);
+
         return $this->em;
     }
 
@@ -145,25 +157,31 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
     protected function stopQueryLog($dumpOnlySql = false, $writeToLog = false)
     {
         if ($this->queryAnalyzer) {
-            $output = $this->queryAnalyzer->getOutput($dumpOnlySql);
-            if ($writeToLog) {
-                $fileName = __DIR__.'/../../temp/query_debug_'.time().'.log';
-                if (($file = fopen($fileName, 'w+')) !== false) {
-                    fwrite($file, $output);
-                    fclose($file);
-                } else {
-                    throw new \RuntimeException('Unable to write to the log file');
-                }
-            } else {
+            ob_start();
+            $this->queryAnalyzer->getOutput($dumpOnlySql);
+            $output = ob_get_contents();
+            ob_end_clean();
+
+            if (!$writeToLog) {
                 echo $output;
+
+                return;
             }
+
+            $fileName = __DIR__.'/../../temp/query_debug_'.time().'.log';
+            if (($file = fopen($fileName, 'wb+')) !== false) {
+                throw new \RuntimeException('Unable to write to the log file');
+            }
+
+            fwrite($file, $output);
+            fclose($file);
         }
     }
 
     /**
      * Creates default mapping driver
      *
-     * @return \Doctrine\ORM\Mapping\Driver\Driver
+     * @return MappingDriver
      */
     protected function getMetadataDriverImplementation()
     {
@@ -184,18 +202,17 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
      */
     private function getEventManager()
     {
-        $evm = new EventManager;
-        return $evm;
+        return new EventManager();
     }
 
     /**
      * Get annotation mapping configuration
      *
-     * @return Doctrine\ORM\Configuration
+     * @return \Doctrine\ORM\Configuration
      */
     private function getMockAnnotatedConfig()
     {
-        $config = $this->getMock('Doctrine\ORM\Configuration');
+        $config = $this->createMock(Configuration::class);
         $config
             ->expects($this->once())
             ->method('getProxyDir')
@@ -217,7 +234,7 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
         $config
             ->expects($this->once())
             ->method('getClassMetadataFactoryName')
-            ->will($this->returnValue('Doctrine\\ORM\\Mapping\\ClassMetadataFactory'))
+            ->will($this->returnValue(ClassMetadataFactory::class))
         ;
 
         $mappingDriver = $this->getMetadataDriverImplementation();
@@ -231,7 +248,7 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
         $config
             ->expects($this->any())
             ->method('getDefaultRepositoryClassName')
-            ->will($this->returnValue('Doctrine\\ORM\\EntityRepository'))
+            ->will($this->returnValue(EntityRepository::class))
         ;
 
         $config

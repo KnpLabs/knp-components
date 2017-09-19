@@ -25,7 +25,7 @@
         "doctrine/mongodb-odm": "~1.0@beta",
         "doctrine/phpcr-odm": "~1.2",
         "jackalope/jackalope-doctrine-dbal": "~1.2",
-        "phpunit/phpunit": "~4.2",
+        "phpunit/phpunit": "~6.3",
         "ruflin/elastica": "~1.0",
         "symfony/property-access": ">=2.3"
     },
