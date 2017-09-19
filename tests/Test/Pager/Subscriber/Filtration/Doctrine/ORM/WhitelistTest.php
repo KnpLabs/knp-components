@@ -31,7 +31,7 @@ class WhitelistTest extends BaseTestCaseORM
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
 
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
 
         $_GET['filterParam'] = 'a.id';
@@ -66,7 +66,7 @@ class WhitelistTest extends BaseTestCaseORM
 
     protected function getUsedEntityFixtures()
     {
-        return array('Test\Fixture\Entity\Article');
+        return array(Article::class);
     }
 
     private function populate()

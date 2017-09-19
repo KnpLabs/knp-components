@@ -2,15 +2,19 @@
 
 namespace Test\Tool;
 
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Common\EventManager;
 use Doctrine\MongoDB\Connection;
+use PHPUnit\Framework\TestCase;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 
 /**
  * Base test case contains common mock objects
  */
-abstract class BaseTestCaseMongoODM extends \PHPUnit_Framework_TestCase
+abstract class BaseTestCaseMongoODM extends TestCase
 {
     /**
      * @var DocumentManager
@@ -73,7 +77,7 @@ abstract class BaseTestCaseMongoODM extends \PHPUnit_Framework_TestCase
      */
     protected function getMockMappedDocumentManager(EventManager $evm = null)
     {
-        $conn = $this->getMock('Doctrine\\MongoDB\\Connection');
+        $conn = $this->getMock(Connection::class);
         $config = $this->getMockAnnotatedConfig();
 
         $this->dm = DocumentManager::create($conn, $config, $evm ?: $this->getEventManager());
@@ -83,7 +87,7 @@ abstract class BaseTestCaseMongoODM extends \PHPUnit_Framework_TestCase
     /**
      * Creates default mapping driver
      *
-     * @return \Doctrine\ORM\Mapping\Driver\Driver
+     * @return MappingDriver
      */
     protected function getMetadataDriverImplementation()
     {
@@ -97,18 +101,17 @@ abstract class BaseTestCaseMongoODM extends \PHPUnit_Framework_TestCase
      */
     private function getEventManager()
     {
-        $evm = new EventManager;
-        return $evm;
+        return new EventManager();
     }
 
     /**
      * Get annotation mapping configuration
      *
-     * @return Doctrine\ORM\Configuration
+     * @return Configuration
      */
     private function getMockAnnotatedConfig()
     {
-        $config = $this->getMock('Doctrine\\ODM\\MongoDB\\Configuration');
+        $config = $this->createMock(Configuration::class);
         $config->expects($this->once())
             ->method('getProxyDir')
             ->will($this->returnValue(__DIR__.'/../../temp'));
@@ -139,7 +142,7 @@ abstract class BaseTestCaseMongoODM extends \PHPUnit_Framework_TestCase
 
         $config->expects($this->once())
             ->method('getClassMetadataFactoryName')
-            ->will($this->returnValue('Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory'));
+            ->will($this->returnValue(ClassMetadataFactory::class));
 
         $config->expects($this->any())
             ->method('getMongoCmd')

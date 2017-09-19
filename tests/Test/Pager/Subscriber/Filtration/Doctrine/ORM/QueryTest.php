@@ -2,6 +2,8 @@
 
 namespace Test\Pager\Subscriber\Filtration\Doctrine\ORM;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\Pagination\SlidingPagination;
@@ -9,7 +11,6 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber as Filtration;
 use Test\Fixture\Entity\Article;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
 use Knp\Component\Pager\PaginatorInterface;
 
 class QueryTest extends BaseTestCaseORM
@@ -77,14 +78,14 @@ class QueryTest extends BaseTestCaseORM
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
 
         $_GET['filterValue'] = 'summer';
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
 
         $this->assertEquals(4, $this->queryAnalyzer->getNumExecutedQueries());
@@ -120,7 +121,7 @@ class QueryTest extends BaseTestCaseORM
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
 
@@ -129,21 +130,21 @@ class QueryTest extends BaseTestCaseORM
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
 
         $_GET['filterValue'] = '0';
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
         $this->assertEquals('spring', $items[1]->getTitle());
 
         $_GET['filterValue'] = 'false';
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
         $this->assertEquals('spring', $items[1]->getTitle());
 
@@ -329,14 +330,14 @@ class QueryTest extends BaseTestCaseORM
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
 
         $_GET['filterParam'] = array('a.id', 'a.title');
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
@@ -428,7 +429,7 @@ class QueryTest extends BaseTestCaseORM
 
     /**
      * @test
-     * @expectedException UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      */
     public function shouldValidateFiltrationParameterExistance()
     {
@@ -457,10 +458,10 @@ class QueryTest extends BaseTestCaseORM
 
         $_GET['filterParam'] = 'test_alias';
         $_GET['filterValue'] = '*er';
-        $dql = <<<___SQL
+        $dql = <<<SQL
         SELECT a, a.title AS test_alias
         FROM Test\Fixture\Entity\Article a
-___SQL;
+SQL;
         $query = $this->em->createQuery($dql);
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
@@ -471,7 +472,7 @@ ___SQL;
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10, array(PaginatorInterface::DISTINCT => false));
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0][0]->getTitle());
         $this->assertEquals('winter', $items[1][0]->getTitle());
 
@@ -504,7 +505,7 @@ ___SQL;
         $p = new Paginator();
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
-        $this->assertTrue($view instanceof SlidingPagination);
+        $this->assertInstanceOf(SlidingPagination::class, $view);
 
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
@@ -532,7 +533,7 @@ ___SQL;
         $p = new Paginator();
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
-        $this->assertTrue($view instanceof SlidingPagination);
+        $this->assertInstanceOf(SlidingPagination::class, $view);
 
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
     }
@@ -558,17 +559,17 @@ ___SQL;
         $defaultFilterFields = 'a.title';
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::DEFAULT_FILTER_FIELDS));
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $defaultFilterFields = 'a.id,a.title';
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::DEFAULT_FILTER_FIELDS));
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $defaultFilterFields = array('a.id', 'a.title');
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::DEFAULT_FILTER_FIELDS));
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
@@ -604,17 +605,17 @@ ___SQL;
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
         $_GET['filterParam'] = '';
         $_GET['filterValue'] = 'summer';
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
         $_GET['filterParam'] = '';
         $_GET['filterValue'] = '';
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
         // Different aliases separators according to Doctrine version
@@ -629,12 +630,12 @@ ___SQL;
         }
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
-        return array('Test\Fixture\Entity\Article');
+        return [Article::class];
     }
 
-    private function populate($em)
+    private function populate(EntityManagerInterface $em)
     {
         $summer = new Article();
         $summer->setTitle('summer');
@@ -659,7 +660,7 @@ ___SQL;
         $em->flush();
     }
 
-    private function populateNumeric($em)
+    private function populateNumeric(EntityManagerInterface $em)
     {
         $zero = new Article();
         $zero->setTitle('0');
@@ -682,25 +683,5 @@ ___SQL;
         $em->persist($lower);
         $em->persist($upper);
         $em->flush();
-    }
-
-    private function getApcEntityManager()
-    {
-        $config = new \Doctrine\ORM\Configuration();
-        $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcCache());
-        $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcCache());
-        $config->setProxyDir(__DIR__);
-        $config->setProxyNamespace('Gedmo\Mapping\Proxy');
-        $config->setAutoGenerateProxyClasses(false);
-        $config->setMetadataDriverImpl($this->getMetadataDriverImplementation());
-
-        $conn = array(
-            'driver' => 'pdo_sqlite',
-            'memory' => true,
-        );
-
-        $em = \Doctrine\ORM\EntityManager::create($conn, $config);
-
-        return $em;
     }
 }

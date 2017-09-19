@@ -24,17 +24,17 @@ class QueryTest extends BaseTestCaseMongoODM
         $dispatcher->addSubscriber(new PaginationSubscriber); // pagination view
         $p = new Paginator($dispatcher);
 
-        $qb = $this->dm->createQueryBuilder('Test\Fixture\Document\Article');
+        $qb = $this->dm->createQueryBuilder(Article::class);
         $query = $qb->getQuery();
         $pagination = $p->paginate($query, 1, 2);
 
-        $this->assertTrue($pagination instanceof SlidingPagination);
+        $this->assertInstanceOf(SlidingPagination::class, $pagination);
         $this->assertEquals(1, $pagination->getCurrentPageNumber());
         $this->assertEquals(2, $pagination->getItemNumberPerPage());
         $this->assertEquals(4, $pagination->getTotalItemCount());
 
         $items = array_values($pagination->getItems());
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
     }
@@ -46,12 +46,12 @@ class QueryTest extends BaseTestCaseMongoODM
     {
         $query = $this
             ->getMockDocumentManager()
-            ->createQueryBuilder('Test\Fixture\Document\Article')
+            ->createQueryBuilder(Article::class)
             ->getQuery()
         ;
         $p = new Paginator;
         $pagination = $p->paginate($query, 1, 10);
-        $this->assertTrue($pagination instanceof SlidingPagination);
+        $this->assertInstanceOf(SlidingPagination::class, $pagination);
     }
 
     private function populate()

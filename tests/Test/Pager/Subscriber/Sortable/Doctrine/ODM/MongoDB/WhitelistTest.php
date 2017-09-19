@@ -16,7 +16,7 @@ class WhitelistTest extends BaseTestCaseMongoODM
 {
     /**
      * @test
-     * @expectedException UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      */
     function shouldWhitelistSortableFields()
     {
@@ -24,7 +24,7 @@ class WhitelistTest extends BaseTestCaseMongoODM
         $_GET['sort'] = 'title';
         $_GET['direction'] = 'asc';
         $query = $this->dm
-            ->createQueryBuilder('Test\Fixture\Document\Article')
+            ->createQueryBuilder(Article::class)
             ->getQuery()
         ;
 
@@ -33,7 +33,7 @@ class WhitelistTest extends BaseTestCaseMongoODM
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
         $items = array_values($view->getItems());
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
 
         $_GET['sort'] = 'id';
@@ -49,7 +49,7 @@ class WhitelistTest extends BaseTestCaseMongoODM
         $_GET['sort'] = 'title';
         $_GET['direction'] = 'asc';
         $query = $this->dm
-            ->createQueryBuilder('Test\Fixture\Document\Article')
+            ->createQueryBuilder(Article::class)
             ->getQuery()
         ;
 
