@@ -4,9 +4,7 @@ namespace Test\Pager\Subscriber\Sortable\Doctrine\ODM\MongoDB;
 
 use Test\Tool\BaseTestCaseMongoODM;
 use Knp\Component\Pager\Paginator;
-use Knp\Component\Pager\Pagination\SlidingPagination;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ODM\MongoDB\QuerySubscriber as Sortable;
 use Test\Fixture\Document\Article;
@@ -27,12 +25,12 @@ class QueryTest extends BaseTestCaseMongoODM
 
         $_GET['sort'] = 'title';
         $_GET['direction'] = 'asc';
-        $qb = $this->dm->createQueryBuilder('Test\Fixture\Document\Article');
+        $qb = $this->dm->createQueryBuilder(Article::class);
         $query = $qb->getQuery();
         $view = $p->paginate($query, 1, 10);
 
         $items = array_values($view->getItems());
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
         $this->assertEquals('spring', $items[1]->getTitle());
         $this->assertEquals('summer', $items[2]->getTitle());
@@ -41,7 +39,7 @@ class QueryTest extends BaseTestCaseMongoODM
         $_GET['direction'] = 'desc';
         $view = $p->paginate($query, 1, 10);
         $items = array_values($view->getItems());
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
         $this->assertEquals('winter', $items[0]->getTitle());
         $this->assertEquals('summer', $items[1]->getTitle());
         $this->assertEquals('spring', $items[2]->getTitle());
@@ -57,7 +55,7 @@ class QueryTest extends BaseTestCaseMongoODM
         $_GET['direction'] = 'asc';
         $query = $this
             ->getMockDocumentManager()
-            ->createQueryBuilder('Test\Fixture\Document\Article')
+            ->createQueryBuilder(Article::class)
             ->getQuery()
         ;
 

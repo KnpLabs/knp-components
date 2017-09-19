@@ -28,14 +28,14 @@ class DBALQueryBuilderTest extends BaseTestCaseORM
         $this->assertEquals(4, $view->getTotalItemCount());
 
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]['title']);
         $this->assertEquals('winter', $items[1]['title']);
     }
 
     protected function getUsedEntityFixtures()
     {
-        return array('Test\Fixture\Entity\Article');
+        return array(Article::class);
     }
 
     private function populate()

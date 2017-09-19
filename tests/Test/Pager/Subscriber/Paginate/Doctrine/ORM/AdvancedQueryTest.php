@@ -15,17 +15,17 @@ class AdvancedQueryTest extends BaseTestCaseORM
      * count of such query
      *
      * @test
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      */
     function shouldFailToPaginateMultiRootQuery()
     {
         $this->populate();
 
-        $dql = <<<___SQL
+        $dql = <<<SQL
     SELECT p FROM
       Test\Fixture\Entity\Shop\Product p,
       Test\Fixture\Entity\Shop\Tag t
-___SQL;
+SQL;
         $q = $this->em->createQuery($dql);
 
         $p = new Paginator;
@@ -40,18 +40,18 @@ ___SQL;
     {
         $this->populate();
 
-        $dql = <<<___SQL
+        $dql = <<<SQL
         SELECT p, t
         FROM Test\Fixture\Entity\Shop\Product p
         INNER JOIN p.tags t
         GROUP BY p.id
         HAVING p.numTags = COUNT(t)
-___SQL;
+SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
-        $this->assertEquals(3, count($view));
+        $this->assertCount(3, $view);
     }
 
     /**
@@ -61,16 +61,16 @@ ___SQL;
     {
         $this->populate();
 
-        $dql = <<<___SQL
+        $dql = <<<SQL
         SELECT p, t, p.title FROM
           Test\Fixture\Entity\Shop\Product p
         LEFT JOIN
           p.tags t
-___SQL;
+SQL;
         $q = $this->em->createQuery($dql);
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10);
-        $this->assertEquals(3, count($view));
+        $this->assertCount(3, $view);
         $items = $view->getItems();
         // and should be hydrated as array
         $this->assertTrue(isset($items[0]['title']));
@@ -86,7 +86,7 @@ ___SQL;
         }
         $this->populate();
 
-        $dql = <<<___SQL
+        $dql = <<<SQL
             SELECT p,
               CASE
                 WHEN p.title LIKE :keyword
@@ -108,13 +108,13 @@ ___SQL;
             )
             GROUP BY p.id
             ORDER BY relevance ASC, p.id DESC
-___SQL;
+SQL;
         $q = $this->em->createQuery($dql);
         $q->setParameter('keyword', '%Star%');
         $q->setHydrationMode(\Doctrine\ORM\Query::HYDRATE_ARRAY);
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10);
-        $this->assertEquals(1, count($view));
+        $this->assertCount(1, $view);
         $items = $view->getItems();
         // and should be hydrated as array
         $this->assertEquals('Starship', $items[0][0]['title']);
@@ -128,26 +128,26 @@ ___SQL;
     {
         $this->populate();
 
-        $dql = <<<___SQL
+        $dql = <<<SQL
         SELECT p, t
         FROM Test\Fixture\Entity\Shop\Product p
         INNER JOIN p.tags t
         GROUP BY p.id
         HAVING p.numTags = COUNT(t)
-___SQL;
+SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
-        $this->assertEquals(3, count($view));
+        $this->assertCount(3, $view);
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
-        return array(
-            'Test\Fixture\Entity\Shop\Product',
-            'Test\Fixture\Entity\Shop\Tag'
-        );
+        return [
+            Product::class,
+            Tag::class
+        ];
     }
 
     private function populate()

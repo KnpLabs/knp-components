@@ -26,7 +26,7 @@ class QueryTest extends BaseTestCaseORM
         $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcCache);
         $config->setProxyDir(__DIR__);
         $config->setProxyNamespace('Gedmo\Mapping\Proxy');
-        $config->getAutoGenerateProxyClasses(false);
+        $config->setAutoGenerateProxyClasses(false);
         $config->setMetadataDriverImpl($this->getMetadataDriverImplementation());
 
         $conn = array(
@@ -76,7 +76,7 @@ class QueryTest extends BaseTestCaseORM
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
         $this->assertEquals('spring', $items[1]->getTitle());
         $this->assertEquals('summer', $items[2]->getTitle());
@@ -85,7 +85,7 @@ class QueryTest extends BaseTestCaseORM
         $_GET['direction'] = 'desc';
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
         $this->assertEquals('winter', $items[0]->getTitle());
         $this->assertEquals('summer', $items[1]->getTitle());
         $this->assertEquals('spring', $items[2]->getTitle());
@@ -106,7 +106,7 @@ class QueryTest extends BaseTestCaseORM
 
     /**
      * @test
-     * @expectedException UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      */
     function shouldValidateSortableParameters()
     {
@@ -171,7 +171,7 @@ ___SQL;
         $p = new Paginator;
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
-        $this->assertTrue($view instanceof SlidingPagination);
+        $this->assertInstanceOf(SlidingPagination::class, $view);
 
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
@@ -199,14 +199,14 @@ ___SQL;
         $p = new Paginator;
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
-        $this->assertTrue($view instanceof SlidingPagination);
+        $this->assertInstanceOf(SlidingPagination::class, $view);
 
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
     }
 
     protected function getUsedEntityFixtures()
     {
-        return array('Test\Fixture\Entity\Article');
+        return array(Article::class);
     }
 
     private function populate($em)

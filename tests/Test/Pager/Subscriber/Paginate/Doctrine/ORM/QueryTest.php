@@ -18,13 +18,13 @@ class QueryTest extends BaseTestCaseORM
     {
         $this->populate();
 
-        $dql = <<<___SQL
+        $dql = <<<SQL
         SELECT p, t
         FROM Test\Fixture\Entity\Shop\Product p
         INNER JOIN p.tags t
         GROUP BY p.id
         HAVING p.numTags = COUNT(t)
-___SQL;
+SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $q->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, true);
@@ -32,7 +32,7 @@ ___SQL;
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
         $this->assertEquals(3, $this->queryAnalyzer->getNumExecutedQueries());
-        $this->assertEquals(3, count($view));
+        $this->assertCount(3, $view);
     }
 
     /**
@@ -42,11 +42,11 @@ ___SQL;
     {
         $this->populate();
 
-        $dql = <<<___SQL
+        $dql = <<<SQL
         SELECT p
         FROM Test\Fixture\Entity\Shop\Product p
         GROUP BY p.id
-___SQL;
+SQL;
         $q = $this->em->createQuery($dql);
         $q->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
@@ -54,7 +54,7 @@ ___SQL;
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10, array('wrap-queries' => false));
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
-        $this->assertEquals(3, count($view));
+        $this->assertCount(3, $view);
     }
 
     /**
@@ -64,13 +64,13 @@ ___SQL;
     {
         $this->populate();
 
-        $dql = <<<___SQL
+        $dql = <<<SQL
         SELECT p, t
         FROM Test\Fixture\Entity\Shop\Product p
         INNER JOIN p.tags t
         GROUP BY p.id
         HAVING p.numTags = COUNT(t)
-___SQL;
+SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $q->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, true);
@@ -78,14 +78,14 @@ ___SQL;
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
         $this->assertEquals(3, $this->queryAnalyzer->getNumExecutedQueries());
-        $this->assertEquals(3, count($view));
+        $this->assertCount(3, $view);
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
         return array(
-            'Test\Fixture\Entity\Shop\Product',
-            'Test\Fixture\Entity\Shop\Tag'
+            Product::class,
+            Tag::class
         );
     }
 
