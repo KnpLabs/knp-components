@@ -10,35 +10,50 @@ class QuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
-        if ($event->target instanceof Query) {
-            if (isset($_GET[$event->options['sortFieldParameterName']])) {
-                $field = $_GET[$event->options['sortFieldParameterName']];
-                $dir = strtolower($_GET[$event->options['sortDirectionParameterName']]) == 'asc' ? 1 : -1;
-
-                if (isset($event->options['sortFieldWhitelist'])) {
-                    if (!in_array($field, $event->options['sortFieldWhitelist'])) {
-                        throw new \UnexpectedValueException("Cannot sort by: [{$field}] this field is not in whitelist");
-                    }
-                }
-                static $reflectionProperty;
-                if (is_null($reflectionProperty)) {
-                    $reflectionClass = new \ReflectionClass('Doctrine\MongoDB\Query\Query');
-                    $reflectionProperty = $reflectionClass->getProperty('query');
-                    $reflectionProperty->setAccessible(true);
-                }
-                $queryOptions = $reflectionProperty->getValue($event->target);
-
-                //@todo: seems like does not support multisort ??
-                $queryOptions['sort'] = array($field => $dir);
-                $reflectionProperty->setValue($event->target, $queryOptions);
-            }
+        if (!$event->target instanceof Query) {
+            return;
         }
+
+        $parametersResolver = $event->getParametersResolver();
+        $field = $parametersResolver->getFieldToSort(
+            $event->options['sortFieldParameterName'],
+            $event->options['defaultSortFieldName'] ?? null
+        );
+
+        if ($field === null) {
+            return;
+        }
+
+        $direction = $parametersResolver->getDirection(
+            $event->options['sortDirectionParameterName'],
+            $event->options['defaultSortDirection'] ?? 'asc'
+        );
+
+        $whiteList = $event->options['sortFieldWhitelist'] ?? [];
+        if (count($whiteList) !== 0 && !in_array($field, $whiteList, true)) {
+            throw new \UnexpectedValueException(
+                sprintf('Cannot sort by: [%s] this field is not in whitelist', $field)
+            );
+        }
+
+        static $reflectionProperty;
+        if ($reflectionProperty === null) {
+            $reflectionClass = new \ReflectionClass(\Doctrine\MongoDB\Query\Query::class);
+            $reflectionProperty = $reflectionClass->getProperty('query');
+            $reflectionProperty->setAccessible(true);
+        }
+
+        $queryOptions = $reflectionProperty->getValue($event->target);
+
+        //@todo: seems like does not support multisort ??
+        $queryOptions['sort'] = array($field => $direction === 'asc' ? 1 : -1);
+        $reflectionProperty->setValue($event->target, $queryOptions);
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 1)
-        );
+        return [
+            'knp_pager.items' => ['items', 1]
+        ];
     }
 }

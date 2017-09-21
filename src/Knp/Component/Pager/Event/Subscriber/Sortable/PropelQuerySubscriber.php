@@ -9,30 +9,41 @@ class PropelQuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
-        $query = $event->target;
-        if ($query instanceof \ModelCriteria) {
-            if (isset($_GET[$event->options['sortFieldParameterName']])) {
-                $part = $_GET[$event->options['sortFieldParameterName']];
-                $directionParam = $event->options['sortDirectionParameterName'];
-
-                $direction = (isset($_GET[$directionParam]) && strtolower($_GET[$directionParam]) === 'asc')
-                                ? 'asc' : 'desc';
-
-                if (isset($event->options['sortFieldWhitelist'])) {
-                    if (!in_array($_GET[$event->options['sortFieldParameterName']], $event->options['sortFieldWhitelist'])) {
-                        throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options['sortFieldParameterName']]}] this field is not in whitelist");
-                    }
-                }
-
-                $query->orderBy($part, $direction);
-            }
+        if (!$event->target instanceof \ModelCriteria) {
+            return;
         }
+
+        $query = $event->target;
+
+        $parametersResolver = $event->getParametersResolver();
+        $field = $parametersResolver->getFieldToSort(
+            $event->options['sortFieldParameterName'],
+            $event->options['defaultSortFieldName'] ?? null
+        );
+
+        if ($field === null) {
+            return;
+        }
+
+        $direction = $parametersResolver->getDirection(
+            $event->options['sortDirectionParameterName'],
+            $event->options['defaultSortDirection'] ?? 'asc'
+        );
+
+        $whiteList = $event->options['sortFieldWhitelist'] ?? [];
+        if (count($whiteList) !== 0 && !in_array($field, $whiteList, true)) {
+            throw new \UnexpectedValueException(
+                sprintf('Cannot sort by: [%s] this field is not in whitelist', $field)
+            );
+        }
+
+        $query->orderBy($field, $direction);
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 1)
-        );
+        return [
+            'knp_pager.items' => ['items', 1]
+        ];
     }
 }

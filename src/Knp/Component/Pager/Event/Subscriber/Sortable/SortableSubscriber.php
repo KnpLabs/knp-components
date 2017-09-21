@@ -32,10 +32,10 @@ class SortableSubscriber implements EventSubscriberInterface
         $this->isLoaded = true;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.before' => array('before', 1)
-        );
+        return [
+            'knp_pager.before' => ['before', 1]
+        ];
     }
 }

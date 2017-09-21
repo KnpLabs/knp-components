@@ -11,28 +11,47 @@ class ElasticaQuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
-        if (is_array($event->target) && 2 === count($event->target) && reset($event->target) instanceof SearchableInterface && end($event->target) instanceof Query) {
-            list($searchable, $query) = $event->target;
-
-            if (isset($_GET[$event->options['sortFieldParameterName']])) {
-                $field = $_GET[$event->options['sortFieldParameterName']];
-                $dir   = isset($_GET[$event->options['sortDirectionParameterName']]) && strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc';
-
-                if (isset($event->options['sortFieldWhitelist']) && !in_array($field, $event->options['sortFieldWhitelist'])) {
-                    throw new \UnexpectedValueException(sprintf('Cannot sort by: [%s] this field is not in whitelist',$field));
-                }
-
-                $query->setSort(array(
-                    $field => array('order' => $dir),
-                ));
-            }
+        if (!is_array($event->target) || count($event->target) !== 2) {
+            return;
         }
+
+        [$searchable, $query] = $event->target;
+
+        if (!$searchable instanceof SearchableInterface || !$query instanceof Query) {
+            return;
+        }
+
+        $parametersResolver = $event->getParametersResolver();
+        $field = $parametersResolver->getFieldToSort(
+            $event->options['sortFieldParameterName'],
+            $event->options['defaultSortFieldName'] ?? null
+        );
+
+        if ($field === null) {
+            return;
+        }
+
+        $direction = $parametersResolver->getDirection(
+            $event->options['sortDirectionParameterName'],
+            $event->options['defaultSortDirection'] ?? 'asc'
+        );
+
+        $whiteList = $event->options['sortFieldWhitelist'] ?? [];
+        if (count($whiteList) !== 0 && !in_array($field, $whiteList, true)) {
+            throw new \UnexpectedValueException(
+                sprintf('Cannot sort by: [%s] this field is not in whitelist', $field)
+            );
+        }
+
+        $query->setSort([
+            $field => ['order' => $direction],
+        ]);
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 1)
-        );
+        return [
+            'knp_pager.items' => ['items', 1]
+        ];
     }
 }

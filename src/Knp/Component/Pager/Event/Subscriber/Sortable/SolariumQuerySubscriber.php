@@ -14,35 +14,46 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
-        if (is_array($event->target) && 2 == count($event->target)) {
-            $values = array_values($event->target);
-            list($client, $query) = $values;
-
-            if ($client instanceof \Solarium\Client && $query instanceof \Solarium\QueryType\Select\Query\Query) {
-                if (isset($_GET[$event->options['sortFieldParameterName']])) {
-                    if (isset($event->options['sortFieldWhitelist'])) {
-                        if (!in_array($_GET[$event->options['sortFieldParameterName']], $event->options['sortFieldWhitelist'])) {
-                            throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options['sortFieldParameterName']]}] this field is not in whitelist");
-                        }
-                    }
-
-                    $query->addSort($_GET[$event->options['sortFieldParameterName']], $this->getSortDirection($event));
-                }
-            }
+        if (!is_array($event->target) || count($event->target) !== 2) {
+            return;
         }
-    }
 
-    public static function getSubscribedEvents()
-    {
-        return array(
-            // trigger before the pagination subscriber
-            'knp_pager.items' => array('items', 1),
+        [$client, $query] = array_values($event->target);
+
+        if (!$client instanceof \Solarium\Client || !$query instanceof \Solarium\QueryType\Select\Query\Query) {
+            return;
+        }
+
+        $parametersResolver = $event->getParametersResolver();
+        $field = $parametersResolver->getFieldToSort(
+            $event->options['sortFieldParameterName'],
+            $event->options['defaultSortFieldName'] ?? null
         );
+
+        if ($field === null) {
+            return;
+        }
+
+        $direction = $parametersResolver->getDirection(
+            $event->options['sortDirectionParameterName'],
+            $event->options['defaultSortDirection'] ?? 'asc'
+        );
+
+        $whiteList = $event->options['sortFieldWhitelist'] ?? [];
+        if (count($whiteList) !== 0 && !in_array($field, $whiteList, true)) {
+            throw new \UnexpectedValueException(
+                sprintf('Cannot sort by: [%s] this field is not in whitelist', $field)
+            );
+        }
+
+        $query->addSort($field, $direction);
     }
 
-    private function getSortDirection($event)
+    public static function getSubscribedEvents(): array
     {
-        return isset($_GET[$event->options['sortDirectionParameterName']]) &&
-            strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc';
+        return [
+            // trigger before the pagination subscriber
+            'knp_pager.items' => ['items', 1],
+        ];
     }
 }
