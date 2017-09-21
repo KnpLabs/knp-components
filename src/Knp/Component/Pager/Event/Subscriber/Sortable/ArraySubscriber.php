@@ -10,16 +10,6 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 class ArraySubscriber implements EventSubscriberInterface
 {
     /**
-     * @var string the field used to sort current object array list
-     */
-    private $currentSortingField;
-
-    /**
-     * @var string the sorting direction
-     */
-    private $sortDirection;
-
-    /**
      * @var PropertyAccessorInterface
      */
     private $propertyAccessor;
@@ -40,7 +30,7 @@ class ArraySubscriber implements EventSubscriberInterface
         }
 
         $parametersResolver = $event->getParametersResolver();
-        $field = $parametersResolver->getFieldToSort(
+        $field = $parametersResolver->get(
             $event->options['sortFieldParameterName'],
             $event->options['defaultSortFieldName'] ?? null
         );
@@ -49,7 +39,7 @@ class ArraySubscriber implements EventSubscriberInterface
             return;
         }
 
-        $direction = $parametersResolver->getDirection(
+        $direction = $parametersResolver->get(
             $event->options['sortDirectionParameterName'],
             $event->options['defaultSortDirection'] ?? 'asc'
         );

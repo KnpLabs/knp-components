@@ -10,48 +10,57 @@ class PropelQuerySubscriber implements EventSubscriberInterface
     public function items(ItemsEvent $event)
     {
         $query = $event->target;
-        if ($query instanceof \ModelCriteria) {
-            if (empty($_GET[$event->options['filterValueParameterName']])) {
-                return;
+
+        if (!$query instanceof \ModelCriteria) {
+            return;
+        }
+
+        $parametersResolver = $event->getParametersResolver();
+
+        $filterField = $parametersResolver->get(
+            $event->options['filterFieldParameterName'],
+            $event->options['defaultFilterFields'] ?? null
+        );
+
+        if ($filterField === null) {
+            return;
+        }
+
+        $filterValue = $parametersResolver->get($event->options['filterValueParameterName'], null);
+        if ($filterValue === null) {
+            return;
+        }
+
+        $whiteList = $event->options['filterFieldWhitelist'] ?? [];
+        if (count($whiteList) !== 0 && !in_array($filterField, $whiteList, true)) {
+            throw new \UnexpectedValueException(
+                sprintf('Cannot sort by: [%s] this field is not in whitelist', $filterField)
+            );
+        }
+
+        $columns = explode(',', $filterField);
+
+        $criteria = \Criteria::EQUAL;
+        if (false !== strpos($filterValue, '*')) {
+            $filterValue = str_replace('*', '%', $filterValue);
+            $criteria = \Criteria::LIKE;
+        }
+
+        foreach ($columns as $column) {
+            if (false !== strpos($column, '.')) {
+                $query->where($column.$criteria.'?', $filterValue);
+
+                continue;
             }
-            if (!empty($_GET[$event->options['filterFieldParameterName']])) {
-                $columns = $_GET[$event->options['filterFieldParameterName']];
-            } elseif (!empty($event->options['defaultFilterFields'])) {
-                $columns = $event->options['defaultFilterFields'];
-            } else {
-                return;
-            }
-            if (is_string($columns) && false !== strpos($columns, ',')) {
-                $columns = explode(',', $columns);
-            }
-            $columns = (array) $columns;
-            if (isset($event->options['filterFieldWhitelist'])) {
-                foreach ($columns as $column) {
-                    if (!in_array($column, $event->options['filterFieldWhitelist'])) {
-                        throw new \UnexpectedValueException("Cannot filter by: [{$column}] this field is not in whitelist");
-                    }
-                }
-            }
-            $value = $_GET[$event->options['filterValueParameterName']];
-            $criteria = \Criteria::EQUAL;
-            if (false !== strpos($value, '*')) {
-                $value = str_replace('*', '%', $value);
-                $criteria = \Criteria::LIKE;
-            }
-            foreach ($columns as $column) {
-                if (false !== strpos($column, '.')) {
-                    $query->where($column.$criteria.'?', $value);
-                } else {
-                    $query->{'filterBy'.$column}($value, $criteria);
-                }
-            }
+
+            $query->{'filterBy'.$column}($filterValue, $criteria);
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 0),
-        );
+        return [
+            'knp_pager.items' => ['items', 0],
+        ];
     }
 }

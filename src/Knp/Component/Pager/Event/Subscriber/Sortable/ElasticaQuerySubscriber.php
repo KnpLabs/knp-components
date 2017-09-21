@@ -22,7 +22,7 @@ class ElasticaQuerySubscriber implements EventSubscriberInterface
         }
 
         $parametersResolver = $event->getParametersResolver();
-        $field = $parametersResolver->getFieldToSort(
+        $field = $parametersResolver->get(
             $event->options['sortFieldParameterName'],
             $event->options['defaultSortFieldName'] ?? null
         );
@@ -31,7 +31,7 @@ class ElasticaQuerySubscriber implements EventSubscriberInterface
             return;
         }
 
-        $direction = $parametersResolver->getDirection(
+        $direction = $parametersResolver->get(
             $event->options['sortDirectionParameterName'],
             $event->options['defaultSortDirection'] ?? 'asc'
         );

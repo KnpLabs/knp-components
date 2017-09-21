@@ -14,23 +14,8 @@ class Psr7 implements ParametersResolver
         $this->serverRequest = $serverRequest;
     }
 
-    public function getFieldToSort(string $parameterName, ?string $defaultValue): ?string
+    public function get(string $parameterName, ?string $defaultValue): ?string
     {
-        $fields = $this->serverRequest->getQueryParams()[$parameterName] ?? null;
-        if ($fields === null) {
-            return $defaultValue;
-        }
-
-        return $fields;
-    }
-
-    public function getDirection(string $parameterName, string $defaultValue): string
-    {
-        $direction = $this->serverRequest->getQueryParams()[$parameterName] ?? null;
-        if ($direction === null) {
-            return $defaultValue;
-        }
-
-        return $direction;
+        return $this->serverRequest->getQueryParams()[$parameterName] ?? $defaultValue;
     }
 }

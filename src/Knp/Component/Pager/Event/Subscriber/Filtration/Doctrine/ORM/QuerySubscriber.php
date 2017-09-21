@@ -12,43 +12,45 @@ class QuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
-        if ($event->target instanceof Query) {
-            if (!isset($_GET[$event->options['filterValueParameterName']]) || (empty($_GET[$event->options['filterValueParameterName']]) && $_GET[$event->options['filterValueParameterName']] !== "0")) {
-                return;
-            }
-            if (!empty($_GET[$event->options['filterFieldParameterName']])) {
-                $columns = $_GET[$event->options['filterFieldParameterName']];
-            } elseif (!empty($event->options['defaultFilterFields'])) {
-                $columns = $event->options['defaultFilterFields'];
-            } else {
-                return;
-            }
-            $value = $_GET[$event->options['filterValueParameterName']];
-            if (false !== strpos($value, '*')) {
-                $value = str_replace('*', '%', $value);
-            }
-            if (is_string($columns) && false !== strpos($columns, ',')) {
-                $columns = explode(',', $columns);
-            }
-            $columns = (array) $columns;
-            if (isset($event->options['filterFieldWhitelist'])) {
-                foreach ($columns as $column) {
-                    if (!in_array($column, $event->options['filterFieldWhitelist'])) {
-                        throw new \UnexpectedValueException("Cannot filter by: [{$column}] this field is not in whitelist");
-                    }
-                }
-            }
-            $event->target
-                    ->setHint(WhereWalker::HINT_PAGINATOR_FILTER_VALUE, $value)
-                    ->setHint(WhereWalker::HINT_PAGINATOR_FILTER_COLUMNS, $columns);
-            QueryHelper::addCustomTreeWalker($event->target, 'Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM\Query\WhereWalker');
+        if (!$event->target instanceof Query) {
+            return;
         }
+
+        $parametersResolver = $event->getParametersResolver();
+
+        $filterField = $parametersResolver->get(
+            $event->options['filterFieldParameterName'],
+            $event->options['defaultFilterFields'] ?? null
+        );
+
+        if ($filterField === null) {
+            return;
+        }
+
+        $filterValue = $parametersResolver->get($event->options['filterValueParameterName'], null);
+        if ($filterValue === null) {
+            return;
+        }
+
+        $whiteList = $event->options['filterFieldWhitelist'] ?? [];
+        if (count($whiteList) !== 0 && !in_array($filterField, $whiteList, true)) {
+            throw new \UnexpectedValueException(
+                sprintf('Cannot sort by: [%s] this field is not in whitelist', $filterField)
+            );
+        }
+
+        $columns = explode(',', $filterField);
+        $event->target
+            ->setHint(WhereWalker::HINT_PAGINATOR_FILTER_VALUE, $filterValue)
+            ->setHint(WhereWalker::HINT_PAGINATOR_FILTER_COLUMNS, $columns);
+
+        QueryHelper::addCustomTreeWalker($event->target, WhereWalker::class);
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-                'knp_pager.items' => array('items', 0),
-        );
+        return [
+            'knp_pager.items' => ['items', 0],
+        ];
     }
 }

@@ -16,7 +16,7 @@ class PropelQuerySubscriber implements EventSubscriberInterface
         $query = $event->target;
 
         $parametersResolver = $event->getParametersResolver();
-        $field = $parametersResolver->getFieldToSort(
+        $field = $parametersResolver->get(
             $event->options['sortFieldParameterName'],
             $event->options['defaultSortFieldName'] ?? null
         );
@@ -25,7 +25,7 @@ class PropelQuerySubscriber implements EventSubscriberInterface
             return;
         }
 
-        $direction = $parametersResolver->getDirection(
+        $direction = $parametersResolver->get(
             $event->options['sortDirectionParameterName'],
             $event->options['defaultSortDirection'] ?? 'asc'
         );

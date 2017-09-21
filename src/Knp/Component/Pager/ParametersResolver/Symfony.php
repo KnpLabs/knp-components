@@ -14,12 +14,7 @@ class Symfony implements ParametersResolver
         $this->request = $requestStack->getCurrentRequest();
     }
 
-    public function getFieldToSort(string $parameterName, ?string $defaultValue): ?string
-    {
-        return $this->request->query->get($parameterName, $defaultValue);
-    }
-
-    public function getDirection(string $parameterName, string $defaultValue): string
+    public function get(string $parameterName, ?string $defaultValue): ?string
     {
         return $this->request->get($parameterName, $defaultValue);
     }
