@@ -17,18 +17,17 @@ class QuerySubscriber implements EventSubscriberInterface
         }
 
         $parametersResolver = $event->getParametersResolver();
-
         $filterField = $parametersResolver->get(
             $event->options['filterFieldParameterName'],
             $event->options['defaultFilterFields'] ?? null
         );
 
-        if ($filterField === null) {
+        if ($filterField === null || '' === $filterField) {
             return;
         }
 
         $filterValue = $parametersResolver->get($event->options['filterValueParameterName'], null);
-        if ($filterValue === null) {
+        if ($filterValue === null || '' === $filterValue) {
             return;
         }
 

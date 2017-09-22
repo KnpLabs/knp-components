@@ -108,6 +108,7 @@ class Paginator implements PaginatorInterface
         $beforeEvent = new Event\BeforeEvent($this->eventDispatcher);
         $this->eventDispatcher->dispatch('knp_pager.before', $beforeEvent);
 
+
         // items
         $itemsEvent = new Event\ItemsEvent($offset, $limit, $this->parametersResolver);
         $itemsEvent->options = &$options;
