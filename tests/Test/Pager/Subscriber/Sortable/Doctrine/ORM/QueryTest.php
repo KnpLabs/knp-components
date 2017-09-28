@@ -3,6 +3,7 @@
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ORM;
 
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
+use Knp\Component\Pager\ParametersResolver;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\Pagination\SlidingPagination;
@@ -63,17 +64,24 @@ class QueryTest extends BaseTestCaseORM
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
 
-        $dispatcher = new EventDispatcher;
-        $dispatcher->addSubscriber(new PaginationSubscriber);
-        $dispatcher->addSubscriber(new Sortable);
-        $p = new Paginator($dispatcher);
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new PaginationSubscriber());
+        $dispatcher->addSubscriber(new Sortable());
 
-        $_GET['sort'] = 'a.title';
-        $_GET['direction'] = 'asc';
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $parametersResolver
+            ->method('get')
+            ->will($this->returnValueMap([
+                ['sort', null, 'a.title'],
+                ['direction', 'asc', 'asc'],
+            ]));
+
+        $paginator = new Paginator($parametersResolver, $dispatcher);
+
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
-        $view = $p->paginate($query, 1, 10);
+        $view = $paginator->paginate($query, 1, 10);
 
         $items = $view->getItems();
         $this->assertCount(4, $items);
@@ -82,8 +90,17 @@ class QueryTest extends BaseTestCaseORM
         $this->assertEquals('summer', $items[2]->getTitle());
         $this->assertEquals('winter', $items[3]->getTitle());
 
-        $_GET['direction'] = 'desc';
-        $view = $p->paginate($query, 1, 10);
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $parametersResolver
+            ->method('get')
+            ->will($this->returnValueMap([
+                ['sort', null, 'a.title'],
+                ['direction', 'asc', 'desc'],
+            ]));
+
+        $paginator = new Paginator($parametersResolver, $dispatcher);
+
+        $view = $paginator->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertCount(4, $items);
         $this->assertEquals('winter', $items[0]->getTitle());
@@ -110,15 +127,21 @@ class QueryTest extends BaseTestCaseORM
      */
     function shouldValidateSortableParameters()
     {
-        $_GET['sort'] = '"a.title\'';
-        $_GET['direction'] = 'asc';
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $parametersResolver
+            ->method('get')
+            ->will($this->returnValueMap([
+                ['sort', null, '"a.title\''],
+                ['direction', 'asc', 'asc'],
+            ]));
+
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
         ;
 
-        $p = new Paginator;
-        $view = $p->paginate($query, 1, 10);
+        $paginator = new Paginator($parametersResolver);
+        $paginator->paginate($query, 1, 10);
     }
 
     /**
@@ -129,18 +152,25 @@ class QueryTest extends BaseTestCaseORM
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
 
-        $_GET['sort'] = 'counter';
-        $_GET['direction'] = 'asc';
-        $dql = <<<___SQL
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $parametersResolver
+            ->method('get')
+            ->will($this->returnValueMap([
+                ['sort', null, 'counter'],
+                ['direction', 'asc', 'asc'],
+            ]));
+
+        $dql = <<<SQL
         SELECT a, COUNT(a) AS counter
         FROM Test\Fixture\Entity\Article a
-___SQL;
+SQL;
+
         $query = $this->em->createQuery($dql);
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
-        $p = new Paginator;
+        $paginator = new Paginator($parametersResolver);
         $this->startQueryLog();
-        $view = $p->paginate($query, 1, 10, array('distinct' => false));
+        $paginator->paginate($query, 1, 10, array('distinct' => false));
 
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
@@ -160,15 +190,22 @@ ___SQL;
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
-        $_GET['sort'] = 'a.title';
-        $_GET['direction'] = 'asc';
+
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $parametersResolver
+            ->method('get')
+            ->will($this->returnValueMap([
+                ['sort', null, 'a.title'],
+                ['direction', 'asc', 'asc'],
+            ]));
+
         $query = $this
             ->em
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
         ;
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
-        $p = new Paginator;
+        $p = new Paginator($parametersResolver);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
         $this->assertInstanceOf(SlidingPagination::class, $view);
@@ -189,14 +226,20 @@ ___SQL;
      */
     function shouldNotExecuteExtraQueriesWhenCountIsZero()
     {
-        $_GET['sort'] = 'a.title';
-        $_GET['direction'] = 'asc';
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $parametersResolver
+            ->method('get')
+            ->will($this->returnValueMap([
+                ['sort', null, 'a.title'],
+                ['direction', 'asc', 'asc'],
+            ]));
+
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
         ;
 
-        $p = new Paginator;
+        $p = new Paginator($parametersResolver);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
         $this->assertInstanceOf(SlidingPagination::class, $view);
@@ -204,9 +247,9 @@ ___SQL;
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
-        return array(Article::class);
+        return [Article::class];
     }
 
     private function populate($em)
@@ -228,24 +271,5 @@ ___SQL;
         $em->persist($autumn);
         $em->persist($spring);
         $em->flush();
-    }
-
-    private function getApcEntityManager()
-    {
-        $config = new \Doctrine\ORM\Configuration();
-        $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcCache);
-        $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcCache);
-        $config->setProxyDir(__DIR__);
-        $config->setProxyNamespace('Gedmo\Mapping\Proxy');
-        $config->setAutoGenerateProxyClasses(false);
-        $config->setMetadataDriverImpl($this->getMetadataDriverImplementation());
-
-        $conn = array(
-            'driver' => 'pdo_sqlite',
-            'memory' => true,
-        );
-
-        $em = \Doctrine\ORM\EntityManager::create($conn, $config);
-        return $em;
     }
 }

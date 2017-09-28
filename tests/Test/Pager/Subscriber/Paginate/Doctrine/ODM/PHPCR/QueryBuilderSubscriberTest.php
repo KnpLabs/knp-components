@@ -3,6 +3,7 @@
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ODM\PHPCR;
 
 use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\ParametersResolver;
 use Test\Fixture\Document\PHPCR\Article;
 use Test\Tool\BaseTestCasePHPCRODM;
 
@@ -18,8 +19,10 @@ class QueryBuilderSubscriberTest extends BaseTestCasePHPCRODM
         $qb = $this->dm->createQueryBuilder();
         $qb->fromDocument(Article::class, 'a');
 
-        $p = new Paginator();
-        $pagination = $p->paginate($qb, 1, 2);
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver);
+
+        $pagination = $paginator->paginate($qb, 1, 2);
         $this->assertEquals(1, $pagination->getCurrentPageNumber());
         $this->assertEquals(2, $pagination->getItemNumberPerPage());
         $this->assertEquals(4, $pagination->getTotalItemCount());

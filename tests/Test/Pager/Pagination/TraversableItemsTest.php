@@ -1,5 +1,6 @@
 <?php
 
+use Knp\Component\Pager\ParametersResolver;
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Paginator;
 
@@ -10,10 +11,11 @@ class TraversableItemsTest extends BaseTestCase
      */
     function shouldBeAbleToUseTraversableItems()
     {
-        $p = new Paginator;
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver);
 
         $items = new \ArrayObject(range(1, 23));
-        $view = $p->paginate($items, 3, 10);
+        $view = $paginator->paginate($items, 3, 10);
 
         $view->renderer = function($data) {
             return 'custom';

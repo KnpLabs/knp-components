@@ -38,6 +38,8 @@ class QuerySubscriber implements EventSubscriberInterface
             );
         }
 
+        $filterValue = str_replace('*', '%', $filterValue);
+
         $columns = explode(',', $filterField);
         $event->target
             ->setHint(WhereWalker::HINT_PAGINATOR_FILTER_VALUE, $filterValue)

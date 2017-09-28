@@ -1,5 +1,6 @@
 <?php
 
+use Knp\Component\Pager\ParametersResolver;
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -16,7 +17,9 @@ class CustomParameterTest extends BaseTestCase
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new CustomParameterSubscriber);
         $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
-        $p = new Paginator($dispatcher);
+
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $p = new Paginator($parametersResolver, $dispatcher);
 
         $items = array('first', 'second');
         $view = $p->paginate($items, 1, 10);

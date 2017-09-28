@@ -1,5 +1,6 @@
 <?php
 
+use Knp\Component\Pager\ParametersResolver;
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -15,13 +16,15 @@ class CollectionTest extends BaseTestCase
      */
     function shouldPaginateCollection()
     {
-        $dispatcher = new EventDispatcher;
-        $dispatcher->addSubscriber(new CollectionSubscriber);
-        $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
-        $p = new Paginator($dispatcher);
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new CollectionSubscriber());
+        $dispatcher->addSubscriber(new MockPaginationSubscriber()); // pagination view
+
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver, $dispatcher);
 
         $items = new ArrayCollection(array('first', 'second'));
-        $view = $p->paginate($items, 1, 10);
+        $view = $paginator->paginate($items, 1, 10);
 
         $this->assertEquals(1, $view->getCurrentPageNumber());
         $this->assertEquals(10, $view->getItemNumberPerPage());
@@ -34,13 +37,15 @@ class CollectionTest extends BaseTestCase
      */
     function shouldSlicePaginateAnArray()
     {
-        $dispatcher = new EventDispatcher;
-        $dispatcher->addSubscriber(new CollectionSubscriber);
-        $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
-        $p = new Paginator($dispatcher);
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new CollectionSubscriber());
+        $dispatcher->addSubscriber(new MockPaginationSubscriber()); // pagination view
+
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver, $dispatcher);
 
         $items = new ArrayCollection(range('a', 'u'));
-        $view = $p->paginate($items, 2, 10);
+        $view = $paginator->paginate($items, 2, 10);
 
         $this->assertEquals(2, $view->getCurrentPageNumber());
         $this->assertEquals(10, $view->getItemNumberPerPage());
@@ -53,9 +58,12 @@ class CollectionTest extends BaseTestCase
      */
     function shouldSupportPaginateStrategySubscriber()
     {
-        $items = new ArrayCollection(array('first', 'second'));
-        $p = new Paginator;
-        $view = $p->paginate($items, 1, 10);
+        $items = new ArrayCollection(['first', 'second']);
+
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver);
+
+        $view = $paginator->paginate($items, 1, 10);
         $this->assertInstanceOf(PaginationInterface::class, $view);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use Knp\Component\Pager\ParametersResolver;
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Paginator;
 
@@ -10,7 +11,8 @@ class SlidingTest extends BaseTestCase
      */
     function shouldBeAbleToProducePagination()
     {
-        $p = new Paginator;
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $p = new Paginator($parametersResolver);
 
         $items = range(1, 23);
         $view = $p->paginate($items, 1, 10);
@@ -41,7 +43,8 @@ class SlidingTest extends BaseTestCase
      */
     function shouldBeAbleToProduceWiderPagination()
     {
-        $p = new Paginator;
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $p = new Paginator($parametersResolver);
 
         $items = range(1, 43);
         $view = $p->paginate($items, 4, 5);
@@ -68,7 +71,8 @@ class SlidingTest extends BaseTestCase
      */
     function shouldHandleOddAndEvenRange()
     {
-        $p = new Paginator;
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $p = new Paginator($parametersResolver);
 
         $items = range(1, 43);
         $view = $p->paginate($items, 4, 5);
@@ -94,7 +98,8 @@ class SlidingTest extends BaseTestCase
      */
     function shouldNotFallbackToPageInCaseIfExceedsItemLimit()
     {
-        $p = new Paginator;
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $p = new Paginator($parametersResolver);
 
         $view = $p->paginate(range(1, 9), 2, 10);
         $items = $view->getItems();

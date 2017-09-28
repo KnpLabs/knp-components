@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
+use Knp\Component\Pager\ParametersResolver;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
@@ -25,12 +26,15 @@ class QueryTest extends BaseTestCaseORM
         GROUP BY p.id
         HAVING p.numTags = COUNT(t)
 SQL;
-        $q = $this->em->createQuery($dql);
-        $q->setHydrationMode(Query::HYDRATE_ARRAY);
-        $q->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, true);
+        $query = $this->em->createQuery($dql);
+        $query->setHydrationMode(Query::HYDRATE_ARRAY);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, true);
         $this->startQueryLog();
-        $p = new Paginator;
-        $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
+
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver);
+
+        $view = $paginator->paginate($query, 1, 10, array('wrap-queries' => true));
         $this->assertEquals(3, $this->queryAnalyzer->getNumExecutedQueries());
         $this->assertCount(3, $view);
     }
@@ -47,12 +51,15 @@ SQL;
         FROM Test\Fixture\Entity\Shop\Product p
         GROUP BY p.id
 SQL;
-        $q = $this->em->createQuery($dql);
-        $q->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
-        $q->setHydrationMode(Query::HYDRATE_ARRAY);
+        $query = $this->em->createQuery($dql);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHydrationMode(Query::HYDRATE_ARRAY);
         $this->startQueryLog();
-        $p = new Paginator;
-        $view = $p->paginate($q, 1, 10, array('wrap-queries' => false));
+
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver);
+
+        $view = $paginator->paginate($query, 1, 10, array('wrap-queries' => false));
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $this->assertCount(3, $view);
     }
@@ -71,22 +78,25 @@ SQL;
         GROUP BY p.id
         HAVING p.numTags = COUNT(t)
 SQL;
-        $q = $this->em->createQuery($dql);
-        $q->setHydrationMode(Query::HYDRATE_ARRAY);
-        $q->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, true);
+        $query = $this->em->createQuery($dql);
+        $query->setHydrationMode(Query::HYDRATE_ARRAY);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, true);
         $this->startQueryLog();
-        $p = new Paginator;
-        $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
+
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver);
+
+        $view = $paginator->paginate($query, 1, 10, array('wrap-queries' => true));
         $this->assertEquals(3, $this->queryAnalyzer->getNumExecutedQueries());
         $this->assertCount(3, $view);
     }
 
     protected function getUsedEntityFixtures(): array
     {
-        return array(
+        return [
             Product::class,
             Tag::class
-        );
+        ];
     }
 
     private function populate()

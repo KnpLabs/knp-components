@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
+use Knp\Component\Pager\ParametersResolver;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Article;
@@ -14,14 +15,15 @@ class QueryBuilderTest extends BaseTestCaseORM
     function shouldPaginateSimpleDoctrineQuery()
     {
         $this->populate();
-        $p = new Paginator;
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver);
 
         $qb = $this->em->createQueryBuilder();
         $qb
             ->select('a')
             ->from(Article::class, 'a')
         ;
-        $view = $p->paginate($qb, 1, 2);
+        $view = $paginator->paginate($qb, 1, 2);
 
         $this->assertEquals(1, $view->getCurrentPageNumber());
         $this->assertEquals(2, $view->getItemNumberPerPage());

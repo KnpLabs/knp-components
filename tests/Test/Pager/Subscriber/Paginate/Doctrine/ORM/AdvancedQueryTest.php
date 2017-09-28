@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
+use Knp\Component\Pager\ParametersResolver;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Shop\Product;
@@ -28,9 +29,12 @@ class AdvancedQueryTest extends BaseTestCaseORM
 SQL;
         $q = $this->em->createQuery($dql);
 
-        $p = new Paginator;
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+
+        $paginator = new Paginator($parametersResolver);
         $this->startQueryLog();
-        $view = $p->paginate($q, 1, 2);
+
+        $paginator->paginate($q, 1, 2);
     }
 
     /**
@@ -47,10 +51,13 @@ SQL;
         GROUP BY p.id
         HAVING p.numTags = COUNT(t)
 SQL;
-        $q = $this->em->createQuery($dql);
-        $q->setHydrationMode(Query::HYDRATE_ARRAY);
-        $p = new Paginator;
-        $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
+        $query = $this->em->createQuery($dql);
+        $query->setHydrationMode(Query::HYDRATE_ARRAY);
+
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver);
+
+        $view = $paginator->paginate($query, 1, 10, ['wrap-queries' => true]);
         $this->assertCount(3, $view);
     }
 
@@ -67,9 +74,12 @@ SQL;
         LEFT JOIN
           p.tags t
 SQL;
-        $q = $this->em->createQuery($dql);
-        $p = new Paginator;
-        $view = $p->paginate($q, 1, 10);
+        $query = $this->em->createQuery($dql);
+
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver);
+
+        $view = $paginator->paginate($query, 1, 10);
         $this->assertCount(3, $view);
         $items = $view->getItems();
         // and should be hydrated as array
@@ -109,11 +119,14 @@ SQL;
             GROUP BY p.id
             ORDER BY relevance ASC, p.id DESC
 SQL;
-        $q = $this->em->createQuery($dql);
-        $q->setParameter('keyword', '%Star%');
-        $q->setHydrationMode(\Doctrine\ORM\Query::HYDRATE_ARRAY);
-        $p = new Paginator;
-        $view = $p->paginate($q, 1, 10);
+        $query = $this->em->createQuery($dql);
+        $query->setParameter('keyword', '%Star%');
+        $query->setHydrationMode(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver);
+
+        $view = $paginator->paginate($query, 1, 10);
         $this->assertCount(1, $view);
         $items = $view->getItems();
         // and should be hydrated as array
@@ -135,10 +148,13 @@ SQL;
         GROUP BY p.id
         HAVING p.numTags = COUNT(t)
 SQL;
-        $q = $this->em->createQuery($dql);
-        $q->setHydrationMode(Query::HYDRATE_ARRAY);
-        $p = new Paginator;
-        $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
+        $query = $this->em->createQuery($dql);
+        $query->setHydrationMode(Query::HYDRATE_ARRAY);
+
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver);
+
+        $view = $paginator->paginate($query, 1, 10, array('wrap-queries' => true));
         $this->assertCount(3, $view);
     }
 

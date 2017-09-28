@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine;
 
+use Knp\Component\Pager\ParametersResolver;
 use Test\Tool\BaseTestCaseORM;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Knp\Component\Pager\Paginator;
@@ -15,13 +16,14 @@ class DBALQueryBuilderTest extends BaseTestCaseORM
     function shouldPaginateSimpleDoctrineQuery()
     {
         $this->populate();
-        $p = new Paginator;
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver);
 
         $qb = new QueryBuilder($this->em->getConnection());
         $qb->select('*')
             ->from('Article', 'a')
         ;
-        $view = $p->paginate($qb, 1, 2);
+        $view = $paginator->paginate($qb, 1, 2);
 
         $this->assertEquals(1, $view->getCurrentPageNumber());
         $this->assertEquals(2, $view->getItemNumberPerPage());
@@ -33,9 +35,9 @@ class DBALQueryBuilderTest extends BaseTestCaseORM
         $this->assertEquals('winter', $items[1]['title']);
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
-        return array(Article::class);
+        return [Article::class];
     }
 
     private function populate()

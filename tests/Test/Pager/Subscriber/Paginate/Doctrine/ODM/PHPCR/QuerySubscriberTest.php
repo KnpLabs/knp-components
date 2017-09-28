@@ -5,6 +5,7 @@ namespace Test\Pager\Subscriber\Paginate\Doctrine\ODM\PHPCR;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ODM\PHPCR\QuerySubscriber;
 use Knp\Component\Pager\Pagination\SlidingPagination;
 use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\ParametersResolver;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Document\PHPCR\Article;
 use Test\Mock\PaginationSubscriber;
@@ -22,11 +23,13 @@ class QuerySubscriberTest extends BaseTestCasePHPCRODM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new QuerySubscriber());
         $dispatcher->addSubscriber(new PaginationSubscriber()); // pagination view
-        $p = new Paginator($dispatcher);
+
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver, $dispatcher);
 
         $query = $this->dm->createQueryBuilder()->fromDocument(Article::class, 'a')->getQuery();
 
-        $pagination = $p->paginate($query, 1, 2);
+        $pagination = $paginator->paginate($query, 1, 2);
 
         $this->assertInstanceOf(SlidingPagination::class, $pagination);
         $this->assertEquals(1, $pagination->getCurrentPageNumber());
@@ -48,8 +51,10 @@ class QuerySubscriberTest extends BaseTestCasePHPCRODM
         $this->getMockDocumentManager();
         $query = $this->dm->createQueryBuilder()->fromDocument(Article::class, 'a')->getQuery();
 
-        $p = new Paginator();
-        $pagination = $p->paginate($query, 1, 10);
+        $parametersResolver = $this->createMock(ParametersResolver::class);
+        $paginator = new Paginator($parametersResolver);
+
+        $pagination = $paginator->paginate($query, 1, 10);
         $this->assertInstanceOf(SlidingPagination::class, $pagination);
     }
 
