@@ -57,5 +57,8 @@
         "psr-0": {
             "Test": "tests"
         }
+    },
+    "scripts": {
+        "test": "phpunit"
     }
 }

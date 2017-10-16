@@ -20,7 +20,7 @@ class Article
     private $parent;
 
     /**
-     * @PHPCR\String
+     * @PHPCR\Field(type="string")
      */
     private $title;
 
