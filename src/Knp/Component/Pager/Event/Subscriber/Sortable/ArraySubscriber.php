@@ -40,6 +40,10 @@ class ArraySubscriber implements EventSubscriberInterface
             return;
         }
 
+        if (isset($event->target[0]) && $event->target[0] instanceof \Solarium\Client) {
+            return;
+        }
+
         if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST]) && !in_array($_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]], $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
             throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]]}] this field is not in whitelist");
         }
