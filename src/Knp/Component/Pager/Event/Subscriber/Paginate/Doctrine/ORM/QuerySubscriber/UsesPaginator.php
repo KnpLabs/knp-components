@@ -2,6 +2,7 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
 
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
@@ -31,14 +32,14 @@ class UsesPaginator implements EventSubscriberInterface
         $event->target
             ->setFirstResult($event->getOffset())
             ->setMaxResults($event->getLimit())
-            ->setHint(CountWalker::HINT_DISTINCT, $event->options['distinct'])
+            ->setHint(CountWalker::HINT_DISTINCT, $event->options[PaginatorInterface::DISTINCT])
         ;
 
         $fetchJoinCollection = true;
         if ($event->target->hasHint(self::HINT_FETCH_JOIN_COLLECTION)) {
             $fetchJoinCollection = $event->target->getHint(self::HINT_FETCH_JOIN_COLLECTION);
-        } else if (isset($event->options['distinct'])) {
-            $fetchJoinCollection = $event->options['distinct'];
+        } else if (isset($event->options[PaginatorInterface::DISTINCT])) {
+            $fetchJoinCollection = $event->options[PaginatorInterface::DISTINCT];
         }
 
         $paginator = new Paginator($event->target, $fetchJoinCollection);

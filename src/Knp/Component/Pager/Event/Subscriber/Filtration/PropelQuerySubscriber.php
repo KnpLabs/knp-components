@@ -2,6 +2,7 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Filtration;
 
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 
@@ -11,13 +12,13 @@ class PropelQuerySubscriber implements EventSubscriberInterface
     {
         $query = $event->target;
         if ($query instanceof \ModelCriteria) {
-            if (empty($_GET[$event->options['filterValueParameterName']])) {
+            if (empty($_GET[$event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]])) {
                 return;
             }
-            if (!empty($_GET[$event->options['filterFieldParameterName']])) {
-                $columns = $_GET[$event->options['filterFieldParameterName']];
-            } elseif (!empty($event->options['defaultFilterFields'])) {
-                $columns = $event->options['defaultFilterFields'];
+            if (!empty($_GET[$event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]])) {
+                $columns = $_GET[$event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]];
+            } elseif (!empty($event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS])) {
+                $columns = $event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS];
             } else {
                 return;
             }
@@ -25,14 +26,14 @@ class PropelQuerySubscriber implements EventSubscriberInterface
                 $columns = explode(',', $columns);
             }
             $columns = (array) $columns;
-            if (isset($event->options['filterFieldWhitelist'])) {
+            if (isset($event->options[PaginatorInterface::FILTER_FIELD_WHITELIST])) {
                 foreach ($columns as $column) {
-                    if (!in_array($column, $event->options['filterFieldWhitelist'])) {
+                    if (!in_array($column, $event->options[PaginatorInterface::FILTER_FIELD_WHITELIST])) {
                         throw new \UnexpectedValueException("Cannot filter by: [{$column}] this field is not in whitelist");
                     }
                 }
             }
-            $value = $_GET[$event->options['filterValueParameterName']];
+            $value = $_GET[$event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]];
             $criteria = \Criteria::EQUAL;
             if (false !== strpos($value, '*')) {
                 $value = str_replace('*', '%', $value);

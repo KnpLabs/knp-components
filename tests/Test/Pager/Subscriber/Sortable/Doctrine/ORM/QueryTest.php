@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ORM;
 
+use Knp\Component\Pager\PaginatorInterface;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\Pagination\SlidingPagination;
@@ -142,7 +143,7 @@ ___SQL;
 
         $p = new Paginator;
         $this->startQueryLog();
-        $view = $p->paginate($query, 1, 10, array('distinct' => false));
+        $view = $p->paginate($query, 1, 10, array(PaginatorInterface::DISTINCT => false));
 
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
