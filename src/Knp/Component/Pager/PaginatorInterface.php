@@ -7,6 +7,18 @@ namespace Knp\Component\Pager;
  */
 interface PaginatorInterface
 {
+    const DEFAULT_SORT_FIELD_NAME = 'defaultSortFieldName';
+    const DEFAULT_SORT_DIRECTION = 'defaultSortDirection';
+    const DEFAULT_FILTER_FIELDS = 'defaultFilterFields';
+    const SORT_FIELD_PARAMETER_NAME = 'sortFieldParameterName';
+    const SORT_FIELD_WHITELIST = 'sortFieldWhitelist';
+    const SORT_DIRECTION_PARAMETER_NAME = 'sortDirectionParameterName';
+    const PAGE_PARAMETER_NAME = 'pageParameterName';
+    const FILTER_FIELD_PARAMETER_NAME = 'filterFieldParameterName';
+    const FILTER_VALUE_PARAMETER_NAME = 'filterValueParameterName';
+    const FILTER_FIELD_WHITELIST = 'filterFieldWhitelist';
+    const DISTINCT = 'distinct';
+
     /**
      * Paginates anything (depending on event listeners)
      * into Pagination object, which is a view targeted

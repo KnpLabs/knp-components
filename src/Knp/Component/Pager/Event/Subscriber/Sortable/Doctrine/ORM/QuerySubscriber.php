@@ -7,22 +7,23 @@ use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\Query\OrderByWalker;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\Helper as QueryHelper;
 use Doctrine\ORM\Query;
+use Knp\Component\Pager\PaginatorInterface;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
         if ($event->target instanceof Query) {
-            if (isset($_GET[$event->options['sortFieldParameterName']])) {
-                $dir = isset($_GET[$event->options['sortDirectionParameterName']]) && strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc';
+            if (isset($_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]])) {
+                $dir = isset($_GET[$event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]]) && strtolower($_GET[$event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]]) === 'asc' ? 'asc' : 'desc';
 
-                if (isset($event->options['sortFieldWhitelist'])) {
-                    if (!in_array($_GET[$event->options['sortFieldParameterName']], $event->options['sortFieldWhitelist'])) {
-                        throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options['sortFieldParameterName']]}] this field is not in whitelist");
+                if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
+                    if (!in_array($_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]], $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
+                        throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]]}] this field is not in whitelist");
                     }
                 }
 
-                $sortFieldParameterNames = $_GET[$event->options['sortFieldParameterName']];
+                $sortFieldParameterNames = $_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]];
                 $fields = array();
                 $aliases = array();
                 foreach (explode('+', $sortFieldParameterNames) as $sortFieldParameterName) {

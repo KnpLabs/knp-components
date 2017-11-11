@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ORM;
 
+use Knp\Component\Pager\PaginatorInterface;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\Pagination\SlidingPagination;
@@ -27,14 +28,14 @@ class WhitelistTest extends BaseTestCaseORM
 
         $p = new Paginator;
         $sortFieldWhitelist = array('a.title');
-        $view = $p->paginate($query, 1, 10, compact('sortFieldWhitelist'));
+        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
         $items = $view->getItems();
         $this->assertEquals(4, count($items));
         $this->assertEquals('autumn', $items[0]->getTitle());
 
         $_GET['sort'] = 'a.id';
-        $view = $p->paginate($query, 1, 10, compact('sortFieldWhitelist'));
+        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
     }
 
     /**

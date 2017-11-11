@@ -6,6 +6,7 @@ use Knp\Component\Pager\Event\ItemsEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 class ArraySubscriber implements EventSubscriberInterface
 {
@@ -35,16 +36,16 @@ class ArraySubscriber implements EventSubscriberInterface
 
     public function items(ItemsEvent $event)
     {
-        if (!is_array($event->target) || empty($_GET[$event->options['sortFieldParameterName']])) {
+        if (!is_array($event->target) || empty($_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]])) {
             return;
         }
 
-        if (isset($event->options['sortFieldWhitelist']) && !in_array($_GET[$event->options['sortFieldParameterName']], $event->options['sortFieldWhitelist'])) {
-            throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options['sortFieldParameterName']]}] this field is not in whitelist");
+        if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST]) && !in_array($_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]], $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
+            throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]]}] this field is not in whitelist");
         }
 
         $sortFunction = isset($event->options['sortFunction']) ? $event->options['sortFunction'] : array($this, 'proxySortFunction');
-        $sortField = $_GET[$event->options['sortFieldParameterName']];
+        $sortField = $_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]];
 
         // compatibility layer
         if ($sortField[0] === '.') {
@@ -54,7 +55,7 @@ class ArraySubscriber implements EventSubscriberInterface
         call_user_func_array($sortFunction, array(
             &$event->target,
             $sortField,
-            isset($_GET[$event->options['sortDirectionParameterName']]) && strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc'
+            isset($_GET[$event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]]) && strtolower($_GET[$event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]]) === 'asc' ? 'asc' : 'desc'
         ));
     }
 

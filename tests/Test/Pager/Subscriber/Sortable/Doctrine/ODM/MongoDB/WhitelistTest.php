@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ODM\MongoDB;
 
+use Knp\Component\Pager\PaginatorInterface;
 use Test\Tool\BaseTestCaseMongoODM;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\Pagination\SlidingPagination;
@@ -29,14 +30,14 @@ class WhitelistTest extends BaseTestCaseMongoODM
 
         $p = new Paginator;
         $sortFieldWhitelist = array('title');
-        $view = $p->paginate($query, 1, 10, compact('sortFieldWhitelist'));
+        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
         $items = array_values($view->getItems());
         $this->assertEquals(4, count($items));
         $this->assertEquals('autumn', $items[0]->getTitle());
 
         $_GET['sort'] = 'id';
-        $view = $p->paginate($query, 1, 10, compact('sortFieldWhitelist'));
+        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
     }
 
     /**

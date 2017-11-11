@@ -10,6 +10,7 @@ use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber as Filtration;
 use Test\Fixture\Entity\Article;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber\UsesPaginator;
+use Knp\Component\Pager\PaginatorInterface;
 
 class QueryTest extends BaseTestCaseORM
 {
@@ -468,7 +469,7 @@ ___SQL;
         $dispatcher->addSubscriber(new Filtration());
         $p = new Paginator($dispatcher);
         $this->startQueryLog();
-        $view = $p->paginate($query, 1, 10, array('distinct' => false));
+        $view = $p->paginate($query, 1, 10, array(PaginatorInterface::DISTINCT => false));
         $items = $view->getItems();
         $this->assertEquals(2, count($items));
         $this->assertEquals('summer', $items[0][0]->getTitle());
@@ -555,17 +556,17 @@ ___SQL;
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
         $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
         $defaultFilterFields = 'a.title';
-        $view = $p->paginate($query, 1, 10, compact('defaultFilterFields'));
+        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::DEFAULT_FILTER_FIELDS));
         $items = $view->getItems();
         $this->assertEquals(1, count($items));
         $this->assertEquals('summer', $items[0]->getTitle());
         $defaultFilterFields = 'a.id,a.title';
-        $view = $p->paginate($query, 1, 10, compact('defaultFilterFields'));
+        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::DEFAULT_FILTER_FIELDS));
         $items = $view->getItems();
         $this->assertEquals(1, count($items));
         $this->assertEquals('summer', $items[0]->getTitle());
         $defaultFilterFields = array('a.id', 'a.title');
-        $view = $p->paginate($query, 1, 10, compact('defaultFilterFields'));
+        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::DEFAULT_FILTER_FIELDS));
         $items = $view->getItems();
         $this->assertEquals(1, count($items));
         $this->assertEquals('summer', $items[0]->getTitle());

@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Filtration\Doctrine\ORM;
 
+use Knp\Component\Pager\PaginatorInterface;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -27,14 +28,14 @@ class WhitelistTest extends BaseTestCaseORM
         $dispatcher->addSubscriber(new Filtration());
         $p = new Paginator($dispatcher);
         $filterFieldWhitelist = array('a.title');
-        $view = $p->paginate($query, 1, 10, compact('filterFieldWhitelist'));
+        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
 
         $items = $view->getItems();
         $this->assertEquals(1, count($items));
         $this->assertEquals('summer', $items[0]->getTitle());
 
         $_GET['filterParam'] = 'a.id';
-        $view = $p->paginate($query, 1, 10, compact('filterFieldWhitelist'));
+        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
     }
 
     /**

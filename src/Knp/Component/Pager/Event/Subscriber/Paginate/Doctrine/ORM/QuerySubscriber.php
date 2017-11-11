@@ -53,12 +53,12 @@ class QuerySubscriber implements EventSubscriberInterface
                 if ($useDoctrineWalkers) {
                     $countQuery->setHint(
                         DoctrineCountWalker::HINT_DISTINCT,
-                        $event->options['distinct']
+                        $event->options[PaginatorInterface::DISTINCT]
                     );
                 } else {
                     $countQuery->setHint(
                         CountWalker::HINT_DISTINCT,
-                        $event->options['distinct']
+                        $event->options[PaginatorInterface::DISTINCT]
                     );
                 }
                 $countQuery
@@ -75,7 +75,7 @@ class QuerySubscriber implements EventSubscriberInterface
             // process items
             $result = null;
             if ($event->count) {
-                if ($event->options['distinct']) {
+                if ($event->options[PaginatorInterface::DISTINCT]) {
                     $limitSubQuery = QueryHelper::cloneQuery($event->target);
                     $limitSubQuery
                         ->setFirstResult($event->getOffset())
