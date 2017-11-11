@@ -6,6 +6,7 @@ use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Sortable\ArraySubscriber;
 use Knp\Component\Pager\ParametersResolver;
 use Test\Tool\BaseTestCase;
+use Knp\Component\Pager\PaginatorInterface;
 
 class ArraySubscriberTest extends BaseTestCase
 {
@@ -30,7 +31,7 @@ class ArraySubscriberTest extends BaseTestCase
 
         $itemsEvent = new ItemsEvent(0, 10, $parametersResolver);
         $itemsEvent->target = &$array;
-        $itemsEvent->options = ['sortFieldParameterName' => 'sort', 'sortDirectionParameterName' => 'ord'];
+        $itemsEvent->options = [PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort', PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord'];
 
         $this->assertEquals(2, $array[0]['entry']['sortProperty']);
         $arraySubscriber = new ArraySubscriber();
@@ -75,8 +76,8 @@ class ArraySubscriberTest extends BaseTestCase
         $itemsEvent = new ItemsEvent(0, 10, $parametersResolver);
         $itemsEvent->target = &$array;
         $itemsEvent->options = [
-            'sortFieldParameterName' => 'sort',
-            'sortDirectionParameterName' => 'ord',
+            PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort',
+            PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord',
             'sortFunction' => function (&$target, $sortField, $sortDirection) {
                 usort($target, function($object1, $object2) use ($sortField, $sortDirection) {
                     if ($object2[$sortField] === $object1[$sortField]) {

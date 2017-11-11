@@ -6,6 +6,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Elastica\Query;
 use Elastica\SearchableInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 class ElasticaQuerySubscriber implements EventSubscriberInterface
 {

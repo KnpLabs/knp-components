@@ -7,6 +7,7 @@ use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\Query\OrderByWalker;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\Helper as QueryHelper;
 use Doctrine\ORM\Query;
+use Knp\Component\Pager\PaginatorInterface;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
@@ -18,8 +19,8 @@ class QuerySubscriber implements EventSubscriberInterface
 
         $parametersResolver = $event->getParametersResolver();
         $field = $parametersResolver->get(
-            $event->options['sortFieldParameterName'],
-            $event->options['defaultSortFieldName'] ?? null
+            $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME],
+            $event->options[PaginatorInterface::DEFAULT_SORT_FIELD_NAME] ?? null
         );
 
         if ($field === null) {
@@ -27,8 +28,8 @@ class QuerySubscriber implements EventSubscriberInterface
         }
 
         $direction = $parametersResolver->get(
-            $event->options['sortDirectionParameterName'],
-            $event->options['defaultSortDirection'] ?? 'asc'
+            $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME],
+            $event->options[PaginatorInterface::DEFAULT_SORT_DIRECTION] ?? 'asc'
         );
 
         $whiteList = $event->options['sortFieldWhitelist'] ?? [];

@@ -3,6 +3,7 @@
 namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 
 use Knp\Component\Pager\Event\ItemsEvent;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -26,7 +27,7 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
 
         $parametersResolver = $event->getParametersResolver();
         $field = $parametersResolver->get(
-            $event->options['sortFieldParameterName'],
+            $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME],
             $event->options['defaultSortFieldName'] ?? null
         );
 
