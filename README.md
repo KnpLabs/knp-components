@@ -17,5 +17,5 @@ To setup and run tests follow these steps:
 
 ```bash
     composer install
-    vendor/bin/phpunit -c tests
+    composer test
 ```

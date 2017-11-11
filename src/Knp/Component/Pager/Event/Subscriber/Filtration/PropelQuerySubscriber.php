@@ -2,6 +2,7 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Filtration;
 
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 
@@ -18,20 +19,20 @@ class PropelQuerySubscriber implements EventSubscriberInterface
         $parametersResolver = $event->getParametersResolver();
 
         $filterField = $parametersResolver->get(
-            $event->options['filterFieldParameterName'],
-            $event->options['defaultFilterFields'] ?? null
+            $event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME],
+            $event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS] ?? null
         );
 
         if ($filterField === null) {
             return;
         }
 
-        $filterValue = $parametersResolver->get($event->options['filterValueParameterName'], null);
+        $filterValue = $parametersResolver->get($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME], null);
         if ($filterValue === null) {
             return;
         }
 
-        $whiteList = $event->options['filterFieldWhitelist'] ?? [];
+        $whiteList = $event->options[PaginatorInterface::FILTER_FIELD_WHITELIST] ?? [];
         if (count($whiteList) !== 0 && !in_array($filterField, $whiteList, true)) {
             throw new \UnexpectedValueException(
                 sprintf('Cannot sort by: [%s] this field is not in whitelist', $filterField)

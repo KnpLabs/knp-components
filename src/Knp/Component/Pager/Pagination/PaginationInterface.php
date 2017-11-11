@@ -2,12 +2,14 @@
 
 namespace Knp\Component\Pager\Pagination;
 
+use Countable, Iterator, ArrayAccess;
+
 /**
  * Pagination interface strictly defines
  * the methods - paginator will use to populate the
  * pagination data
  */
-interface PaginationInterface
+interface PaginationInterface extends Countable, Iterator, ArrayAccess
 {
     /**
      * @param integer $pageNumber

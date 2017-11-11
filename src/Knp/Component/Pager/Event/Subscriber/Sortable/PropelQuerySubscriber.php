@@ -2,6 +2,7 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 
@@ -17,8 +18,8 @@ class PropelQuerySubscriber implements EventSubscriberInterface
 
         $parametersResolver = $event->getParametersResolver();
         $field = $parametersResolver->get(
-            $event->options['sortFieldParameterName'],
-            $event->options['defaultSortFieldName'] ?? null
+            $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME],
+            $event->options[PaginatorInterface::DEFAULT_SORT_FIELD_NAME] ?? null
         );
 
         if ($field === null) {
@@ -26,8 +27,8 @@ class PropelQuerySubscriber implements EventSubscriberInterface
         }
 
         $direction = $parametersResolver->get(
-            $event->options['sortDirectionParameterName'],
-            $event->options['defaultSortDirection'] ?? 'asc'
+            $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME],
+            $event->options[PaginatorInterface::DEFAULT_SORT_DIRECTION] ?? 'asc'
         );
 
         $whiteList = $event->options['sortFieldWhitelist'] ?? [];

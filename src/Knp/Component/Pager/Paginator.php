@@ -33,12 +33,12 @@ class Paginator implements PaginatorInterface
      * @var array
      */
     protected $defaultOptions = array(
-        'pageParameterName' => 'page',
-        'sortFieldParameterName' => 'sort',
-        'sortDirectionParameterName' => 'direction',
-        'filterFieldParameterName' => 'filterParam',
-        'filterValueParameterName' => 'filterValue',
-        'distinct' => true
+        self::PAGE_PARAMETER_NAME => 'page',
+        self::SORT_FIELD_PARAMETER_NAME => 'sort',
+        self::SORT_DIRECTION_PARAMETER_NAME => 'direction',
+        self::FILTER_FIELD_PARAMETER_NAME => 'filterParam',
+        self::FILTER_VALUE_PARAMETER_NAME => 'filterValue',
+        self::DISTINCT => true
     );
 
     /**
@@ -100,8 +100,8 @@ class Paginator implements PaginatorInterface
         $options = array_merge($this->defaultOptions, $options);
 
         // normalize default sort field
-        if (isset($options['defaultSortFieldName']) && is_array($options['defaultSortFieldName'])) {
-            $options['defaultSortFieldName'] = implode('+', $options['defaultSortFieldName']);
+        if (isset($options[self::DEFAULT_SORT_FIELD_NAME]) && is_array($options[self::DEFAULT_SORT_FIELD_NAME])) {
+            $options[self::DEFAULT_SORT_FIELD_NAME] = implode('+', $options[self::DEFAULT_SORT_FIELD_NAME]);
         }
 
         // before pagination start

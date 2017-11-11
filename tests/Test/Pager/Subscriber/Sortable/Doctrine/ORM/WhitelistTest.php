@@ -3,6 +3,7 @@
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ORM;
 
 use Knp\Component\Pager\ParametersResolver;
+use Knp\Component\Pager\PaginatorInterface;
 use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Article;
@@ -32,7 +33,7 @@ class WhitelistTest extends BaseTestCaseORM
             ->willReturn('asc');
 
         $sortFieldWhitelist = ['a.title'];
-        $view = $paginator->paginate($query, 1, 10, compact('sortFieldWhitelist'));
+        $view = $paginator->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
         $items = $view->getItems();
         $this->assertCount(4, $items);
@@ -64,7 +65,7 @@ class WhitelistTest extends BaseTestCaseORM
             ->willReturn('asc');
 
         $sortFieldWhitelist = ['a.title'];
-        $paginator->paginate($query, 1, 10, compact('sortFieldWhitelist'));
+        $paginator->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
     }
 
     /**
