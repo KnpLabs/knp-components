@@ -32,7 +32,7 @@ class QuerySubscriber implements EventSubscriberInterface
             $useDoctrineOutputWalker = false;
             if (version_compare(\Doctrine\ORM\Version::VERSION, '2.3.0', '>=')) {
                 $useDoctrineWalkers = true;
-                $useDoctrineOutputWalker = true;
+                $useDoctrineOutputWalker = ($event->target->getHint(Query::HINT_CUSTOM_OUTPUT_WALKER) === false);
             } else if (version_compare(\Doctrine\ORM\Version::VERSION, '2.2.0', '>=')) {
                 $useDoctrineWalkers = true;
             }
