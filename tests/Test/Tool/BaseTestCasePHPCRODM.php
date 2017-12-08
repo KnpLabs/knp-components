@@ -11,11 +11,12 @@ use Doctrine\MongoDB\Connection;
 use Jackalope\RepositoryFactoryDoctrineDBAL;
 use Jackalope\Session;
 use Jackalope\Transport\DoctrineDBAL\RepositorySchema;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Base test case contains common mock objects
  */
-abstract class BaseTestCasePHPCRODM extends \PHPUnit_Framework_TestCase
+abstract class BaseTestCasePHPCRODM extends TestCase
 {
     /**
      * @var DocumentManager
