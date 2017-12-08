@@ -8,8 +8,9 @@ use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SolariumQuerySubscriber;
 
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
+use PHPUnit\Framework\TestCase;
 
-class SolariumQuerySubscriberTest extends \PHPUnit_Framework_TestCase
+class SolariumQuerySubscriberTest extends TestCase
 {
     /**
      * @test

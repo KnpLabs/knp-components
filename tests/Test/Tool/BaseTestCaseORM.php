@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Tools\SchemaTool;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Base test case contains common mock objects
@@ -21,7 +22,7 @@ use Doctrine\ORM\Tools\SchemaTool;
  * @link http://www.gediminasm.org
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
+abstract class BaseTestCaseORM extends TestCase
 {
     /**
      * @var EntityManager

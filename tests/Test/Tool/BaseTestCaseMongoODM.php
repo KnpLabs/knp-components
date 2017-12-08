@@ -7,11 +7,12 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Common\EventManager;
 use Doctrine\MongoDB\Connection;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Base test case contains common mock objects
  */
-abstract class BaseTestCaseMongoODM extends \PHPUnit_Framework_TestCase
+abstract class BaseTestCaseMongoODM extends TestCase
 {
     /**
      * @var DocumentManager
