@@ -24,7 +24,7 @@ class TraversableItemsTest extends BaseTestCase
         $this->assertEquals('custom', (string)$view);
 
         $items = $view->getItems();
-        $this->assertTrue($items instanceof \ArrayObject);
+        $this->assertInstanceOf('ArrayObject', $items);
         $i = 21;
         foreach ($view as $item) {
             $this->assertEquals($i++, $item);

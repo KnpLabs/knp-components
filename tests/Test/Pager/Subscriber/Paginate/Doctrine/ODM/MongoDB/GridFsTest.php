@@ -24,7 +24,7 @@ class GridFsTest extends BaseTestCaseMongoODM
         $view = $p->paginate($query, 1, 10);
 
         $cursor = $query->execute();
-        $this->assertEquals(4, count($view->getItems()));
+        $this->assertCount(4, $view->getItems());
     }
 
     private function populate()

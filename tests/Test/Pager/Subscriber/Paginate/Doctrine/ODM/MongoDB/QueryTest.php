@@ -28,13 +28,13 @@ class QueryTest extends BaseTestCaseMongoODM
         $query = $qb->getQuery();
         $pagination = $p->paginate($query, 1, 2);
 
-        $this->assertTrue($pagination instanceof SlidingPagination);
+        $this->assertInstanceOf('Knp\Component\Pager\Pagination\SlidingPagination', $pagination);
         $this->assertEquals(1, $pagination->getCurrentPageNumber());
         $this->assertEquals(2, $pagination->getItemNumberPerPage());
         $this->assertEquals(4, $pagination->getTotalItemCount());
 
         $items = array_values($pagination->getItems());
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
     }
@@ -51,7 +51,7 @@ class QueryTest extends BaseTestCaseMongoODM
         ;
         $p = new Paginator;
         $pagination = $p->paginate($query, 1, 10);
-        $this->assertTrue($pagination instanceof SlidingPagination);
+        $this->assertInstanceOf('Knp\Component\Pager\Pagination\SlidingPagination', $pagination);
     }
 
     private function populate()

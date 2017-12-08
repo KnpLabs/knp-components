@@ -31,7 +31,7 @@ class WhitelistTest extends BaseTestCaseORM
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
         $items = $view->getItems();
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items));
         $this->assertEquals('autumn', $items[0]->getTitle());
 
         $_GET['sort'] = 'a.id';

@@ -28,13 +28,13 @@ class QueryTest extends BaseTestCaseORM
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
         $view = $p->paginate($query, 1, 2);
 
-        $this->assertTrue($view instanceof PaginationInterface);
+        $this->assertInstanceOf('Knp\Component\Pager\Pagination\PaginationInterface', $view);
         $this->assertEquals(1, $view->getCurrentPageNumber());
         $this->assertEquals(2, $view->getItemNumberPerPage());
         $this->assertEquals(4, $view->getTotalItemCount());
 
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
     }
@@ -50,7 +50,7 @@ class QueryTest extends BaseTestCaseORM
         ;
         $p = new Paginator;
         $view = $p->paginate($query, 1, 10);
-        $this->assertTrue($view instanceof PaginationInterface);
+        $this->assertInstanceOf('Knp\Component\Pager\Pagination\PaginationInterface', $view);
     }
 
     protected function getUsedEntityFixtures()
