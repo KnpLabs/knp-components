@@ -32,7 +32,7 @@ class CompositeKeyTest extends BaseTestCaseORM
         $view = $p->paginate($query, 1, 10, array('wrap-queries' => true));
 
         $items = $view->getItems();
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
     }
 
     protected function getUsedEntityFixtures()

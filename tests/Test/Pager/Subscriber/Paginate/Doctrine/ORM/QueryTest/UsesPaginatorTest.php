@@ -37,7 +37,7 @@ ___SQL;
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
         $this->assertEquals(3, $this->queryAnalyzer->getNumExecutedQueries());
-        $this->assertEquals(3, count($view));
+        $this->assertCount(3, $view);
     }
 
     /**
@@ -59,7 +59,7 @@ ___SQL;
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10, array('wrap-queries' => false));
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
-        $this->assertEquals(3, count($view));
+        $this->assertCount(3, $view);
     }
 
     /**
@@ -83,7 +83,7 @@ ___SQL;
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
         $this->assertEquals(3, $this->queryAnalyzer->getNumExecutedQueries());
-        $this->assertEquals(3, count($view));
+        $this->assertCount(3, $view);
     }
 
     protected function getUsedEntityFixtures()

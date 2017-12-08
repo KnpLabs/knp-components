@@ -28,14 +28,14 @@ class QuerySubscriberTest extends BaseTestCasePHPCRODM
 
         $pagination = $p->paginate($query, 1, 2);
 
-        $this->assertTrue($pagination instanceof SlidingPagination);
+        $this->assertInstanceOf('Knp\Component\Pager\Pagination\SlidingPagination', $pagination);
         $this->assertEquals(1, $pagination->getCurrentPageNumber());
         $this->assertEquals(2, $pagination->getItemNumberPerPage());
         $this->assertEquals(4, $pagination->getTotalItemCount());
 
         $items = $pagination->getItems();
 
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items->first()->getTitle());
         $this->assertEquals('winter', $items->last()->getTitle());
     }
@@ -50,7 +50,7 @@ class QuerySubscriberTest extends BaseTestCasePHPCRODM
 
         $p = new Paginator();
         $pagination = $p->paginate($query, 1, 10);
-        $this->assertTrue($pagination instanceof SlidingPagination);
+        $this->assertInstanceOf('Knp\Component\Pager\Pagination\SlidingPagination', $pagination);
     }
 
     private function populate()

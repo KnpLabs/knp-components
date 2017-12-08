@@ -56,7 +56,7 @@ ___SQL;
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
-        $this->assertEquals(3, count($view));
+        $this->assertCount(3, $view);
     }
 
     /**
@@ -75,7 +75,7 @@ ___SQL;
         $q = $this->em->createQuery($dql);
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10);
-        $this->assertEquals(3, count($view));
+        $this->assertCount(3, $view);
         $items = $view->getItems();
         // and should be hydrated as array
         $this->assertTrue(isset($items[0]['title']));
@@ -119,7 +119,7 @@ ___SQL;
         $q->setHydrationMode(\Doctrine\ORM\Query::HYDRATE_ARRAY);
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10);
-        $this->assertEquals(1, count($view));
+        $this->assertCount(1, $view);
         $items = $view->getItems();
         // and should be hydrated as array
         $this->assertEquals('Starship', $items[0][0]['title']);
@@ -144,7 +144,7 @@ ___SQL;
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
-        $this->assertEquals(3, count($view));
+        $this->assertCount(3, $view);
     }
 
     protected function getUsedEntityFixtures()

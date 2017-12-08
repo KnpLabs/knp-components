@@ -26,7 +26,7 @@ class QueryBuilderSubscriberTest extends BaseTestCasePHPCRODM
 
         $items = $pagination->getItems();
 
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items->first()->getTitle());
         $this->assertEquals('winter', $items->last()->getTitle());
     }

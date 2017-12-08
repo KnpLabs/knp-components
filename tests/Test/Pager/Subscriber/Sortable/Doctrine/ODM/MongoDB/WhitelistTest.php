@@ -33,7 +33,7 @@ class WhitelistTest extends BaseTestCaseMongoODM
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
         $items = array_values($view->getItems());
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
 
         $_GET['sort'] = 'id';

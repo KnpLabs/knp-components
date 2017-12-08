@@ -23,11 +23,11 @@ class ArrayTest extends BaseTestCase
 
         $items = array('first', 'second');
         $view = $p->paginate($items, 1, 10);
-        $this->assertTrue($view instanceof PaginationInterface);
+        $this->assertInstanceOf('Knp\Component\Pager\Pagination\PaginationInterface', $view);
 
         $this->assertEquals(1, $view->getCurrentPageNumber());
         $this->assertEquals(10, $view->getItemNumberPerPage());
-        $this->assertEquals(2, count($view->getItems()));
+        $this->assertCount(2, $view->getItems());
         $this->assertEquals(2, $view->getTotalItemCount());
     }
 
@@ -46,7 +46,7 @@ class ArrayTest extends BaseTestCase
 
         $this->assertEquals(2, $view->getCurrentPageNumber());
         $this->assertEquals(10, $view->getItemNumberPerPage());
-        $this->assertEquals(10, count($view->getItems()));
+        $this->assertCount(10, $view->getItems());
         $this->assertEquals(21, $view->getTotalItemCount());
     }
 
@@ -58,7 +58,7 @@ class ArrayTest extends BaseTestCase
         $items = array('first', 'second');
         $p = new Paginator;
         $view = $p->paginate($items, 1, 10);
-        $this->assertTrue($view instanceof PaginationInterface);
+        $this->assertInstanceOf('Knp\Component\Pager\Pagination\PaginationInterface', $view);
     }
 
     /**
@@ -70,6 +70,6 @@ class ArrayTest extends BaseTestCase
         $array = new \ArrayObject($items);
         $p = new Paginator;
         $view = $p->paginate($array, 1, 10);
-        $this->assertTrue($view instanceof PaginationInterface);
+        $this->assertInstanceOf('Knp\Component\Pager\Pagination\PaginationInterface', $view);
     }
 }

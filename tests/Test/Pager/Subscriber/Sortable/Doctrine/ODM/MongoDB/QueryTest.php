@@ -32,7 +32,7 @@ class QueryTest extends BaseTestCaseMongoODM
         $view = $p->paginate($query, 1, 10);
 
         $items = array_values($view->getItems());
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
         $this->assertEquals('spring', $items[1]->getTitle());
         $this->assertEquals('summer', $items[2]->getTitle());
@@ -41,7 +41,7 @@ class QueryTest extends BaseTestCaseMongoODM
         $_GET['direction'] = 'desc';
         $view = $p->paginate($query, 1, 10);
         $items = array_values($view->getItems());
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
         $this->assertEquals('winter', $items[0]->getTitle());
         $this->assertEquals('summer', $items[1]->getTitle());
         $this->assertEquals('spring', $items[2]->getTitle());

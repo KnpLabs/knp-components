@@ -43,7 +43,7 @@ class ElasticaTest extends BaseTestCase
 
         $this->assertEquals(1, $view->getCurrentPageNumber());
         $this->assertEquals(10, $view->getItemNumberPerPage());
-        $this->assertEquals(2, count($view->getItems()));
+        $this->assertCount(2, $view->getItems());
         $this->assertEquals(2, $view->getTotalItemCount());
     }
 
@@ -62,7 +62,7 @@ class ElasticaTest extends BaseTestCase
 
         $this->assertEquals(2, $view->getCurrentPageNumber());
         $this->assertEquals(10, $view->getItemNumberPerPage());
-        $this->assertEquals(10, count($view->getItems()));
+        $this->assertCount(10, $view->getItems());
         $this->assertEquals(21, $view->getTotalItemCount());*/
     }
 }
