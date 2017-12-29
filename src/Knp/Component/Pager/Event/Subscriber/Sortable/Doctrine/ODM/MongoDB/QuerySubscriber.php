@@ -31,7 +31,7 @@ class QuerySubscriber implements EventSubscriberInterface
 
                 // handle multi sort
                 $sortFields = explode('+', $field);
-                $sortOption = [];
+                $sortOption = array();
                 foreach ($sortFields as $sortField) {
                     $sortOption[$sortField] = $dir;
                 }
