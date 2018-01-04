@@ -372,7 +372,7 @@ class QueryTest extends BaseTestCaseORM
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
 
         $executed = $this->queryAnalyzer->getExecutedQueries();
