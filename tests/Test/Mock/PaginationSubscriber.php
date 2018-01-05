@@ -8,7 +8,7 @@ use Knp\Component\Pager\Pagination\SlidingPagination;
 
 class PaginationSubscriber implements EventSubscriberInterface
 {
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             'knp_pager.pagination' => ['pagination', 0]

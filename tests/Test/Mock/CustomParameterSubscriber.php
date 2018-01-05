@@ -7,7 +7,7 @@ use Knp\Component\Pager\Event\Subscriber\Paginate\ArraySubscriber;
 
 class CustomParameterSubscriber extends ArraySubscriber
 {
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             'knp_pager.items' => ['items', 10]
