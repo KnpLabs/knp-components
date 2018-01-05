@@ -17,7 +17,7 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    function shouldHandleApcQueryCache()
+    public function shouldHandleApcQueryCache(): void
     {
         if (!extension_loaded('apc') || !ini_get('apc.enable_cli')) {
             $this->markTestSkipped('APC extension is not loaded.');
@@ -30,10 +30,10 @@ class QueryTest extends BaseTestCaseORM
         $config->setAutoGenerateProxyClasses(false);
         $config->setMetadataDriverImpl($this->getMetadataDriverImplementation());
 
-        $conn = array(
+        $conn = [
             'driver' => 'pdo_sqlite',
             'memory' => true,
-        );
+        ];
 
         $em = \Doctrine\ORM\EntityManager::create($conn, $config);
         $schema = array_map(function($class) use ($em) {
@@ -41,7 +41,7 @@ class QueryTest extends BaseTestCaseORM
         }, (array)$this->getUsedEntityFixtures());
 
         $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($em);
-        $schemaTool->dropSchema(array());
+        $schemaTool->dropSchema([]);
         $schemaTool->createSchema($schema);
         $this->populate($em);
 
@@ -59,7 +59,7 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    function shouldSortSimpleDoctrineQuery()
+    public function shouldSortSimpleDoctrineQuery(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -107,10 +107,11 @@ class QueryTest extends BaseTestCaseORM
 
     /**
      * @test
-     * @expectedException \UnexpectedValueException
      */
-    function shouldValidateSortableParameters()
+    public function shouldValidateSortableParameters(): void
     {
+        $this->expectException(\UnexpectedValueException::class);
+
         $_GET['sort'] = '"a.title\'';
         $_GET['direction'] = 'asc';
         $query = $this
@@ -125,7 +126,7 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    function shouldSortByAnyAvailableAlias()
+    public function shouldSortByAnyAvailableAlias(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -141,7 +142,7 @@ ___SQL;
 
         $p = new Paginator;
         $this->startQueryLog();
-        $view = $p->paginate($query, 1, 10, array(PaginatorInterface::DISTINCT => false));
+        $view = $p->paginate($query, 1, 10, [PaginatorInterface::DISTINCT => false]);
 
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
@@ -157,7 +158,7 @@ ___SQL;
     /**
      * @test
      */
-    function shouldWorkWithInitialPaginatorEventDispatcher()
+    public function shouldWorkWithInitialPaginatorEventDispatcher(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -188,7 +189,7 @@ ___SQL;
     /**
      * @test
      */
-    function shouldNotExecuteExtraQueriesWhenCountIsZero()
+    public function shouldNotExecuteExtraQueriesWhenCountIsZero(): void
     {
         $_GET['sort'] = 'a.title';
         $_GET['direction'] = 'asc';
@@ -207,10 +208,10 @@ ___SQL;
 
     protected function getUsedEntityFixtures()
     {
-        return array(Article::class);
+        return [Article::class];
     }
 
-    private function populate($em)
+    private function populate($em): void
     {
         $summer = new Article;
         $summer->setTitle('summer');
@@ -241,10 +242,10 @@ ___SQL;
         $config->setAutoGenerateProxyClasses(false);
         $config->setMetadataDriverImpl($this->getMetadataDriverImplementation());
 
-        $conn = array(
+        $conn = [
             'driver' => 'pdo_sqlite',
             'memory' => true,
-        );
+        ];
 
         $em = \Doctrine\ORM\EntityManager::create($conn, $config);
         return $em;

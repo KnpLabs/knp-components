@@ -13,7 +13,7 @@ use Doctrine\DBAL\Query\QueryBuilder;
  */
 class DBALQueryBuilderSubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
         if ($event->target instanceof QueryBuilder) {
             /** @var $target QueryBuilder */
@@ -42,7 +42,7 @@ class DBALQueryBuilderSubscriber implements EventSubscriberInterface
             ;
 
             // if there is results
-            $event->items = array();
+            $event->items = [];
             if ($event->count) {
                 $qb = clone $target;
                 $qb
@@ -60,10 +60,10 @@ class DBALQueryBuilderSubscriber implements EventSubscriberInterface
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 10 /*make sure to transform before any further modifications*/)
-        );
+        return [
+            'knp_pager.items' => ['items', 10 /*make sure to transform before any further modifications*/]
+        ];
     }
 }

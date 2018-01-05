@@ -12,7 +12,7 @@ class DBALQueryBuilderTest extends BaseTestCaseORM
     /**
      * @test
      */
-    function shouldPaginateSimpleDoctrineQuery()
+    public function shouldPaginateSimpleDoctrineQuery(): void
     {
         $this->populate();
         $p = new Paginator;
@@ -35,10 +35,10 @@ class DBALQueryBuilderTest extends BaseTestCaseORM
 
     protected function getUsedEntityFixtures()
     {
-        return array(Article::class);
+        return [Article::class];
     }
 
-    private function populate()
+    private function populate(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $summer = new Article;

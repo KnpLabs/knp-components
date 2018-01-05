@@ -12,32 +12,32 @@ use Countable, Iterator, ArrayAccess;
 interface PaginationInterface extends Countable, Iterator, ArrayAccess
 {
     /**
-     * @param integer $pageNumber
+     * @param int $pageNumber
      */
-    function setCurrentPageNumber($pageNumber);
+    public function setCurrentPageNumber(int $pageNumber): void;
 
     /**
-     * @param integer $numItemsPerPage
+     * @param int $numItemsPerPage
      */
-    function setItemNumberPerPage($numItemsPerPage);
+    public function setItemNumberPerPage(int $numItemsPerPage): void;
 
     /**
-     * @param integer $numTotal
+     * @param int $numTotal
      */
-    function setTotalItemCount($numTotal);
+    public function setTotalItemCount(int $numTotal): void;
 
     /**
-     * @param mixed $items
+     * @param iterable $items
      */
-    function setItems($items);
+    public function setItems(iterable $items): void;
 
     /**
-     * @param string $options
+     * @param array $options
      */
-    function setPaginatorOptions($options);
+    public function setPaginatorOptions(array $options): void;
 
     /**
      * @param array $parameters
      */
-    function setCustomParameters(array $parameters);
+    public function setCustomParameters(array $parameters): void;
 }

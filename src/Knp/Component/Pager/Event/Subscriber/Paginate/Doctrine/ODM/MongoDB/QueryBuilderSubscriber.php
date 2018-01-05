@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\Query\Builder;
 
 class QueryBuilderSubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
         if ($event->target instanceof Builder) {
             // change target into query
@@ -16,10 +16,10 @@ class QueryBuilderSubscriber implements EventSubscriberInterface
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 10/*make sure to transform before any further modifications*/)
-        );
+        return [
+            'knp_pager.items' => ['items', 10/*make sure to transform before any further modifications*/]
+        ];
     }
 }

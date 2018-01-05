@@ -8,6 +8,7 @@ cache:
 
 php:
     - 7.1
+    - 7.2
 
 before_script:
     # mongo extension is not available on PHP 7

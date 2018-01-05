@@ -9,20 +9,22 @@ class PaginatorTest extends BaseTestCase
 {
     /**
      * @test
-     * @expectedException RuntimeException
      */
-    function shouldNotBeAbleToPaginateWithoutListeners()
+    public function shouldNotBeAbleToPaginateWithoutListeners(): void
     {
+        $this->expectException(\RuntimeException::class);
+
         $paginator = new Paginator(new EventDispatcher());
-        $paginator->paginate(array());
+        $paginator->paginate([]);
     }
 
     /**
      * @test
-     * @expectedException RuntimeException
      */
-    function shouldFailToPaginateUnsupportedValue()
+    public function shouldFailToPaginateUnsupportedValue(): void
     {
+        $this->expectException(\RuntimeException::class);
+
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
 

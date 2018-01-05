@@ -8,7 +8,7 @@ class TraversableItemsTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldBeAbleToUseTraversableItems()
+    public function shouldBeAbleToUseTraversableItems(): void
     {
         $p = new Paginator;
 

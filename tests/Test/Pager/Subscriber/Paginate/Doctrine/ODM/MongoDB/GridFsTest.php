@@ -11,7 +11,7 @@ class GridFsTest extends BaseTestCaseMongoODM
     /**
      * @test
      */
-    function shouldPaginate()
+    public function shouldPaginate(): void
     {
         $this->populate();
 
@@ -27,7 +27,7 @@ class GridFsTest extends BaseTestCaseMongoODM
         $this->assertCount(4, $view->getItems());
     }
 
-    private function populate()
+    private function populate(): void
     {
         $mockFile = __DIR__.'/summer.gif';
         $dm = $this->getMockDocumentManager();

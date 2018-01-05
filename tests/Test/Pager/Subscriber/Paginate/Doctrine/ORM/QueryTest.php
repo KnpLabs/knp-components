@@ -14,7 +14,7 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    function shouldUseOutputWalkersIfAskedTo()
+    public function shouldUseOutputWalkersIfAskedTo(): void
     {
         $this->populate();
 
@@ -30,7 +30,7 @@ SQL;
         $q->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, true);
         $this->startQueryLog();
         $p = new Paginator;
-        $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
+        $view = $p->paginate($q, 1, 10, ['wrap-queries' => true]);
         $this->assertEquals(3, $this->queryAnalyzer->getNumExecutedQueries());
         $this->assertCount(3, $view);
     }
@@ -38,7 +38,7 @@ SQL;
     /**
      * @test
      */
-    function shouldNotUseOutputWalkersByDefault()
+    public function shouldNotUseOutputWalkersByDefault(): void
     {
         $this->populate();
 
@@ -52,7 +52,7 @@ SQL;
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $this->startQueryLog();
         $p = new Paginator;
-        $view = $p->paginate($q, 1, 10, array('wrap-queries' => false));
+        $view = $p->paginate($q, 1, 10, ['wrap-queries' => false]);
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $this->assertCount(3, $view);
     }
@@ -60,7 +60,7 @@ SQL;
     /**
      * @test
      */
-    function shouldFetchJoinCollectionsIfNeeded()
+    public function shouldFetchJoinCollectionsIfNeeded(): void
     {
         $this->populate();
 
@@ -76,20 +76,20 @@ SQL;
         $q->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, true);
         $this->startQueryLog();
         $p = new Paginator;
-        $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
+        $view = $p->paginate($q, 1, 10, ['wrap-queries' => true]);
         $this->assertEquals(3, $this->queryAnalyzer->getNumExecutedQueries());
         $this->assertCount(3, $view);
     }
 
     protected function getUsedEntityFixtures(): array
     {
-        return array(
+        return [
             Product::class,
             Tag::class
-        );
+        ];
     }
 
-    private function populate()
+    private function populate(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $cheep = new Tag;

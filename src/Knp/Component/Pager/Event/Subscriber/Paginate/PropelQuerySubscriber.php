@@ -9,7 +9,7 @@ use Knp\Component\Pager\Event\ItemsEvent;
 
 class PropelQuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
         if ($event->target instanceof ModelCriteria) {
             // process count
@@ -35,17 +35,17 @@ class PropelQuerySubscriber implements EventSubscriberInterface
                 ;
                 $result = $resultQuery->find();
             } else {
-                $result = array(); // count is 0
+                $result = []; // count is 0
             }
             $event->items = $result;
             $event->stopPropagation();
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 0)
-        );
+        return [
+            'knp_pager.items' => ['items', 0]
+        ];
     }
 }

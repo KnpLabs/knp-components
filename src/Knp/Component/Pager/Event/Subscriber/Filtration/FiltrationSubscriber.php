@@ -13,7 +13,7 @@ class FiltrationSubscriber implements EventSubscriberInterface
      */
     private $isLoaded = false;
 
-    public function before(BeforeEvent $event)
+    public function before(BeforeEvent $event): void
     {
         // Do not lazy-load more than once
         if ($this->isLoaded) {
@@ -30,8 +30,8 @@ class FiltrationSubscriber implements EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
-        return array(
-            'knp_pager.before' => array('before', 1),
-        );
+        return [
+            'knp_pager.before' => ['before', 1],
+        ];
     }
 }

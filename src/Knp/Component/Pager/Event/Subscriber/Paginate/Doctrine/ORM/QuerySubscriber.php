@@ -13,7 +13,7 @@ class QuerySubscriber implements EventSubscriberInterface
     const HINT_COUNT = 'knp_paginator.count';
     const HINT_FETCH_JOIN_COLLECTION = 'knp_paginator.fetch_join_collection';
 
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
         if (!$event->target instanceof Query) {
             return;
@@ -48,10 +48,10 @@ class QuerySubscriber implements EventSubscriberInterface
         $event->items = iterator_to_array($paginator);
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 0)
-        );
+        return [
+            'knp_pager.items' => ['items', 0]
+        ];
     }
 }

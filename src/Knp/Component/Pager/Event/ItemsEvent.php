@@ -39,30 +39,30 @@ class ItemsEvent extends Event
 
     private $offset;
     private $limit;
-    private $customPaginationParams = array();
+    private $customPaginationParams = [];
 
-    public function __construct($offset, $limit)
+    public function __construct(int $offset, int $limit)
     {
         $this->offset = $offset;
         $this->limit = $limit;
     }
 
-    public function setCustomPaginationParameter($name, $value)
+    public function setCustomPaginationParameter($name, $value): void
     {
         $this->customPaginationParams[$name] = $value;
     }
 
-    public function getCustomPaginationParameters()
+    public function getCustomPaginationParameters(): array
     {
         return $this->customPaginationParams;
     }
 
-    public function getLimit()
+    public function getLimit(): int
     {
         return $this->limit;
     }
 
-    public function getOffset()
+    public function getOffset(): int
     {
         return $this->offset;
     }

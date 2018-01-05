@@ -34,7 +34,7 @@ class ArraySubscriber implements EventSubscriberInterface
         $this->propertyAccessor = $accessor;
     }
 
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
         if (!is_array($event->target) || empty($_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]])) {
             return;
@@ -44,7 +44,7 @@ class ArraySubscriber implements EventSubscriberInterface
             throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]]}] this field is not in whitelist");
         }
 
-        $sortFunction = isset($event->options['sortFunction']) ? $event->options['sortFunction'] : array($this, 'proxySortFunction');
+        $sortFunction = isset($event->options['sortFunction']) ? $event->options['sortFunction'] : [$this, 'proxySortFunction'];
         $sortField = $_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]];
 
         // compatibility layer
@@ -52,18 +52,18 @@ class ArraySubscriber implements EventSubscriberInterface
             $sortField = substr($sortField, 1);
         }
 
-        call_user_func_array($sortFunction, array(
+        call_user_func_array($sortFunction, [
             &$event->target,
             $sortField,
             isset($_GET[$event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]]) && strtolower($_GET[$event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]]) === 'asc' ? 'asc' : 'desc'
-        ));
+        ]);
     }
 
     private function proxySortFunction(&$target, $sortField, $sortDirection) {
         $this->currentSortingField = $sortField;
         $this->sortDirection = $sortDirection;
 
-        return usort($target, array($this, 'sortFunction'));
+        return usort($target, [$this, 'sortFunction']);
     }
 
     /**
@@ -98,8 +98,8 @@ class ArraySubscriber implements EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
-        return array(
-            'knp_pager.items' => array('items', 1)
-        );
+        return [
+            'knp_pager.items' => ['items', 1]
+        ];
     }
 }

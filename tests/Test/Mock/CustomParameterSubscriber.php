@@ -7,14 +7,14 @@ use Knp\Component\Pager\Event\Subscriber\Paginate\ArraySubscriber;
 
 class CustomParameterSubscriber extends ArraySubscriber
 {
-    static function getSubscribedEvents()
+    public static function getSubscribedEvents()
     {
-        return array(
-            'knp_pager.items' => array('items', 10)
-        );
+        return [
+            'knp_pager.items' => ['items', 10]
+        ];
     }
 
-    function items(ItemsEvent $e)
+    public function items(ItemsEvent $e): void
     {
         $e->setCustomPaginationParameter('test', 'val');
         parent::items($e);

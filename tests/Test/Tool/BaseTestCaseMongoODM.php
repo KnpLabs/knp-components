@@ -24,7 +24,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!class_exists('MongoClient')) {
             $this->markTestSkipped('Missing Mongo extension.');
@@ -34,7 +34,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
     /**
      * {@inheritdoc}
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         if ($this->dm) {
             foreach ($this->dm->getDocumentDatabases() as $db) {
@@ -77,7 +77,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
      */
     protected function getMockMappedDocumentManager(EventManager $evm = null)
     {
-        $conn = $this->getMock(Connection::class);
+        $conn = $this->createMock(Connection::class);
         $config = $this->getMockAnnotatedConfig();
 
         $this->dm = DocumentManager::create($conn, $config, $evm ?: $this->getEventManager());
@@ -151,7 +151,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
         $config
             ->expects($this->any())
             ->method('getDefaultCommitOptions')
-            ->will($this->returnValue(array('safe' => true)))
+            ->will($this->returnValue(['safe' => true]))
         ;
         $mappingDriver = $this->getMetadataDriverImplementation();
 

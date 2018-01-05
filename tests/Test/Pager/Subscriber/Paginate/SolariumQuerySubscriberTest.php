@@ -13,12 +13,13 @@ class SolariumQuerySubscriberTest extends TestCase
 {
     /**
      * @test
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage One of listeners must count and slice given target
      */
-    function arrayShouldNotBeHandled()
+    public function arrayShouldNotBeHandled(): void
     {
-        $array = array(1 => 'foo', 2 => 'bar');
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('One of listeners must count and slice given target');
+
+        $array = [1 => 'foo', 2 => 'bar'];
 
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new SolariumQuerySubscriber);

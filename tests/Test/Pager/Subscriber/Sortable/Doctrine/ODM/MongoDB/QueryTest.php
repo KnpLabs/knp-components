@@ -14,7 +14,7 @@ class QueryTest extends BaseTestCaseMongoODM
     /**
      * @test
      */
-    function shouldSortSimpleDoctrineQuery()
+    public function shouldSortSimpleDoctrineQuery(): void
     {
         $this->populate();
 
@@ -49,7 +49,7 @@ class QueryTest extends BaseTestCaseMongoODM
     /**
      * @test
      */
-    function shouldSortOnAnyField()
+    public function shouldSortOnAnyField(): void
     {
         $_GET['sort'] = '"title\'';
         $_GET['direction'] = 'asc';
@@ -63,7 +63,7 @@ class QueryTest extends BaseTestCaseMongoODM
         $view = $p->paginate($query, 1, 10);
     }
 
-    private function populate()
+    private function populate(): void
     {
         $em = $this->getMockDocumentManager();
         $summer = new Article;

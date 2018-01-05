@@ -11,7 +11,7 @@ use Knp\Component\Pager\PaginatorInterface;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
         if ($event->target instanceof Query) {
             if (isset($_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]])) {
@@ -24,8 +24,8 @@ class QuerySubscriber implements EventSubscriberInterface
                 }
 
                 $sortFieldParameterNames = $_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]];
-                $fields = array();
-                $aliases = array();
+                $fields = [];
+                $aliases = [];
                 foreach (explode('+', $sortFieldParameterNames) as $sortFieldParameterName) {
                     $parts = explode('.', $sortFieldParameterName, 2);
 
@@ -48,8 +48,8 @@ class QuerySubscriber implements EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
-        return array(
-            'knp_pager.items' => array('items', 1)
-        );
+        return [
+            'knp_pager.items' => ['items', 1]
+        ];
     }
 }

@@ -25,7 +25,7 @@ class SlidingPagination extends AbstractPagination
      */
     public $renderer;
 
-    public function setPageRange($range)
+    public function setPageRange(int $range): void
     {
         $this->range = intval(abs($range));
     }
@@ -33,7 +33,7 @@ class SlidingPagination extends AbstractPagination
     /**
      * Renders the pagination
      */
-    public function __toString()
+    public function __toString(): string
     {
         $data = $this->getPaginationData();
         $output = '';
@@ -45,7 +45,7 @@ class SlidingPagination extends AbstractPagination
         return $output;
     }
 
-    public function getPaginationData()
+    public function getPaginationData(): array
     {
         $pageCount = intval(ceil($this->totalCount / $this->numItemsPerPage));
         $current = $this->currentPageNumber;
@@ -67,14 +67,14 @@ class SlidingPagination extends AbstractPagination
             $pages = range($offset + 1, $offset + $this->range);
         }
 
-        $viewData = array(
+        $viewData = [
             'last' => $pageCount,
             'current' => $current,
             'numItemsPerPage' => $this->numItemsPerPage,
             'first' => 1,
             'pageCount' => $pageCount,
             'totalCount' => $this->totalCount,
-        );
+        ];
         $viewData = array_merge($viewData, $this->paginatorOptions, $this->customParameters);
 
         if ($current - 1 > 0) {

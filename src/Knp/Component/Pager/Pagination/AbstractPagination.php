@@ -6,7 +6,7 @@ abstract class AbstractPagination implements PaginationInterface
 {
     protected $currentPageNumber;
     protected $numItemsPerPage;
-    protected $items = array();
+    protected $items = [];
     protected $totalCount;
     protected $paginatorOptions;
     protected $customParameters;
@@ -14,60 +14,65 @@ abstract class AbstractPagination implements PaginationInterface
     /**
      * {@inheritDoc}
      */
-    public function rewind() {
+    public function rewind(): void
+    {
         reset($this->items);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function current() {
+    public function current()
+    {
         return current($this->items);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function key() {
+    public function key() 
+    {
         return key($this->items);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function next() {
+    public function next(): void
+    {
         next($this->items);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function valid() {
+    public function valid(): bool
+    {
         return key($this->items) !== null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function count()
+    public function count(): int
     {
         return count($this->items);
     }
 
-    public function setCustomParameters(array $parameters)
+    public function setCustomParameters(array $parameters): void
     {
         $this->customParameters = $parameters;
     }
 
-    public function getCustomParameter($name)
+    public function getCustomParameter(string $name)
     {
-        return isset($this->customParameters[$name]) ? $this->customParameters[$name] : null;
+        return $this->customParameters[$name] ?? null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setCurrentPageNumber($pageNumber)
+    public function setCurrentPageNumber(int $pageNumber): void
     {
         $this->currentPageNumber = $pageNumber;
     }
@@ -75,9 +80,9 @@ abstract class AbstractPagination implements PaginationInterface
     /**
      * Get currently used page number
      *
-     * @return integer
+     * @return int
      */
-    public function getCurrentPageNumber()
+    public function getCurrentPageNumber(): int
     {
         return $this->currentPageNumber;
     }
@@ -85,7 +90,7 @@ abstract class AbstractPagination implements PaginationInterface
     /**
      * {@inheritDoc}
      */
-    public function setItemNumberPerPage($numItemsPerPage)
+    public function setItemNumberPerPage(int $numItemsPerPage): void
     {
         $this->numItemsPerPage = $numItemsPerPage;
     }
@@ -93,9 +98,9 @@ abstract class AbstractPagination implements PaginationInterface
     /**
      * Get number of items per page
      *
-     * @return integer
+     * @return int
      */
-    public function getItemNumberPerPage()
+    public function getItemNumberPerPage(): int
     {
         return $this->numItemsPerPage;
     }
@@ -103,7 +108,7 @@ abstract class AbstractPagination implements PaginationInterface
     /**
      * {@inheritDoc}
      */
-    public function setTotalItemCount($numTotal)
+    public function setTotalItemCount(int $numTotal): void
     {
         $this->totalCount = $numTotal;
     }
@@ -111,9 +116,9 @@ abstract class AbstractPagination implements PaginationInterface
     /**
      * Get total item number available
      *
-     * @return integer
+     * @return int
      */
-    public function getTotalItemCount()
+    public function getTotalItemCount(): int
     {
         return $this->totalCount;
     }
@@ -121,7 +126,7 @@ abstract class AbstractPagination implements PaginationInterface
     /**
      * {@inheritDoc}
      */
-    public function setPaginatorOptions($options)
+    public function setPaginatorOptions(array $options): void
     {
         $this->paginatorOptions = $options;
     }
@@ -139,25 +144,22 @@ abstract class AbstractPagination implements PaginationInterface
     /**
      * {@inheritDoc}
      */
-    public function setItems($items)
+    public function setItems(iterable $items): void
     {
-        if (!is_array($items) && !$items instanceof \Traversable) {
-            throw new \UnexpectedValueException("Items must be an array type");
-        }
         $this->items = $items;
     }
 
     /**
      * Get current items
      *
-     * @return array
+     * @return iterable
      */
-    public function getItems()
+    public function getItems(): iterable
     {
         return $this->items;
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return array_key_exists($offset, $this->items);
     }
@@ -167,7 +169,7 @@ abstract class AbstractPagination implements PaginationInterface
         return $this->items[$offset];
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if (null === $offset) {
             $this->items[] = $value;
@@ -176,7 +178,7 @@ abstract class AbstractPagination implements PaginationInterface
         }
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->items[$offset]);
     }

@@ -8,6 +8,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
 use Knp\Component\Pager\Event;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 
 /**
  * Paginator uses event dispatcher to trigger pagination
@@ -27,14 +28,14 @@ class Paginator implements PaginatorInterface
      *
      * @var array
      */
-    protected $defaultOptions = array(
+    protected $defaultOptions = [
         self::PAGE_PARAMETER_NAME => 'page',
         self::SORT_FIELD_PARAMETER_NAME => 'sort',
         self::SORT_DIRECTION_PARAMETER_NAME => 'direction',
         self::FILTER_FIELD_PARAMETER_NAME => 'filterParam',
         self::FILTER_VALUE_PARAMETER_NAME => 'filterValue',
         self::DISTINCT => true
-    );
+    ];
 
     /**
      * Initialize paginator with event dispatcher
@@ -59,7 +60,7 @@ class Paginator implements PaginatorInterface
      *
      * @param array $options
      */
-    public function setDefaultPaginatorOptions(array $options)
+    public function setDefaultPaginatorOptions(array $options): void
     {
         $this->defaultOptions = array_merge($this->defaultOptions, $options);
     }
@@ -71,16 +72,16 @@ class Paginator implements PaginatorInterface
      * responsible for the pagination result representation
      *
      * @param mixed $target - anything what needs to be paginated
-     * @param integer $page - page number, starting from 1
-     * @param integer $limit - number of items per page
+     * @param int $page - page number, starting from 1
+     * @param int $limit - number of items per page
      * @param array $options - less used options:
      *     boolean $distinct - default true for distinction of results
      *     string $alias - pagination alias, default none
      *     array $whitelist - sortable whitelist for target fields being paginated
      * @throws \LogicException
-     * @return \Knp\Component\Pager\Pagination\PaginationInterface
+     * @return PaginationInterface
      */
-    public function paginate($target, $page = 1, $limit = 10, array $options = array())
+    public function paginate($target, int $page = 1, int $limit = 10, array $options = []): PaginationInterface
     {
         $limit = intval(abs($limit));
         if (!$limit) {
@@ -142,7 +143,7 @@ class Paginator implements PaginatorInterface
      *
      * @param \Symfony\Component\EventDispatcher\EventSubscriberInterface $subscriber
      */
-    public function subscribe(EventSubscriberInterface $subscriber)
+    public function subscribe(EventSubscriberInterface $subscriber): void
     {
         $this->eventDispatcher->addSubscriber($subscriber);
     }
@@ -154,7 +155,7 @@ class Paginator implements PaginatorInterface
      * @param object $listener
      * @param integer $priority
      */
-    public function connect($eventName, $listener, $priority = 0)
+    public function connect(string $eventName, $listener, int $priority = 0): void
     {
         $this->eventDispatcher->addListener($eventName, $listener, $priority);
     }

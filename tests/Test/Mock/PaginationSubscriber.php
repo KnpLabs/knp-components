@@ -8,14 +8,14 @@ use Knp\Component\Pager\Pagination\SlidingPagination;
 
 class PaginationSubscriber implements EventSubscriberInterface
 {
-    static function getSubscribedEvents()
+    public static function getSubscribedEvents()
     {
-        return array(
-            'knp_pager.pagination' => array('pagination', 0)
-        );
+        return [
+            'knp_pager.pagination' => ['pagination', 0]
+        ];
     }
 
-    function pagination(PaginationEvent $e)
+    public function pagination(PaginationEvent $e): void
     {
         $e->setPagination(new SlidingPagination);
         $e->stopPropagation();
