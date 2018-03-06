@@ -12,7 +12,15 @@ class ElasticaQuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
+        // Check if the result has already been sorted
+        $customPaginationParameters = $event->getCustomPaginationParameters();
+        if (!empty($customPaginationParameters['sorted']) ) {
+            return;
+        }
+
         if (is_array($event->target) && 2 === count($event->target) && reset($event->target) instanceof SearchableInterface && end($event->target) instanceof Query) {
+            $event->setCustomPaginationParameter('sorted', true);
+
             list($searchable, $query) = $event->target;
 
             if (isset($_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]])) {

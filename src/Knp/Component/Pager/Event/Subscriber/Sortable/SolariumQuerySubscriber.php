@@ -15,7 +15,15 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
+        // Check if the result has already been sorted
+        $customPaginationParameters = $event->getCustomPaginationParameters();
+        if (!empty($customPaginationParameters['sorted']) ) {
+            return;
+        }
+
         if (is_array($event->target) && 2 == count($event->target)) {
+            $event->setCustomPaginationParameter('sorted', true);
+
             $values = array_values($event->target);
             list($client, $query) = $values;
 
