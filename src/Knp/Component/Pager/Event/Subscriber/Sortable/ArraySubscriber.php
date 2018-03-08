@@ -78,6 +78,27 @@ class ArraySubscriber implements EventSubscriberInterface
             throw new \UnexpectedValueException('You need symfony/property-access component to use this sorting function');
         }
 
+        // @see https://bugs.php.net/bug.php?id=50688
+        // To avoid this problem in PHP 5.x we can't use PropertyAccessor::isReadable()
+        if (version_compare(PHP_VERSION, '7.0', '<')) {
+            if (is_object($object1)) {
+                // snake to camelcase
+                $sortFieldName = ucfirst(strtr(ucwords(strtr($this->currentSortingField, array('_' => ' '))), array(' ' => '')));
+                $currentSortingFieldGetter = 'get' . $sortFieldName;
+                // Getter detection
+                $class = new \ReflectionClass(get_class($object1));
+                if (!$class->hasMethod($currentSortingFieldGetter)) {
+                    return 0;
+                }
+            }
+        } else {
+            if (!$this->propertyAccessor->isReadable($object1, $this->currentSortingField) ||
+                !$this->propertyAccessor->isReadable($object2, $this->currentSortingField)
+            ) {
+                return 0;
+            }
+        }
+
         $fieldValue1 = $this->propertyAccessor->getValue($object1, $this->currentSortingField);
         $fieldValue2 = $this->propertyAccessor->getValue($object2, $this->currentSortingField);
 
