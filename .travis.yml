@@ -14,5 +14,6 @@ before_script:
     # this is a workaround till doctrine/mongodb-odm move to mongodb extension
     - composer remove --dev --no-update doctrine/mongodb-odm;
     - composer install --prefer-dist
+    - phpunit --version
 
 script: phpunit

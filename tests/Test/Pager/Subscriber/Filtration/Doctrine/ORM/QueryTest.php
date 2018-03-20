@@ -705,13 +705,13 @@ SQL;
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
         $defaultFilterFields = 'a.title';
-        $view = $paginator->paginate($query, 1, 10, compact(PaginatorInterface::DEFAULT_FILTER_FIELDS));
+        $view = $paginator->paginate($query, 1, 10, compact('defaultFilterFields'));
         $items = $view->getItems();
         $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
 
         $defaultFilterFields = 'a.id,a.title';
-        $view = $paginator->paginate($query, 1, 10, compact(PaginatorInterface::DEFAULT_FILTER_FIELDS));
+        $view = $paginator->paginate($query, 1, 10, compact('defaultFilterFields'));
         $items = $view->getItems();
         $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
