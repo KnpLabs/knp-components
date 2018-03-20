@@ -13,7 +13,15 @@ class QuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
+        // Check if the result has already been sorted by an other sort subscriber
+        $customPaginationParameters = $event->getCustomPaginationParameters();
+        if (!empty($customPaginationParameters['sorted']) ) {
+            return;
+        }
+
         if ($event->target instanceof Query) {
+            $event->setCustomPaginationParameter('sorted', true);
+
             if (isset($_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]])) {
                 $dir = isset($_GET[$event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]]) && strtolower($_GET[$event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]]) === 'asc' ? 'asc' : 'desc';
 
