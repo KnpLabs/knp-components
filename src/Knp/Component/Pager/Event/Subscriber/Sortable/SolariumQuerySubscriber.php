@@ -15,7 +15,7 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
-        // Check if the result has already been sorted
+        // Check if the result has already been sorted by an other sort subscriber
         $customPaginationParameters = $event->getCustomPaginationParameters();
         if (!empty($customPaginationParameters['sorted']) ) {
             return;
