@@ -35,6 +35,7 @@ class ArraySubscriberTest extends BaseTestCase
 
         $this->assertEquals(2, $array[0]['entry']['sortProperty']);
         $arraySubscriber = new ArraySubscriber();
+
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(1, $array[0]['entry']['sortProperty']);
 

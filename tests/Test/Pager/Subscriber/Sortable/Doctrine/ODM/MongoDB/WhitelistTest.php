@@ -2,15 +2,10 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ODM\MongoDB;
 
-use Knp\Component\Pager\PaginatorInterface;
-use Test\Tool\BaseTestCaseMongoODM;
 use Knp\Component\Pager\Paginator;
-use Knp\Component\Pager\Pagination\SlidingPagination;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
-use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ODM\MongoDB\QuerySubscriber as Sortable;
+use Knp\Component\Pager\PaginatorInterface;
 use Test\Fixture\Document\Article;
+use Test\Tool\BaseTestCaseMongoODM;
 
 class WhitelistTest extends BaseTestCaseMongoODM
 {
@@ -29,15 +24,11 @@ class WhitelistTest extends BaseTestCaseMongoODM
         ;
 
         $p = new Paginator;
-        $sortFieldWhitelist = array('title');
-        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
+        $view = $p->paginate($query, 1, 10, [PaginatorInterface::SORT_FIELD_WHITELIST => ['title']]);
 
         $items = array_values($view->getItems());
         $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
-
-        $_GET['sort'] = 'id';
-        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
     }
 
     /**

@@ -60,6 +60,11 @@ class ItemsEvent extends Event
         return $this->customPaginationParams;
     }
 
+    public function unsetCustomPaginationParameter($name)
+    {
+        unset($this->customPaginationParams[$name]);
+    }
+
     public function getLimit()
     {
         return $this->limit;

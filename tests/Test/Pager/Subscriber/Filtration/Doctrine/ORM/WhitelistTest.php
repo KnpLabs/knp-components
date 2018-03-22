@@ -3,14 +3,13 @@
 namespace Test\Pager\Subscriber\Filtration\Doctrine\ORM;
 
 use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber;
-use Knp\Component\Pager\ParametersResolver;
-use Knp\Component\Pager\PaginatorInterface;
-use Test\Tool\BaseTestCaseORM;
-use Knp\Component\Pager\Paginator;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
-use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber as Filtration;
+use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\PaginatorInterface;
+use Knp\Component\Pager\ParametersResolver;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Entity\Article;
+use Test\Tool\BaseTestCaseORM;
 
 class WhitelistTest extends BaseTestCaseORM
 {
@@ -39,8 +38,7 @@ class WhitelistTest extends BaseTestCaseORM
             ->with($this->equalTo('filterValue'), $this->equalTo(null))
             ->willReturn('summer');
 
-        $filterFieldWhitelist = ['a.title'];
-        $view = $paginator->paginate($query, 1, 10, compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
+        $view = $paginator->paginate($query, 1, 10, [PaginatorInterface::FILTER_FIELD_WHITELIST => ['a.title']]);
 
         $items = $view->getItems();
         $this->assertCount(1, $items);
@@ -73,8 +71,7 @@ class WhitelistTest extends BaseTestCaseORM
             ->with($this->equalTo('filterValue'), $this->equalTo(null))
             ->willReturn('summer');
 
-        $filterFieldWhitelist = ['a.title'];
-        $paginator->paginate($query, 1, 10, compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
+        $paginator->paginate($query, 1, 10, [PaginatorInterface::FILTER_FIELD_WHITELIST => ['a.title']]);
     }
 
     /**

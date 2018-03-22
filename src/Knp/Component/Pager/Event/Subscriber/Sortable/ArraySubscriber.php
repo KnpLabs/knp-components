@@ -26,6 +26,12 @@ class ArraySubscriber implements EventSubscriberInterface
 
     public function items(ItemsEvent $event)
     {
+        // Check if the result has already been sorted by an other sort subscriber
+        $customPaginationParameters = $event->getCustomPaginationParameters();
+        if (!empty($customPaginationParameters['sorted']) ) {
+            return;
+        }
+
         if (!is_array($event->target)) {
             return;
         }
@@ -39,6 +45,8 @@ class ArraySubscriber implements EventSubscriberInterface
         if ($field === null) {
             return;
         }
+
+        $event->setCustomPaginationParameter('sorted', true);
 
         $direction = $parametersResolver->get(
             $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME],

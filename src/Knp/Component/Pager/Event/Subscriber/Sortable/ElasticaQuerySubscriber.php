@@ -6,15 +6,22 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Elastica\Query;
 use Elastica\SearchableInterface;
-use Knp\Component\Pager\PaginatorInterface;
 
 class ElasticaQuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
+        // Check if the result has already been sorted by an other sort subscriber
+        $customPaginationParameters = $event->getCustomPaginationParameters();
+        if (!empty($customPaginationParameters['sorted']) ) {
+            return;
+        }
+
         if (!is_array($event->target) || count($event->target) !== 2) {
             return;
         }
+
+        $event->setCustomPaginationParameter('sorted', true);
 
         [$searchable, $query] = $event->target;
 

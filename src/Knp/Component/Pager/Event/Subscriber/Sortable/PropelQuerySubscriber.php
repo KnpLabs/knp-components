@@ -10,9 +10,17 @@ class PropelQuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event)
     {
+        // Check if the result has already been sorted by an other sort subscriber
+        $customPaginationParameters = $event->getCustomPaginationParameters();
+        if (!empty($customPaginationParameters['sorted']) ) {
+            return;
+        }
+
         if (!$event->target instanceof \ModelCriteria) {
             return;
         }
+
+        $event->setCustomPaginationParameter('sorted', true);
 
         $query = $event->target;
 
