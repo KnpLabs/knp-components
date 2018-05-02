@@ -30,6 +30,7 @@ class ElasticaTest extends BaseTestCase
         $response->expects($this->once())
             ->method('getResults')
             ->will($this->returnValue([new Result([]), new Result([])]));
+
         $searchable = $this->getMockBuilder(SearchableInterface::class)->getMock();
         $searchable->expects($this->once())
             ->method('search')

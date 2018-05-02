@@ -206,7 +206,7 @@ ___SQL;
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
         return [Article::class];
     }

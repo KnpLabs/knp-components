@@ -36,9 +36,17 @@ class ArraySubscriber implements EventSubscriberInterface
 
     public function items(ItemsEvent $event): void
     {
+        // Check if the result has already been sorted by an other sort subscriber
+        $customPaginationParameters = $event->getCustomPaginationParameters();
+        if (!empty($customPaginationParameters['sorted']) ) {
+            return;
+        }
+
         if (!is_array($event->target) || empty($_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]])) {
             return;
         }
+
+        $event->setCustomPaginationParameter('sorted', true);
 
         if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST]) && !in_array($_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]], $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
             throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]]}] this field is not in whitelist");

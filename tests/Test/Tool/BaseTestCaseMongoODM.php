@@ -54,7 +54,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
      * @param EventManager $evm
      * @return DocumentManager
      */
-    protected function getMockDocumentManager(EventManager $evm = null)
+    protected function getMockDocumentManager(EventManager $evm = null): DocumentManager
     {
         $conn = new Connection;
         $config = $this->getMockAnnotatedConfig();
@@ -75,7 +75,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
      * @param EventManager $evm
      * @return DocumentManager
      */
-    protected function getMockMappedDocumentManager(EventManager $evm = null)
+    protected function getMockMappedDocumentManager(EventManager $evm = null): DocumentManager
     {
         $conn = $this->createMock(Connection::class);
         $config = $this->getMockAnnotatedConfig();
@@ -89,7 +89,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
      *
      * @return MappingDriver
      */
-    protected function getMetadataDriverImplementation()
+    protected function getMetadataDriverImplementation(): MappingDriver
     {
         return new AnnotationDriver($_ENV['annotation_reader']);
     }
@@ -99,7 +99,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
      *
      * @return EventManager
      */
-    private function getEventManager()
+    private function getEventManager(): EventManager
     {
         return new EventManager();
     }
@@ -109,7 +109,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
      *
      * @return Configuration
      */
-    private function getMockAnnotatedConfig()
+    private function getMockAnnotatedConfig(): Configuration
     {
         $config = $this->createMock(Configuration::class);
         $config->expects($this->once())

@@ -56,7 +56,7 @@ class WhitelistTest extends BaseTestCaseORM
         $this->assertEquals('summer', $items[0]->getTitle());
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
         return [Article::class];
     }
