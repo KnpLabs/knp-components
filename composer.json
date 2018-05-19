@@ -32,14 +32,7 @@
     },
 
     "suggest": {
-        "symfony/property-access": "To allow sorting arrays",
-        "doctrine/orm" : "to allow usage pagination with Doctrine ORM",
-        "doctrine/common" : "to allow usage pagination with Doctrine ArrayCollection",
-        "doctrine/mongodb-odm" : "to allow usage pagination with Doctrine ODM MongoDB",
-        "doctrine/phpcr-odm" : "to allow usage pagination with Doctrine ODM PHPCR",
-        "ruflin/Elastica" : "to allow usage pagination with ElasticSearch Client",
-        "propel/propel1" : "to allow usage pagination with Propel ORM",
-        "solarium/solarium" : "to allow usage pagination with Solarium Client"
+        "symfony/property-access": "To allow sorting arrays"
     },
 
     "extra": {
