@@ -82,6 +82,7 @@ class Paginator implements PaginatorInterface
      */
     public function paginate($target, $page = 1, $limit = 10, array $options = array())
     {
+        $page = (int) $page; 
         $limit = intval(abs($limit));
         if (!$limit) {
             throw new \LogicException("Invalid item per page number, must be a positive number");
