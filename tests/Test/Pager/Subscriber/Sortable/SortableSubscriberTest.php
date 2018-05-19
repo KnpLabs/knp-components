@@ -10,7 +10,7 @@ class SortableSubscriberTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldRegisterExpectedSubscribersOnlyOnce()
+    public function shouldRegisterExpectedSubscribersOnlyOnce(): void
     {
         $dispatcher = $this->getMockBuilder(EventDispatcherInterface::class)->getMock();
         $dispatcher->expects($this->exactly(6))->method('addSubscriber');

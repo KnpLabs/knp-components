@@ -15,7 +15,7 @@ class QuerySubscriberTest extends BaseTestCasePHPCRODM
     /**
      * @test
      */
-    function shouldPaginateSimpleDoctrinePHPCRQuery()
+    public function shouldPaginateSimpleDoctrinePHPCRQuery(): void
     {
         $this->populate();
 
@@ -43,7 +43,7 @@ class QuerySubscriberTest extends BaseTestCasePHPCRODM
     /**
      * @test
      */
-    function shouldSupportPaginateStrategySubscriber()
+    public function shouldSupportPaginateStrategySubscriber(): void
     {
         $this->getMockDocumentManager();
         $query = $this->dm->createQueryBuilder()->fromDocument(Article::class, 'a')->getQuery();
@@ -53,7 +53,7 @@ class QuerySubscriberTest extends BaseTestCasePHPCRODM
         $this->assertInstanceOf(SlidingPagination::class, $pagination);
     }
 
-    private function populate()
+    private function populate(): void
     {
         $dm = $this->getMockDocumentManager();
 

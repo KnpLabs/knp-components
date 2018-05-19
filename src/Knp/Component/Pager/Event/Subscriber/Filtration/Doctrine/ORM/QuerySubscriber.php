@@ -11,7 +11,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
         if ($event->target instanceof Query) {
             if (!isset($_GET[$event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]]) || (empty($_GET[$event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]]) && $_GET[$event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]] !== "0")) {
@@ -46,10 +46,10 @@ class QuerySubscriber implements EventSubscriberInterface
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-                'knp_pager.items' => array('items', 0),
-        );
+        return [
+            'knp_pager.items' => ['items', 0],
+        ];
     }
 }

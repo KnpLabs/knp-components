@@ -17,7 +17,7 @@ class AfterEvent extends Event
         $this->pagination = $paginationView;
     }
 
-    public function getPaginationView()
+    public function getPaginationView(): PaginationInterface
     {
         return $this->pagination;
     }

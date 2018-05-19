@@ -15,7 +15,7 @@ class QueryTest extends BaseTestCaseMongoODM
     /**
      * @test
      */
-    function shouldPaginateSimpleDoctrineMongoDBQuery()
+    public function shouldPaginateSimpleDoctrineMongoDBQuery(): void
     {
         $this->populate();
 
@@ -42,7 +42,7 @@ class QueryTest extends BaseTestCaseMongoODM
     /**
      * @test
      */
-    function shouldSupportPaginateStrategySubscriber()
+    public function shouldSupportPaginateStrategySubscriber(): void
     {
         $query = $this
             ->getMockDocumentManager()
@@ -54,7 +54,7 @@ class QueryTest extends BaseTestCaseMongoODM
         $this->assertInstanceOf(SlidingPagination::class, $pagination);
     }
 
-    private function populate()
+    private function populate(): void
     {
         $em = $this->getMockDocumentManager();
         $summer = new Article;

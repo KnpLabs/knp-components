@@ -9,7 +9,7 @@ use Knp\Component\Pager\PaginatorInterface;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
         // Check if the result has already been sorted by an other sort subscriber
         $customPaginationParameters = $event->getCustomPaginationParameters();
@@ -38,16 +38,16 @@ class QuerySubscriber implements EventSubscriberInterface
                 $queryOptions = $reflectionProperty->getValue($event->target);
 
                 //@todo: seems like does not support multisort ??
-                $queryOptions['sort'] = array($field => $dir);
+                $queryOptions['sort'] = [$field => $dir];
                 $reflectionProperty->setValue($event->target, $queryOptions);
             }
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 1)
-        );
+        return [
+            'knp_pager.items' => ['items', 1]
+        ];
     }
 }

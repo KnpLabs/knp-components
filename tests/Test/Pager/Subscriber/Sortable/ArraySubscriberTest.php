@@ -12,22 +12,22 @@ class ArraySubscriberTest extends BaseTestCase
     /**
      * @test
      */
-    public function shouldSort()
+    public function shouldSort(): void
     {
-        $array = array(
-            array('entry' => array('sortProperty' => 2)),
-            array('entry' => array('sortProperty' => 3)),
-            array('entry' => array('sortProperty' => 1)),
-        );
+        $array = [
+            ['entry' => ['sortProperty' => 2]],
+            ['entry' => ['sortProperty' => 3]],
+            ['entry' => ['sortProperty' => 1]],
+        ];
 
         $itemsEvent = new ItemsEvent(0, 10);
         $itemsEvent->target = &$array;
-        $itemsEvent->options = array(PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort', PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord');
+        $itemsEvent->options = [PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort', PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord'];
 
         $arraySubscriber = new ArraySubscriber();
 
         // test asc sort
-        $_GET = array('sort' => '[entry][sortProperty]', 'ord' => 'asc');
+        $_GET = ['sort' => '[entry][sortProperty]', 'ord' => 'asc'];  
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(1, $array[0]['entry']['sortProperty']);
 
@@ -42,20 +42,20 @@ class ArraySubscriberTest extends BaseTestCase
     /**
      * @test
      */
-    public function shouldSortWithCustomCallback()
+    public function shouldSortWithCustomCallback(): void
     {
-        $array = array(
-            array('name' => 'hot'),
-            array('name' => 'cold'),
-            array('name' => 'hot'),
-        );
+        $array = [
+            ['name' => 'hot'],
+            ['name' => 'cold'],
+            ['name' => 'hot'],
+        ];
 
         $itemsEvent = new ItemsEvent(0, 10);
         $itemsEvent->target = &$array;
-        $itemsEvent->options = array(
+        $itemsEvent->options = [
             PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort',
             PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord',
-            'sortFunction' => function (&$target, $sortField, $sortDirection) {
+            'sortFunction' => function (&$target, $sortField, $sortDirection): void {
                 usort($target, function($object1, $object2) use ($sortField, $sortDirection) {
                     if ($object1[$sortField] === $object2[$sortField]) {
                         return 0;
@@ -64,12 +64,12 @@ class ArraySubscriberTest extends BaseTestCase
                     return ($object1[$sortField] === 'hot' ? 1 : -1) * ($sortDirection === 'asc' ? 1 : -1);
                 });
             },
-        );
+        ];
 
         $arraySubscriber = new ArraySubscriber();
 
         // test asc sort
-        $_GET = array('sort' => '.name', 'ord' => 'asc');
+        $_GET = ['sort' => '.name', 'ord' => 'asc'];
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals('cold', $array[0]['name']);
 

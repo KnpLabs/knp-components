@@ -13,7 +13,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class SolariumQuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
         // Check if the result has already been sorted by an other sort subscriber
         $customPaginationParameters = $event->getCustomPaginationParameters();
@@ -25,7 +25,7 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
             $event->setCustomPaginationParameter('sorted', true);
 
             $values = array_values($event->target);
-            list($client, $query) = $values;
+            [$client, $query] = $values;
 
             if ($client instanceof \Solarium\Client && $query instanceof \Solarium\QueryType\Select\Query\Query) {
                 if (isset($_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]])) {
@@ -43,10 +43,10 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
-        return array(
+        return [
             // trigger before the pagination subscriber
-            'knp_pager.items' => array('items', 1),
-        );
+            'knp_pager.items' => ['items', 1],
+        ];
     }
 
     private function getSortDirection($event)

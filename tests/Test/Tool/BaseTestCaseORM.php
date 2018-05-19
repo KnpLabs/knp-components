@@ -43,7 +43,7 @@ abstract class BaseTestCaseORM extends TestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
 
     }
@@ -58,10 +58,10 @@ abstract class BaseTestCaseORM extends TestCase
      */
     protected function getMockSqliteEntityManager(EventManager $evm = null)
     {
-        $conn = array(
+        $conn = [
             'driver' => 'pdo_sqlite',
             'memory' => true,
-        );
+        ];
 
         $config = $this->getMockAnnotatedConfig();
         $em = EntityManager::create($conn, $config, $evm ?: $this->getEventManager());
@@ -71,7 +71,7 @@ abstract class BaseTestCaseORM extends TestCase
         }, (array)$this->getUsedEntityFixtures());
 
         $schemaTool = new SchemaTool($em);
-        $schemaTool->dropSchema(array());
+        $schemaTool->dropSchema([]);
         $schemaTool->createSchema($schema);
         return $this->em = $em;
     }
@@ -95,7 +95,7 @@ abstract class BaseTestCaseORM extends TestCase
         }, (array)$this->getUsedEntityFixtures());
 
         $schemaTool = new SchemaTool($em);
-        $schemaTool->dropSchema(array());
+        $schemaTool->dropSchema([]);
         $schemaTool->createSchema($schema);
         return $this->em = $em;
     }
@@ -133,7 +133,7 @@ abstract class BaseTestCaseORM extends TestCase
      *
      * @throws \RuntimeException
      */
-    protected function startQueryLog()
+    protected function startQueryLog(): void
     {
         if (!$this->em || !$this->em->getConnection()->getDatabasePlatform()) {
             throw new \RuntimeException('EntityManager and database platform must be initialized');
@@ -154,7 +154,7 @@ abstract class BaseTestCaseORM extends TestCase
      * @param boolean $writeToLog
      * @throws \RuntimeException
      */
-    protected function stopQueryLog($dumpOnlySql = false, $writeToLog = false)
+    protected function stopQueryLog($dumpOnlySql = false, $writeToLog = false): void
     {
         if ($this->queryAnalyzer) {
             ob_start();
@@ -272,7 +272,7 @@ abstract class BaseTestCaseORM extends TestCase
         $config
             ->expects($this->any())
             ->method('getDefaultQueryHints')
-            ->will($this->returnValue(array()))
+            ->will($this->returnValue([]))
         ;
 
         return $config;

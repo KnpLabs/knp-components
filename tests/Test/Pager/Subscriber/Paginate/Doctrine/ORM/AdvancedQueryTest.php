@@ -15,10 +15,11 @@ class AdvancedQueryTest extends BaseTestCaseORM
      * count of such query
      *
      * @test
-     * @expectedException \RuntimeException
      */
-    function shouldFailToPaginateMultiRootQuery()
+    public function shouldFailToPaginateMultiRootQuery(): void
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->populate();
 
         $dql = <<<SQL
@@ -36,7 +37,7 @@ SQL;
     /**
      * @test
      */
-    function shouldBeAbleToPaginateWithHavingClause()
+    public function shouldBeAbleToPaginateWithHavingClause(): void
     {
         $this->populate();
 
@@ -50,14 +51,14 @@ SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $p = new Paginator;
-        $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
+        $view = $p->paginate($q, 1, 10, ['wrap-queries' => true]);
         $this->assertCount(3, $view);
     }
 
     /**
      * @test
      */
-    function shouldBeAbleToPaginateMixedKeyArray()
+    public function shouldBeAbleToPaginateMixedKeyArray(): void
     {
         $this->populate();
 
@@ -79,7 +80,7 @@ SQL;
     /**
      * @test
      */
-    function shouldBeAbleToPaginateCaseBasedQuery()
+    public function shouldBeAbleToPaginateCaseBasedQuery(): void
     {
         if (version_compare(\Doctrine\ORM\Version::VERSION, '2.2.0-DEV', '<')) {
             $this->markTestSkipped('Only recent orm version can test against this query.');
@@ -124,7 +125,7 @@ SQL;
     /**
      * @test
      */
-    function shouldUseOutputWalkersIfHinted()
+    public function shouldUseOutputWalkersIfHinted(): void
     {
         $this->populate();
 
@@ -138,7 +139,7 @@ SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $p = new Paginator;
-        $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
+        $view = $p->paginate($q, 1, 10, ['wrap-queries' => true]);
         $this->assertCount(3, $view);
     }
 
@@ -150,7 +151,7 @@ SQL;
         ];
     }
 
-    private function populate()
+    private function populate(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $cheep = new Tag;

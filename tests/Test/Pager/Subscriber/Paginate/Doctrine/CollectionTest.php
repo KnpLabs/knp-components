@@ -13,14 +13,14 @@ class CollectionTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldPaginateCollection()
+    public function shouldPaginateCollection(): void
     {
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new CollectionSubscriber);
         $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
         $p = new Paginator($dispatcher);
 
-        $items = new ArrayCollection(array('first', 'second'));
+        $items = new ArrayCollection(['first', 'second']);
         $view = $p->paginate($items, 1, 10);
 
         $this->assertEquals(1, $view->getCurrentPageNumber());
@@ -32,7 +32,7 @@ class CollectionTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldSlicePaginateAnArray()
+    public function shouldSlicePaginateAnArray(): void
     {
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new CollectionSubscriber);
@@ -51,9 +51,9 @@ class CollectionTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldSupportPaginateStrategySubscriber()
+    public function shouldSupportPaginateStrategySubscriber(): void
     {
-        $items = new ArrayCollection(array('first', 'second'));
+        $items = new ArrayCollection(['first', 'second']);
         $p = new Paginator;
         $view = $p->paginate($items, 1, 10);
         $this->assertInstanceOf(PaginationInterface::class, $view);

@@ -24,7 +24,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!class_exists('MongoClient')) {
             $this->markTestSkipped('Missing Mongo extension.');
@@ -34,7 +34,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
     /**
      * {@inheritdoc}
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         if ($this->dm) {
             foreach ($this->dm->getDocumentDatabases() as $db) {
@@ -54,7 +54,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
      * @param EventManager $evm
      * @return DocumentManager
      */
-    protected function getMockDocumentManager(EventManager $evm = null)
+    protected function getMockDocumentManager(EventManager $evm = null): DocumentManager
     {
         $conn = new Connection;
         $config = $this->getMockAnnotatedConfig();
@@ -75,9 +75,9 @@ abstract class BaseTestCaseMongoODM extends TestCase
      * @param EventManager $evm
      * @return DocumentManager
      */
-    protected function getMockMappedDocumentManager(EventManager $evm = null)
+    protected function getMockMappedDocumentManager(EventManager $evm = null): DocumentManager
     {
-        $conn = $this->getMock(Connection::class);
+        $conn = $this->createMock(Connection::class);
         $config = $this->getMockAnnotatedConfig();
 
         $this->dm = DocumentManager::create($conn, $config, $evm ?: $this->getEventManager());
@@ -89,7 +89,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
      *
      * @return MappingDriver
      */
-    protected function getMetadataDriverImplementation()
+    protected function getMetadataDriverImplementation(): MappingDriver
     {
         return new AnnotationDriver($_ENV['annotation_reader']);
     }
@@ -99,7 +99,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
      *
      * @return EventManager
      */
-    private function getEventManager()
+    private function getEventManager(): EventManager
     {
         return new EventManager();
     }
@@ -109,7 +109,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
      *
      * @return Configuration
      */
-    private function getMockAnnotatedConfig()
+    private function getMockAnnotatedConfig(): Configuration
     {
         $config = $this->createMock(Configuration::class);
         $config->expects($this->once())
@@ -151,7 +151,7 @@ abstract class BaseTestCaseMongoODM extends TestCase
         $config
             ->expects($this->any())
             ->method('getDefaultCommitOptions')
-            ->will($this->returnValue(array('safe' => true)))
+            ->will($this->returnValue(['safe' => true]))
         ;
         $mappingDriver = $this->getMetadataDriverImplementation();
 

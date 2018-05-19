@@ -11,7 +11,7 @@ class QueryBuilderTest extends BaseTestCaseORM
     /**
      * @test
      */
-    function shouldPaginateSimpleDoctrineQuery()
+    public function shouldPaginateSimpleDoctrineQuery(): void
     {
         $this->populate();
         $p = new Paginator;
@@ -38,7 +38,7 @@ class QueryBuilderTest extends BaseTestCaseORM
         return [Article::class];
     }
 
-    private function populate()
+    private function populate(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $summer = new Article;

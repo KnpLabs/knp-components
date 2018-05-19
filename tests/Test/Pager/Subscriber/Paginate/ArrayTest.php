@@ -12,14 +12,14 @@ class ArrayTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldPaginateAnArray()
+    public function shouldPaginateAnArray(): void
     {
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new ArraySubscriber);
         $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
         $p = new Paginator($dispatcher);
 
-        $items = array('first', 'second');
+        $items = ['first', 'second'];
         $view = $p->paginate($items, 1, 10);
         $this->assertInstanceOf(PaginationInterface::class, $view);
 
@@ -32,7 +32,7 @@ class ArrayTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldSlicePaginateAnArray()
+    public function shouldSlicePaginateAnArray(): void
     {
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new ArraySubscriber);
@@ -51,9 +51,9 @@ class ArrayTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldSupportPaginateStrategySubscriber()
+    public function shouldSupportPaginateStrategySubscriber(): void
     {
-        $items = array('first', 'second');
+        $items = ['first', 'second'];
         $p = new Paginator;
         $view = $p->paginate($items, 1, 10);
         $this->assertInstanceOf(PaginationInterface::class, $view);
@@ -62,9 +62,9 @@ class ArrayTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldPaginateArrayObject()
+    public function shouldPaginateArrayObject(): void
     {
-        $items = array('first', 'second');
+        $items = ['first', 'second'];
         $array = new \ArrayObject($items);
         $p = new Paginator;
         $view = $p->paginate($array, 1, 10);

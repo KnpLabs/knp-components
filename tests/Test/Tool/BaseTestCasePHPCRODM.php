@@ -21,14 +21,14 @@ abstract class BaseTestCasePHPCRODM extends TestCase
      */
     protected $dm;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!class_exists(Query::class)) {
             $this->markTestSkipped('Doctrine PHPCR-ODM is not available');
         }
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         if ($this->dm) {
             $this->dm = null;
@@ -52,16 +52,16 @@ abstract class BaseTestCasePHPCRODM extends TestCase
 
     private function getSession()
     {
-        $connection = DriverManager::getConnection(array(
+        $connection = DriverManager::getConnection([
             'driver' => 'pdo_sqlite',
             'path'   => ':memory:',
-        ));
+        ]);
         $factory = new RepositoryFactoryDoctrineDBAL();
-        $repository = $factory->getRepository(array(
+        $repository = $factory->getRepository([
             'jackalope.doctrine_dbal_connection' => $connection,
-        ));
+        ]);
 
-        $schema = new RepositorySchema(array('disable_fks' => true), $connection);
+        $schema = new RepositorySchema(['disable_fks' => true], $connection);
         $schema->reset();
 
         $session = $repository->login(new \PHPCR\SimpleCredentials('', ''));

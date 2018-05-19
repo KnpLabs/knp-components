@@ -8,7 +8,7 @@ class SlidingTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldBeAbleToProducePagination()
+    public function shouldBeAbleToProducePagination(): void
     {
         $p = new Paginator;
 
@@ -28,7 +28,7 @@ class SlidingTest extends BaseTestCase
         $this->assertEquals(3, $pagination['pageCount']);
         $this->assertEquals(23, $pagination['totalCount']);
         $this->assertEquals(2, $pagination['next']);
-        $this->assertEquals(array(1, 2, 3), $pagination['pagesInRange']);
+        $this->assertEquals([1, 2, 3], $pagination['pagesInRange']);
         $this->assertEquals(1, $pagination['firstPageInRange']);
         $this->assertEquals(3, $pagination['lastPageInRange']);
         $this->assertEquals(10, $pagination['currentItemCount']);
@@ -39,7 +39,7 @@ class SlidingTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldBeAbleToProduceWiderPagination()
+    public function shouldBeAbleToProduceWiderPagination(): void
     {
         $p = new Paginator;
 
@@ -55,7 +55,7 @@ class SlidingTest extends BaseTestCase
         $this->assertEquals(43, $pagination['totalCount']);
         $this->assertEquals(5, $pagination['next']);
         $this->assertEquals(3, $pagination['previous']);
-        $this->assertEquals(array(2, 3, 4, 5, 6), $pagination['pagesInRange']);
+        $this->assertEquals([2, 3, 4, 5, 6], $pagination['pagesInRange']);
         $this->assertEquals(2, $pagination['firstPageInRange']);
         $this->assertEquals(6, $pagination['lastPageInRange']);
         $this->assertEquals(5, $pagination['currentItemCount']);
@@ -66,7 +66,7 @@ class SlidingTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldHandleOddAndEvenRange()
+    public function shouldHandleOddAndEvenRange(): void
     {
         $p = new Paginator;
 
@@ -76,7 +76,7 @@ class SlidingTest extends BaseTestCase
         $pagination = $view->getPaginationData();
 
         $this->assertEquals(3, $pagination['previous']);
-        $this->assertEquals(array(3, 4, 5, 6), $pagination['pagesInRange']);
+        $this->assertEquals([3, 4, 5, 6], $pagination['pagesInRange']);
         $this->assertEquals(3, $pagination['firstPageInRange']);
         $this->assertEquals(6, $pagination['lastPageInRange']);
 
@@ -84,7 +84,7 @@ class SlidingTest extends BaseTestCase
         $pagination = $view->getPaginationData();
 
         $this->assertEquals(3, $pagination['previous']);
-        $this->assertEquals(array(3, 4, 5), $pagination['pagesInRange']);
+        $this->assertEquals([3, 4, 5], $pagination['pagesInRange']);
         $this->assertEquals(3, $pagination['firstPageInRange']);
         $this->assertEquals(5, $pagination['lastPageInRange']);
     }
@@ -92,7 +92,7 @@ class SlidingTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldNotFallbackToPageInCaseIfExceedsItemLimit()
+    public function shouldNotFallbackToPageInCaseIfExceedsItemLimit(): void
     {
         $p = new Paginator;
 

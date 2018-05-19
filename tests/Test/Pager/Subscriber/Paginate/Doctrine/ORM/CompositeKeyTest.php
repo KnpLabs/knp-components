@@ -13,7 +13,7 @@ class CompositeKeyTest extends BaseTestCaseORM
     /**
      * @test
      */
-    function shouldBeHandledByQueryHintByPassingCount()
+    public function shouldBeHandledByQueryHintByPassingCount(): void
     {
         $p = new Paginator;
         $em = $this->getMockSqliteEntityManager();
@@ -29,7 +29,7 @@ class CompositeKeyTest extends BaseTestCaseORM
             ->setHint('knp_paginator.count', $count)
         ;
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
-        $view = $p->paginate($query, 1, 10, array('wrap-queries' => true));
+        $view = $p->paginate($query, 1, 10, ['wrap-queries' => true]);
 
         $items = $view->getItems();
         $this->assertCount(4, $items);
@@ -40,7 +40,7 @@ class CompositeKeyTest extends BaseTestCaseORM
         return [Composite::class];
     }
 
-    private function populate(EntityManagerInterface $em)
+    private function populate(EntityManagerInterface $em): void
     {
         $summer = new Composite;
         $summer->setId(1);

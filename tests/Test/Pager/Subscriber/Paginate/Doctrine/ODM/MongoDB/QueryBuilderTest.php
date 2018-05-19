@@ -11,7 +11,7 @@ class QueryBuilderTest extends BaseTestCaseMongoODM
     /**
      * @test
      */
-    function shouldSupportPaginateStrategySubscriber()
+    public function shouldSupportPaginateStrategySubscriber(): void
     {
         $this->populate();
         $qb = $this
@@ -30,7 +30,7 @@ class QueryBuilderTest extends BaseTestCaseMongoODM
         $this->assertEquals('winter', $items[1]->getTitle());
     }
 
-    private function populate()
+    private function populate(): void
     {
         $em = $this->getMockDocumentManager();
         $summer = new Article;

@@ -11,7 +11,7 @@ class QueryBuilderSubscriberTest extends BaseTestCasePHPCRODM
     /**
      * @test
      */
-    public function shouldSupportPaginateStrategySubscriber()
+    public function shouldSupportPaginateStrategySubscriber(): void
     {
         $this->populate();
 
@@ -31,7 +31,7 @@ class QueryBuilderSubscriberTest extends BaseTestCasePHPCRODM
         $this->assertEquals('winter', $items->last()->getTitle());
     }
 
-    private function populate()
+    private function populate(): void
     {
         $dm = $this->getMockDocumentManager();
 

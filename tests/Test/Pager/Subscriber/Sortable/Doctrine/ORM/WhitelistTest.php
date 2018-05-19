@@ -11,17 +11,18 @@ class WhitelistTest extends BaseTestCaseORM
 {
     /**
      * @test
-     * @expectedException \UnexpectedValueException
      */
-    function shouldWhitelistSortableFields()
+    public function shouldWhitelistSortableFields(): void
     {
+        $this->expectException(\UnexpectedValueException::class);
+
         $this->populate();
         $_GET['sort'] = 'a.title';
         $_GET['direction'] = 'asc';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
         $p = new Paginator;
-        $sortFieldWhitelist = array('a.title');
+        $sortFieldWhitelist = ['a.title'];
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
         $items = $view->getItems();
@@ -35,7 +36,7 @@ class WhitelistTest extends BaseTestCaseORM
     /**
      * @test
      */
-    function shouldSortWithoutSpecificWhitelist()
+    public function shouldSortWithoutSpecificWhitelist(): void
     {
         $this->populate();
         $_GET['sort'] = 'a.title';
@@ -55,12 +56,12 @@ class WhitelistTest extends BaseTestCaseORM
         $this->assertEquals('summer', $items[0]->getTitle());
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
-        return array(Article::class);
+        return [Article::class];
     }
 
-    private function populate()
+    private function populate(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $summer = new Article;

@@ -13,10 +13,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class ElasticaQuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
         if (is_array($event->target) && 2 === count($event->target) && reset($event->target) instanceof SearchableInterface && end($event->target) instanceof Query) {
-            list($searchable, $query) = $event->target;
+            [$searchable, $query] = $event->target;
 
             $query->setFrom($event->getOffset());
             $query->setSize($event->getLimit());
@@ -34,10 +34,10 @@ class ElasticaQuerySubscriber implements EventSubscriberInterface
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 0) /* triggers before a standard array subscriber*/
-        );
+        return [
+            'knp_pager.items' => ['items', 0] /* triggers before a standard array subscriber*/
+        ];
     }
 }

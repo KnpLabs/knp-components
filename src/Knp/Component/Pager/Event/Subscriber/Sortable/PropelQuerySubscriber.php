@@ -8,7 +8,7 @@ use Knp\Component\Pager\Event\ItemsEvent;
 
 class PropelQuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
         // Check if the result has already been sorted by an other sort subscriber
         $customPaginationParameters = $event->getCustomPaginationParameters();
@@ -40,8 +40,8 @@ class PropelQuerySubscriber implements EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
-        return array(
-            'knp_pager.items' => array('items', 1)
-        );
+        return [
+            'knp_pager.items' => ['items', 1]
+        ];
     }
 }

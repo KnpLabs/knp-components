@@ -18,7 +18,7 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    public function shouldHandleApcQueryCache()
+    public function shouldHandleApcQueryCache(): void
     {
         if (!extension_loaded('apc') || !ini_get('apc.enable_cli')) {
             $this->markTestSkipped('APC extension is not loaded.');
@@ -31,10 +31,10 @@ class QueryTest extends BaseTestCaseORM
         $config->getAutoGenerateProxyClasses(false);
         $config->setMetadataDriverImpl($this->getMetadataDriverImplementation());
 
-        $conn = array(
+        $conn = [
             'driver' => 'pdo_sqlite',
             'memory' => true,
-        );
+        ];
 
         $em = \Doctrine\ORM\EntityManager::create($conn, $config);
         $schema = array_map(function ($class) use ($em) {
@@ -42,7 +42,7 @@ class QueryTest extends BaseTestCaseORM
         }, (array) $this->getUsedEntityFixtures());
 
         $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($em);
-        $schemaTool->dropSchema(array());
+        $schemaTool->dropSchema([]);
         $schemaTool->createSchema($schema);
         $this->populate($em);
 
@@ -60,7 +60,7 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    public function shouldFilterSimpleDoctrineQuery()
+    public function shouldFilterSimpleDoctrineQuery(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -104,7 +104,7 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    public function shouldFilterBooleanFilterValues()
+    public function shouldFilterBooleanFilterValues(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -168,7 +168,7 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    public function shouldNotFilterInvalidBooleanFilterValues()
+    public function shouldNotFilterInvalidBooleanFilterValues(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -201,7 +201,7 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    public function shouldFilterNumericFilterValues()
+    public function shouldFilterNumericFilterValues(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populateNumeric($em);
@@ -245,7 +245,7 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    public function shouldFilterComplexDoctrineQuery()
+    public function shouldFilterComplexDoctrineQuery(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -313,7 +313,7 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    public function shouldFilterSimpleDoctrineQueryWithMultipleProperties()
+    public function shouldFilterSimpleDoctrineQueryWithMultipleProperties(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -334,7 +334,7 @@ class QueryTest extends BaseTestCaseORM
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
 
-        $_GET['filterParam'] = array('a.id', 'a.title');
+        $_GET['filterParam'] = ['a.id', 'a.title'];
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertCount(2, $items);
@@ -355,7 +355,7 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    public function shouldFilterComplexDoctrineQueryWithMultipleProperties()
+    public function shouldFilterComplexDoctrineQueryWithMultipleProperties(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -387,10 +387,11 @@ class QueryTest extends BaseTestCaseORM
 
     /**
      * @test
-     * @expectedException \UnexpectedValueException
      */
-    public function shouldValidateFiltrationParameter()
+    public function shouldValidateFiltrationParameter(): void
     {
+        $this->expectException(\UnexpectedValueException::class);
+
         $_GET['filterParam'] = '"a.title\'';
         $_GET['filterValue'] = 'summer';
         $query = $this
@@ -408,10 +409,11 @@ class QueryTest extends BaseTestCaseORM
 
     /**
      * @test
-     * @expectedException \UnexpectedValueException
      */
-    public function shouldValidateFiltrationParameterWithoutAlias()
+    public function shouldValidateFiltrationParameterWithoutAlias(): void
     {
+        $this->expectException(\UnexpectedValueException::class);
+
         $_GET['filterParam'] = 'title';
         $_GET['filterValue'] = 'summer';
         $query = $this
@@ -429,10 +431,11 @@ class QueryTest extends BaseTestCaseORM
 
     /**
      * @test
-     * @expectedException \UnexpectedValueException
      */
-    public function shouldValidateFiltrationParameterExistance()
+    public function shouldValidateFiltrationParameterExistance(): void
     {
+        $this->expectException(\UnexpectedValueException::class);
+
         $_GET['filterParam'] = 'a.nonExistantField';
         $_GET['filterValue'] = 'summer';
         $query = $this
@@ -451,7 +454,7 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    public function shouldFilterByAnyAvailableAlias()
+    public function shouldFilterByAnyAvailableAlias(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -470,7 +473,7 @@ SQL;
         $dispatcher->addSubscriber(new Filtration());
         $p = new Paginator($dispatcher);
         $this->startQueryLog();
-        $view = $p->paginate($query, 1, 10, array(PaginatorInterface::DISTINCT => false));
+        $view = $p->paginate($query, 1, 10, [PaginatorInterface::DISTINCT => false]);
         $items = $view->getItems();
         $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0][0]->getTitle());
@@ -490,7 +493,7 @@ SQL;
     /**
      * @test
      */
-    public function shouldNotWorkWithInitialPaginatorEventDispatcher()
+    public function shouldNotWorkWithInitialPaginatorEventDispatcher(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -521,7 +524,7 @@ SQL;
     /**
      * @test
      */
-    public function shouldNotExecuteExtraQueriesWhenCountIsZero()
+    public function shouldNotExecuteExtraQueriesWhenCountIsZero(): void
     {
         $_GET['filterParam'] = 'a.title';
         $_GET['filterValue'] = 'asc';
@@ -541,7 +544,7 @@ SQL;
     /**
      * @test
      */
-    public function shouldFilterWithEmptyParametersAndDefaults()
+    public function shouldFilterWithEmptyParametersAndDefaults(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -566,7 +569,7 @@ SQL;
         $items = $view->getItems();
         $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
-        $defaultFilterFields = array('a.id', 'a.title');
+        $defaultFilterFields = ['a.id', 'a.title'];
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::DEFAULT_FILTER_FIELDS));
         $items = $view->getItems();
         $this->assertCount(1, $items);
@@ -588,7 +591,7 @@ SQL;
     /**
      * @test
      */
-    public function shouldNotFilterWithEmptyParametersAndDefaults()
+    public function shouldNotFilterWithEmptyParametersAndDefaults(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -635,7 +638,7 @@ SQL;
         return [Article::class];
     }
 
-    private function populate(EntityManagerInterface $em)
+    private function populate(EntityManagerInterface $em): void
     {
         $summer = new Article();
         $summer->setTitle('summer');
@@ -660,7 +663,7 @@ SQL;
         $em->flush();
     }
 
-    private function populateNumeric(EntityManagerInterface $em)
+    private function populateNumeric(EntityManagerInterface $em): void
     {
         $zero = new Article();
         $zero->setTitle('0');

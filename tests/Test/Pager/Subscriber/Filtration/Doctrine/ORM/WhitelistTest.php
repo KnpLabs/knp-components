@@ -14,10 +14,11 @@ class WhitelistTest extends BaseTestCaseORM
 {
     /**
      * @test
-     * @expectedException \UnexpectedValueException
      */
-    public function shouldWhitelistFiltrationFields()
+    public function shouldWhitelistFiltrationFields(): void
     {
+        $this->expectException(\UnexpectedValueException::class);
+
         $this->populate();
         $_GET['filterParam'] = 'a.title';
         $_GET['filterValue'] = 'summer';
@@ -27,7 +28,7 @@ class WhitelistTest extends BaseTestCaseORM
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
         $p = new Paginator($dispatcher);
-        $filterFieldWhitelist = array('a.title');
+        $filterFieldWhitelist = ['a.title'];
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
 
         $items = $view->getItems();
@@ -41,7 +42,7 @@ class WhitelistTest extends BaseTestCaseORM
     /**
      * @test
      */
-    public function shouldFilterWithoutSpecificWhitelist()
+    public function shouldFilterWithoutSpecificWhitelist(): void
     {
         $this->populate();
         $_GET['filterParam'] = 'a.title';
@@ -66,10 +67,10 @@ class WhitelistTest extends BaseTestCaseORM
 
     protected function getUsedEntityFixtures()
     {
-        return array(Article::class);
+        return [Article::class];
     }
 
-    private function populate()
+    private function populate(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $summer = new Article();
