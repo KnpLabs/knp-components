@@ -27,9 +27,7 @@
         "jackalope/jackalope-doctrine-dbal": "~1.2",
         "phpunit/phpunit": "~6.3",
         "ruflin/elastica": "~1.0",
-        "symfony/property-access": ">=2.3",
-        "symfony/http-foundation": ">=2.3",
-        "psr/http-message": "^1.0"
+        "symfony/property-access": ">=2.3"
     },
     "suggest": {
         "symfony/property-access": "To allow sorting arrays",
@@ -55,5 +53,8 @@
         "psr-0": {
             "Test": "tests"
         }
+    },
+    "scripts": {
+        "test": "phpunit"
     }
 }

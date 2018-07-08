@@ -6,6 +6,7 @@ use Knp\Component\Pager\Event\ItemsEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 class ArraySubscriber implements EventSubscriberInterface
 {
@@ -31,8 +32,8 @@ class ArraySubscriber implements EventSubscriberInterface
 
         $parametersResolver = $event->getParametersResolver();
         $field = $parametersResolver->get(
-            $event->options['sortFieldParameterName'],
-            $event->options['defaultSortFieldName'] ?? null
+            $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME],
+            $event->options[PaginatorInterface::DEFAULT_SORT_FIELD_NAME] ?? null
         );
 
         if ($field === null) {
@@ -40,11 +41,11 @@ class ArraySubscriber implements EventSubscriberInterface
         }
 
         $direction = $parametersResolver->get(
-            $event->options['sortDirectionParameterName'],
-            $event->options['defaultSortDirection'] ?? 'asc'
+            $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME],
+            $event->options[PaginatorInterface::DEFAULT_SORT_DIRECTION] ?? 'asc'
         );
 
-        $whiteList = $event->options['sortFieldWhitelist'] ?? [];
+        $whiteList = $event->options[PaginatorInterface::SORT_FIELD_WHITELIST] ?? [];
         if (count($whiteList) !== 0 && !in_array($field, $whiteList, true)) {
             throw new \UnexpectedValueException(
                 sprintf('Cannot sort by: [%s] this field is not in whitelist', $field)

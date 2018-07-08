@@ -12,6 +12,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber as Filtration;
 use Test\Fixture\Entity\Article;
+use Knp\Component\Pager\PaginatorInterface;
 
 class QueryTest extends BaseTestCaseORM
 {
@@ -604,7 +605,7 @@ SQL;
         $paginator = new Paginator($parametersResolver, $dispatcher);
 
         $this->startQueryLog();
-        $view = $paginator->paginate($query, 1, 10, ['distinct' => false]);
+        $view = $paginator->paginate($query, 1, 10, [PaginatorInterface::DISTINCT => false]);
         $items = $view->getItems();
         $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0][0]->getTitle());
@@ -704,13 +705,13 @@ SQL;
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
         $defaultFilterFields = 'a.title';
-        $view = $paginator->paginate($query, 1, 10, compact('defaultFilterFields'));
+        $view = $paginator->paginate($query, 1, 10, compact(PaginatorInterface::DEFAULT_FILTER_FIELDS));
         $items = $view->getItems();
         $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
 
         $defaultFilterFields = 'a.id,a.title';
-        $view = $paginator->paginate($query, 1, 10, compact('defaultFilterFields'));
+        $view = $paginator->paginate($query, 1, 10, compact(PaginatorInterface::DEFAULT_FILTER_FIELDS));
         $items = $view->getItems();
         $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());

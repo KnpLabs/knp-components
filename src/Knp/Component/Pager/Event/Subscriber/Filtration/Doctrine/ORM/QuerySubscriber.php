@@ -6,6 +6,7 @@ use Doctrine\ORM\Query;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM\Query\WhereWalker;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\Helper as QueryHelper;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class QuerySubscriber implements EventSubscriberInterface
@@ -18,20 +19,20 @@ class QuerySubscriber implements EventSubscriberInterface
 
         $parametersResolver = $event->getParametersResolver();
         $filterField = $parametersResolver->get(
-            $event->options['filterFieldParameterName'],
-            $event->options['defaultFilterFields'] ?? null
+            $event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME],
+            $event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS] ?? null
         );
 
         if ($filterField === null || '' === $filterField) {
             return;
         }
 
-        $filterValue = $parametersResolver->get($event->options['filterValueParameterName'], null);
+        $filterValue = $parametersResolver->get($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME], null);
         if ($filterValue === null || '' === $filterValue) {
             return;
         }
 
-        $whiteList = $event->options['filterFieldWhitelist'] ?? [];
+        $whiteList = $event->options[PaginatorInterface::FILTER_FIELD_WHITELIST] ?? [];
         if (count($whiteList) !== 0 && !in_array($filterField, $whiteList, true)) {
             throw new \UnexpectedValueException(
                 sprintf('Cannot sort by: [%s] this field is not in whitelist', $filterField)
