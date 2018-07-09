@@ -82,7 +82,7 @@ class Paginator implements PaginatorInterface
      */
     public function paginate($target, $page = 1, $limit = 10, array $options = array())
     {
-        $page = (int) $page; 
+        $page = (int) $page;
         $limit = intval(abs($limit));
         if (!$limit) {
             throw new \LogicException("Invalid item per page number, must be a positive number");
@@ -94,16 +94,14 @@ class Paginator implements PaginatorInterface
         if (isset($options[self::DEFAULT_SORT_FIELD_NAME]) && is_array($options[self::DEFAULT_SORT_FIELD_NAME])) {
             $options[self::DEFAULT_SORT_FIELD_NAME] = implode('+', $options[self::DEFAULT_SORT_FIELD_NAME]);
         }
-        
+
         // default sort field and direction are set based on options (if available)
-        if (!isset($_GET[$options[self::SORT_FIELD_PARAMETER_NAME]]) && isset($options[self::DEFAULT_SORT_FIELD_NAME])) {
+        if (isset($options[self::DEFAULT_SORT_FIELD_NAME])) {
             $_GET[$options[self::SORT_FIELD_PARAMETER_NAME]] = $options[self::DEFAULT_SORT_FIELD_NAME];
-            
-            if (!isset($_GET[$options[self::SORT_DIRECTION_PARAMETER_NAME]])) {
-                $_GET[$options[self::SORT_DIRECTION_PARAMETER_NAME]] = isset($options[self::DEFAULT_SORT_DIRECTION]) ? $options[self::DEFAULT_SORT_DIRECTION] : 'asc';
-            }
+
+            $_GET[$options[self::SORT_DIRECTION_PARAMETER_NAME]] = isset($options[self::DEFAULT_SORT_DIRECTION]) ? $options[self::DEFAULT_SORT_DIRECTION] : 'asc';
         }
-        
+
         // before pagination start
         $beforeEvent = new Event\BeforeEvent($this->eventDispatcher);
         $this->eventDispatcher->dispatch('knp_pager.before', $beforeEvent);
