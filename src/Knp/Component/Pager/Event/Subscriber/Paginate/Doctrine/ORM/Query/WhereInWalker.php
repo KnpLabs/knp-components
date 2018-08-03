@@ -94,16 +94,9 @@ class WhereInWalker extends TreeWalkerAdapter
         $count = $this->_getQuery()->getHint(self::HINT_PAGINATOR_ID_COUNT);
 
         if ($count > 0) {
-            // in new doctrine 2.2 version theres a different expression
-            if (property_exists('Doctrine\ORM\Query\AST\InExpression', 'expression')) {
-                $arithmeticExpression = new ArithmeticExpression();
-                $arithmeticExpression->simpleArithmeticExpression = new SimpleArithmeticExpression(
-                    array($pathExpression)
-                );
-                $expression = new InExpression($arithmeticExpression);
-            } else {
-                $expression = new InExpression($pathExpression);
-            }
+            $arithmeticExpression = new ArithmeticExpression();
+            $arithmeticExpression->simpleArithmeticExpression = new SimpleArithmeticExpression(array($pathExpression));
+            $expression = new InExpression($arithmeticExpression);
             $ns = self::PAGINATOR_ID_ALIAS;
 
             for ($i = 1; $i <= $count; $i++) {
