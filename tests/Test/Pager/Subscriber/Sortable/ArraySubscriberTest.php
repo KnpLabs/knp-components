@@ -82,4 +82,34 @@ class ArraySubscriberTest extends BaseTestCase
         $this->assertEquals('hot', $array[0]['name']);
 
     }
+
+    /**
+     * @test
+     */
+    public function shouldSortEvenWhenTheSortPropertyIsNotAccessible()
+    {
+        $array = array(
+            array('entry' => array('sortProperty' => 2)),
+            array('entry' => array()),
+            array('entry' => array('sortProperty' => 1)),
+        );
+
+        $itemsEvent = new ItemsEvent(0, 10);
+        $itemsEvent->target = &$array;
+        $itemsEvent->options = array(PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort', PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord');
+
+        $arraySubscriber = new ArraySubscriber();
+
+        // test asc sort
+        $_GET = array('sort' => '[entry][sortProperty]', 'ord' => 'asc');
+        $arraySubscriber->items($itemsEvent);
+        $this->assertEquals(false, isset($array[0]['entry']['sortProperty']));
+
+        $itemsEvent->unsetCustomPaginationParameter('sorted');
+
+        // test desc sort
+        $_GET ['ord'] = 'desc';
+        $arraySubscriber->items($itemsEvent);
+        $this->assertEquals(2, $array[0]['entry']['sortProperty']);
+    }
 }
