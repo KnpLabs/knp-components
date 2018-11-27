@@ -37,8 +37,14 @@ class QuerySubscriber implements EventSubscriberInterface
                 }
                 $queryOptions = $reflectionProperty->getValue($event->target);
 
-                //@todo: seems like does not support multisort ??
-                $queryOptions['sort'] = array($field => $dir);
+                // handle multi sort
+                $sortFields = explode('+', $field);
+                $sortOption = array();
+                foreach ($sortFields as $sortField) {
+                    $sortOption[$sortField] = $dir;
+                }
+
+                $queryOptions['sort'] = $sortOption;
                 $reflectionProperty->setValue($event->target, $queryOptions);
             }
         }
