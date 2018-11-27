@@ -2,9 +2,9 @@
 
 namespace Knp\Component\Pager\Pagination;
 
-use Countable, Iterator, ArrayAccess;
+use Iterator;
 
-abstract class AbstractPagination implements PaginationInterface, Countable, Iterator, ArrayAccess
+abstract class AbstractPagination implements Iterator, PaginationInterface
 {
     protected $currentPageNumber;
     protected $numItemsPerPage;
