@@ -2,41 +2,41 @@
 
 namespace Test\Pager\Pagination;
 
-use ReflectionClass;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 use Test\Tool\BaseTestCase;
 
-class PaginationInterafaceTest extends BaseTestCase
+class PaginationInterfaceTest extends BaseTestCase
 {
     private $reflection;
 
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->reflection = new ReflectionClass('Knp\\Component\\Pager\\Pagination\\PaginationInterface');
+        $this->reflection = new \ReflectionClass(PaginationInterface::class);
     }
 
     /**
      * @test
      */
-    function shouldBeCountable()
+    function shouldBeCountable(): void
     {
-        $this->assertTrue($this->reflection->implementsInterface('Countable'));
+        $this->assertTrue($this->reflection->implementsInterface(\Countable::class));
     }
 
     /**
      * @test
      */
-    function shouldBeTraversable()
+    function shouldBeTraversable(): void
     {
-        $this->assertTrue($this->reflection->implementsInterface('Traversable'));
-        $this->assertFalse($this->reflection->implementsInterface('Iterator'));
-        $this->assertFalse($this->reflection->implementsInterface('IteratorAggregate'));
+        $this->assertTrue($this->reflection->implementsInterface(\Traversable::class));
+        $this->assertFalse($this->reflection->implementsInterface(\Iterator::class));
+        $this->assertFalse($this->reflection->implementsInterface(\IteratorAggregate::class));
     }
 
     /**
      * @test
      */
-    function shouldBeArrayAccessible()
+    function shouldBeArrayAccessible(): void
     {
-        $this->assertTrue($this->reflection->implementsInterface('ArrayAccess'));
+        $this->assertTrue($this->reflection->implementsInterface(\ArrayAccess::class));
     }
 }
