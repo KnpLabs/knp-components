@@ -66,6 +66,9 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
         $this->customParameters = $parameters;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getCustomParameter(string $name)
     {
         return $this->customParameters[$name] ?? null;
@@ -80,9 +83,7 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
     }
 
     /**
-     * Get currently used page number
-     *
-     * @return int
+     * {@inheritDoc}
      */
     public function getCurrentPageNumber(): int
     {
@@ -98,9 +99,7 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
     }
 
     /**
-     * Get number of items per page
-     *
-     * @return int
+     * {@inheritDoc}
      */
     public function getItemNumberPerPage(): int
     {
@@ -116,9 +115,7 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
     }
 
     /**
-     * Get total item number available
-     *
-     * @return int
+     * {@inheritDoc}
      */
     public function getTotalItemCount(): int
     {
@@ -134,9 +131,7 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
     }
 
     /**
-     * Get pagination alias
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function getPaginatorOption($name)
     {
@@ -152,9 +147,7 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
     }
 
     /**
-     * Get current items
-     *
-     * @return iterable
+     * {@inheritDoc}
      */
     public function getItems(): iterable
     {
