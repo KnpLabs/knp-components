@@ -127,9 +127,9 @@ class Paginator implements PaginatorInterface
         $paginationEvent->target = &$target;
         $paginationEvent->options = &$options;
         if ($newDispatch) {
-            $this->eventDispatcher->dispatch($itemsEvent, 'knp_pager.pagination');
+            $this->eventDispatcher->dispatch($paginationEvent, 'knp_pager.pagination');
         } else {
-            $this->eventDispatcher->dispatch('knp_pager.pagination', $itemsEvent);
+            $this->eventDispatcher->dispatch('knp_pager.pagination', $paginationEvent);
         }
         if (!$paginationEvent->isPropagationStopped()) {
             throw new \RuntimeException('One of listeners must create pagination view');
@@ -146,9 +146,9 @@ class Paginator implements PaginatorInterface
         // after
         $afterEvent = new Event\AfterEvent($paginationView);
         if ($newDispatch) {
-            $this->eventDispatcher->dispatch($itemsEvent, 'knp_pager.after');
+            $this->eventDispatcher->dispatch($afterEvent, 'knp_pager.after');
         } else {
-            $this->eventDispatcher->dispatch('knp_pager.after', $itemsEvent);
+            $this->eventDispatcher->dispatch('knp_pager.after', $afterEvent);
         }
         return $paginationView;
     }
