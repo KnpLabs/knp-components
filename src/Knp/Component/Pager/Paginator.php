@@ -104,6 +104,9 @@ class Paginator implements PaginatorInterface
             }
         }
         
+        // Fix symfony 4.3 deprecation
+        $newDispatch = method_exists(EventDispatcher::class, 'callListeners')
+        
         // before pagination start
         $beforeEvent = new Event\BeforeEvent($this->eventDispatcher);
         $this->eventDispatcher->dispatch('knp_pager.before', $beforeEvent);
@@ -111,7 +114,11 @@ class Paginator implements PaginatorInterface
         $itemsEvent = new Event\ItemsEvent($offset, $limit);
         $itemsEvent->options = &$options;
         $itemsEvent->target = &$target;
-        $this->eventDispatcher->dispatch('knp_pager.items', $itemsEvent);
+        if ($newDispatch) {
+            $this->eventDispatcher->dispatch($itemsEvent, 'knp_pager.items');
+        } else {
+            $this->eventDispatcher->dispatch('knp_pager.items', $itemsEvent);
+        }
         if (!$itemsEvent->isPropagationStopped()) {
             throw new \RuntimeException('One of listeners must count and slice given target');
         }
@@ -119,7 +126,11 @@ class Paginator implements PaginatorInterface
         $paginationEvent = new Event\PaginationEvent;
         $paginationEvent->target = &$target;
         $paginationEvent->options = &$options;
-        $this->eventDispatcher->dispatch('knp_pager.pagination', $paginationEvent);
+        if ($newDispatch) {
+            $this->eventDispatcher->dispatch($itemsEvent, 'knp_pager.pagination');
+        } else {
+            $this->eventDispatcher->dispatch('knp_pager.pagination', $itemsEvent);
+        }
         if (!$paginationEvent->isPropagationStopped()) {
             throw new \RuntimeException('One of listeners must create pagination view');
         }
@@ -134,7 +145,11 @@ class Paginator implements PaginatorInterface
 
         // after
         $afterEvent = new Event\AfterEvent($paginationView);
-        $this->eventDispatcher->dispatch('knp_pager.after', $afterEvent);
+        if ($newDispatch) {
+            $this->eventDispatcher->dispatch($itemsEvent, 'knp_pager.after');
+        } else {
+            $this->eventDispatcher->dispatch('knp_pager.after', $itemsEvent);
+        }
         return $paginationView;
     }
 
