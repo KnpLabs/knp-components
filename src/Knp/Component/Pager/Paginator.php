@@ -105,7 +105,7 @@ class Paginator implements PaginatorInterface
         }
         
         // Fix symfony 4.3 deprecation
-        $newDispatch = method_exists(EventDispatcher::class, 'callListeners')
+        $newDispatch = method_exists(EventDispatcher::class, 'callListeners');
         
         // before pagination start
         $beforeEvent = new Event\BeforeEvent($this->eventDispatcher);
