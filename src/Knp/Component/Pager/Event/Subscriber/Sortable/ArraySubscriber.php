@@ -4,6 +4,8 @@ namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 
 use Knp\Component\Pager\Event\ItemsEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -25,13 +27,19 @@ class ArraySubscriber implements EventSubscriberInterface
      */
     private $propertyAccessor;
 
-    public function __construct(PropertyAccessorInterface $accessor = null)
+    /**
+     * @var Request
+     */
+    private $request;
+
+    public function __construct(PropertyAccessorInterface $accessor = null, RequestStack $requestStack = null)
     {
         if (!$accessor && class_exists('Symfony\Component\PropertyAccess\PropertyAccess')) {
             $accessor = PropertyAccess::createPropertyAccessorBuilder()->enableMagicCall()->getPropertyAccessor();
         }
 
         $this->propertyAccessor = $accessor;
+        $this->request = null === $requestStack ? Request::createFromGlobals() : $requestStack->getCurrentRequest();
     }
 
     public function items(ItemsEvent $event): void
@@ -42,18 +50,18 @@ class ArraySubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!is_array($event->target) || empty($_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]])) {
+        if (!is_array($event->target) || !$this->request->query->has($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])) {
             return;
         }
 
         $event->setCustomPaginationParameter('sorted', true);
 
-        if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST]) && !in_array($_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]], $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-            throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]]}] this field is not in whitelist");
+        if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST]) && !in_array($this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]), $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
+            throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])}] this field is not in whitelist");
         }
 
         $sortFunction = isset($event->options['sortFunction']) ? $event->options['sortFunction'] : [$this, 'proxySortFunction'];
-        $sortField = $_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]];
+        $sortField = $this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]);
 
         // compatibility layer
         if ($sortField[0] === '.') {
@@ -63,8 +71,21 @@ class ArraySubscriber implements EventSubscriberInterface
         call_user_func_array($sortFunction, [
             &$event->target,
             $sortField,
-            isset($_GET[$event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]]) && strtolower($_GET[$event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]]) === 'asc' ? 'asc' : 'desc'
+            $this->getSortDirection($event->options)
         ]);
+    }
+
+    private function getSortDirection(array $options): string
+    {
+        if (!$this->request->query->has($options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME])) {
+            return 'desc';
+        }
+        $direction = $this->request->query->get($options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]);
+        if (strtolower($direction) === 'asc') {
+            return 'asc';
+        }
+
+        return 'desc';
     }
 
     private function proxySortFunction(&$target, $sortField, $sortDirection) {
