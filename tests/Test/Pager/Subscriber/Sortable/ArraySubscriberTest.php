@@ -24,17 +24,17 @@ class ArraySubscriberTest extends BaseTestCase
         $itemsEvent->target = &$array;
         $itemsEvent->options = [PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort', PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord'];
 
-        $arraySubscriber = new ArraySubscriber();
-
         // test asc sort
-        $_GET = ['sort' => '[entry][sortProperty]', 'ord' => 'asc'];  
+        $requestStack = $this->getRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'asc']);
+        $arraySubscriber = new ArraySubscriber(null, $requestStack);
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(1, $array[0]['entry']['sortProperty']);
 
         $itemsEvent->unsetCustomPaginationParameter('sorted');
 
         // test desc sort
-        $_GET ['ord'] = 'desc';
+        $requestStack = $this->getRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'desc']);
+        $arraySubscriber = new ArraySubscriber(null, $requestStack);
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(3, $array[0]['entry']['sortProperty']);
     }
@@ -55,8 +55,8 @@ class ArraySubscriberTest extends BaseTestCase
         $itemsEvent->options = [
             PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort',
             PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord',
-            'sortFunction' => function (&$target, $sortField, $sortDirection): void {
-                usort($target, function($object1, $object2) use ($sortField, $sortDirection) {
+            'sortFunction' => static function (&$target, $sortField, $sortDirection): void {
+                usort($target, static function($object1, $object2) use ($sortField, $sortDirection) {
                     if ($object1[$sortField] === $object2[$sortField]) {
                         return 0;
                     }
@@ -66,18 +66,17 @@ class ArraySubscriberTest extends BaseTestCase
             },
         ];
 
-        $arraySubscriber = new ArraySubscriber();
-
         // test asc sort
-        $_GET = ['sort' => '.name', 'ord' => 'asc'];
+        $requestStack = $this->getRequestStack(['sort' => '.name', 'ord' => 'asc']);
+        $arraySubscriber = new ArraySubscriber(null, $requestStack);
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals('cold', $array[0]['name']);
-
 
         $itemsEvent->unsetCustomPaginationParameter('sorted');
 
         // test desc sort
-        $_GET['ord'] = 'desc';
+        $requestStack = $this->getRequestStack(['sort' => '.name', 'ord' => 'desc']);
+        $arraySubscriber = new ArraySubscriber(null, $requestStack);
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals('hot', $array[0]['name']);
 

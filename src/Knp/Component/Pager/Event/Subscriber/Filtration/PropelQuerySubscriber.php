@@ -4,19 +4,31 @@ namespace Knp\Component\Pager\Event\Subscriber\Filtration;
 
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Knp\Component\Pager\Event\ItemsEvent;
 
 class PropelQuerySubscriber implements EventSubscriberInterface
 {
+    /**
+     * @var Request
+     */
+    private $request;
+
+    public function __construct(RequestStack $requestStack = null)
+    {
+        $this->request = null === $requestStack ? Request::createFromGlobals() : $requestStack->getCurrentRequest();
+    }
+
     public function items(ItemsEvent $event): void
     {
         $query = $event->target;
         if ($query instanceof \ModelCriteria) {
-            if (empty($_GET[$event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]])) {
+            if (!$this->request->query->has($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME])) {
                 return;
             }
-            if (!empty($_GET[$event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]])) {
-                $columns = $_GET[$event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]];
+            if ($this->request->query->has($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME])) {
+                $columns = $this->request->query->get($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]);
             } elseif (!empty($event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS])) {
                 $columns = $event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS];
             } else {
@@ -33,7 +45,7 @@ class PropelQuerySubscriber implements EventSubscriberInterface
                     }
                 }
             }
-            $value = $_GET[$event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]];
+            $value = $this->request->query->get($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
             $criteria = \Criteria::EQUAL;
             if (false !== strpos($value, '*')) {
                 $value = str_replace('*', '%', $value);

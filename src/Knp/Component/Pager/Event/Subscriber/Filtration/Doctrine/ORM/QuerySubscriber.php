@@ -31,7 +31,7 @@ class QuerySubscriber implements EventSubscriberInterface
                 return;
             }
             $filterName = $this->getQueryParameter($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]);
-            if (!empty($filterName) {
+            if (!empty($filterName)) {
                 $columns = $filterName;
             } elseif (!empty($event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS])) {
                 $columns = $event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS];

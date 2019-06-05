@@ -20,14 +20,14 @@ class WhitelistTest extends BaseTestCaseORM
         $this->expectException(\UnexpectedValueException::class);
 
         $this->populate();
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = 'summer';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.title', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
+
         $filterFieldWhitelist = ['a.title'];
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
 
@@ -35,7 +35,8 @@ class WhitelistTest extends BaseTestCaseORM
         $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
 
-        $_GET['filterParam'] = 'a.id';
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.id', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
     }
 
@@ -45,27 +46,27 @@ class WhitelistTest extends BaseTestCaseORM
     public function shouldFilterWithoutSpecificWhitelist(): void
     {
         $this->populate();
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = 'autumn';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.title', 'filterValue' => 'autumn']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();
         $this->assertEquals('autumn', $items[0]->getTitle());
 
-        $_GET['filterParam'] = 'a.id';
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.id', 'filterValue' => 'autumn']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();
         $this->assertEquals(0, count($items));
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
         return [Article::class];
     }

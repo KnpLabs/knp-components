@@ -9,7 +9,6 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Tools\SchemaTool;
-use PHPUnit\Framework\TestCase;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\DBAL\Connection;
@@ -28,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  * @link http://www.gediminasm.org
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-abstract class BaseTestCaseORM extends TestCase
+abstract class BaseTestCaseORM extends BaseTestCase
 {
     /**
      * @var EntityManager

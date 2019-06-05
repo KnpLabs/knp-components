@@ -37,20 +37,20 @@ class QueryTest extends BaseTestCaseORM
         ];
 
         $em = \Doctrine\ORM\EntityManager::create($conn, $config);
-        $schema = array_map(function ($class) use ($em) {
+        $schema = array_map(static function ($class) use ($em) {
             return $em->getClassMetadata($class);
-        }, (array) $this->getUsedEntityFixtures());
+        }, $this->getUsedEntityFixtures());
 
         $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($em);
         $schemaTool->dropSchema([]);
         $schemaTool->createSchema($schema);
         $this->populate($em);
 
-        $_GET['filterField'] = 'a.title';
-        $_GET['filterValue'] = 'summer';
         $query = $em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
-        $p = new Paginator();
+        $requestStack = $this->getRequestStack(['filterField' => 'a.title', 'filterValue' => 'summer']);
+
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $query = $em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
@@ -68,10 +68,9 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.title', 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
 
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = '*er';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
@@ -82,7 +81,9 @@ class QueryTest extends BaseTestCaseORM
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
 
-        $_GET['filterValue'] = 'summer';
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.title', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
+
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertCount(1, $items);
@@ -112,11 +113,10 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.enabled', 'filterValue' => '1']);
+        $p = new Paginator($dispatcher, $requestStack);
         $this->startQueryLog();
 
-        $_GET['filterParam'] = 'a.enabled';
-        $_GET['filterValue'] = '1';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
@@ -125,7 +125,8 @@ class QueryTest extends BaseTestCaseORM
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
 
-        $_GET['filterValue'] = 'true';
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.enabled', 'filterValue' => 'true']);
+        $p = new Paginator($dispatcher, $requestStack);
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
@@ -134,14 +135,16 @@ class QueryTest extends BaseTestCaseORM
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
 
-        $_GET['filterValue'] = '0';
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.enabled', 'filterValue' => '0']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertCount(2, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
         $this->assertEquals('spring', $items[1]->getTitle());
 
-        $_GET['filterValue'] = 'false';
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.enabled', 'filterValue' => 'false']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertCount(2, $items);
@@ -176,11 +179,10 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.enabled', 'filterValue' => 'invalid_boolean']);
+        $p = new Paginator($dispatcher, $requestStack);
         $this->startQueryLog();
 
-        $_GET['filterParam'] = 'a.enabled';
-        $_GET['filterValue'] = 'invalid_boolean';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
@@ -209,11 +211,10 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.title', 'filterValue' => '0']);
+        $p = new Paginator($dispatcher, $requestStack);
         $this->startQueryLog();
 
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = '0';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
@@ -221,7 +222,8 @@ class QueryTest extends BaseTestCaseORM
         $this->assertCount(1, $items);
         $this->assertEquals('0', $items[0]->getTitle());
 
-        $_GET['filterValue'] = '1';
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.title', 'filterValue' => '1']);
+        $p = new Paginator($dispatcher, $requestStack);
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
@@ -253,10 +255,9 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.title', 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
 
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = '*er';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a WHERE a.title <> \'\' AND (a.title LIKE \'summer\' OR a.title LIKE \'spring\')');
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
@@ -264,7 +265,9 @@ class QueryTest extends BaseTestCaseORM
         $items = $view->getItems();
         $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
-        $_GET['filterParam'] = 'a.id,a.title';
+
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.id,a.title', 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertCount(1, $items);
@@ -286,7 +289,9 @@ class QueryTest extends BaseTestCaseORM
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
-        $_GET['filterParam'] = 'a.title';
+
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.title', 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertCount(2, $items);
@@ -321,10 +326,9 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.id,a.title', 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
 
-        $_GET['filterParam'] = 'a.id,a.title';
-        $_GET['filterValue'] = '*er';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
@@ -334,7 +338,8 @@ class QueryTest extends BaseTestCaseORM
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
 
-        $_GET['filterParam'] = ['a.id', 'a.title'];
+        $requestStack = $this->getRequestStack(['filterParam' => ['a.id', 'a.title'], 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertCount(2, $items);
@@ -363,10 +368,9 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.id,a.title', 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
 
-        $_GET['filterParam'] = 'a.id,a.title';
-        $_GET['filterValue'] = '*er';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a WHERE a.title <> \'\' AND (a.title LIKE \'summer\' OR a.title LIKE \'spring\')');
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
@@ -392,8 +396,6 @@ class QueryTest extends BaseTestCaseORM
     {
         $this->expectException(\UnexpectedValueException::class);
 
-        $_GET['filterParam'] = '"a.title\'';
-        $_GET['filterValue'] = 'summer';
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
@@ -402,7 +404,8 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->getRequestStack(['filterParam' => '"a.title\'', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
     }
@@ -414,8 +417,6 @@ class QueryTest extends BaseTestCaseORM
     {
         $this->expectException(\UnexpectedValueException::class);
 
-        $_GET['filterParam'] = 'title';
-        $_GET['filterValue'] = 'summer';
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
@@ -424,7 +425,8 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->getRequestStack(['filterParam' => 'title', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
     }
@@ -436,8 +438,6 @@ class QueryTest extends BaseTestCaseORM
     {
         $this->expectException(\UnexpectedValueException::class);
 
-        $_GET['filterParam'] = 'a.nonExistantField';
-        $_GET['filterValue'] = 'summer';
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
@@ -446,7 +446,9 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.nonExistantField', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
+
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
     }
@@ -459,8 +461,6 @@ class QueryTest extends BaseTestCaseORM
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
 
-        $_GET['filterParam'] = 'test_alias';
-        $_GET['filterValue'] = '*er';
         $dql = <<<SQL
         SELECT a, a.title AS test_alias
         FROM Test\Fixture\Entity\Article a
@@ -471,7 +471,8 @@ SQL;
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->getRequestStack(['filterParam' => 'test_alias', 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10, [PaginatorInterface::DISTINCT => false]);
         $items = $view->getItems();
@@ -497,15 +498,14 @@ SQL;
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = 'summer';
         $query = $this
             ->em
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
         ;
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
-        $p = new Paginator();
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.title', 'filterValue' => 'summer']);
+        $p = new Paginator(null, $requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
         $this->assertInstanceOf(SlidingPagination::class, $view);
@@ -526,14 +526,13 @@ SQL;
      */
     public function shouldNotExecuteExtraQueriesWhenCountIsZero(): void
     {
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = 'asc';
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
         ;
 
-        $p = new Paginator();
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.title', 'filterValue' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
         $this->assertInstanceOf(SlidingPagination::class, $view);
@@ -552,10 +551,9 @@ SQL;
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->getRequestStack(['filterParam' => '', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
 
-        $_GET['filterParam'] = '';
-        $_GET['filterValue'] = 'summer';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
@@ -599,23 +597,24 @@ SQL;
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->getRequestStack(['filterParam' => 'a.title', 'filterValue' => '']);
+        $p = new Paginator($dispatcher, $requestStack);
 
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = '';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertCount(4, $items);
-        $_GET['filterParam'] = '';
-        $_GET['filterValue'] = 'summer';
+
+        $requestStack = $this->getRequestStack(['filterParam' => '', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertCount(4, $items);
-        $_GET['filterParam'] = '';
-        $_GET['filterValue'] = '';
+
+        $requestStack = $this->getRequestStack(['filterParam' => '', 'filterValue' => '']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertCount(4, $items);

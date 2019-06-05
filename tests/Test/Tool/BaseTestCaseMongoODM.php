@@ -8,13 +8,12 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Common\EventManager;
 use Doctrine\MongoDB\Connection;
-use PHPUnit\Framework\TestCase;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 
 /**
  * Base test case contains common mock objects
  */
-abstract class BaseTestCaseMongoODM extends TestCase
+abstract class BaseTestCaseMongoODM extends BaseTestCase
 {
     /**
      * @var DocumentManager
