@@ -5,7 +5,6 @@ namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -32,14 +31,18 @@ class ArraySubscriber implements EventSubscriberInterface
      */
     private $request;
 
-    public function __construct(PropertyAccessorInterface $accessor = null, RequestStack $requestStack = null)
+    public function __construct(PropertyAccessorInterface $accessor = null, Request $request = null)
     {
         if (!$accessor && class_exists('Symfony\Component\PropertyAccess\PropertyAccess')) {
             $accessor = PropertyAccess::createPropertyAccessorBuilder()->enableMagicCall()->getPropertyAccessor();
         }
 
         $this->propertyAccessor = $accessor;
-        $this->request = null === $requestStack ? Request::createFromGlobals() : $requestStack->getCurrentRequest();
+        // check needed because $request must be nullable, being the second parameter (with the first one nullable)
+        if (null === $request) {
+            throw new \InvalidArgumentException('Request must be initialized.');
+        }
+        $this->request = $request;
     }
 
     public function items(ItemsEvent $event): void

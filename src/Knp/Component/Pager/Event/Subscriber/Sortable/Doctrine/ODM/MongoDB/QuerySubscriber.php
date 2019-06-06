@@ -7,7 +7,6 @@ use Knp\Component\Pager\Event\ItemsEvent;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
@@ -16,9 +15,9 @@ class QuerySubscriber implements EventSubscriberInterface
      */
     private $request;
 
-    public function __construct(RequestStack $requestStack = null)
+    public function __construct(Request $request)
     {
-        $this->request = null === $requestStack ? Request::createFromGlobals() : $requestStack->getCurrentRequest();
+        $this->request = null === $request;
     }
 
     public function items(ItemsEvent $event): void

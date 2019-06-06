@@ -9,7 +9,6 @@ use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\Helper as Q
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
@@ -18,9 +17,9 @@ class QuerySubscriber implements EventSubscriberInterface
      */
     private $request;
 
-    public function __construct(RequestStack $requestStack = null)
+    public function __construct(Request $request)
     {
-        $this->request = null === $requestStack ? Request::createFromGlobals() : $requestStack->getCurrentRequest();
+        $this->request = $request;
     }
 
     public function items(ItemsEvent $event): void
@@ -69,6 +68,7 @@ class QuerySubscriber implements EventSubscriberInterface
 
     private function getQueryParameter(string $name): ?string
     {
+        #var_dump($name, $this->request->query->get($name));
         return $this->request->query->get($name);
     }
 }

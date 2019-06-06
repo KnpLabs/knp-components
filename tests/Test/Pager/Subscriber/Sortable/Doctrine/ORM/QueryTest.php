@@ -63,10 +63,10 @@ class QueryTest extends BaseTestCaseORM
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
 
+        $requestStack = $this->getRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new PaginationSubscriber);
-        $dispatcher->addSubscriber(new Sortable);
-        $requestStack = $this->getRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
+        $dispatcher->addSubscriber(new Sortable($requestStack->getCurrentRequest()));
         $p = new Paginator($dispatcher, $requestStack);
 
         $this->startQueryLog();
@@ -81,9 +81,36 @@ class QueryTest extends BaseTestCaseORM
         $this->assertEquals('summer', $items[2]->getTitle());
         $this->assertEquals('winter', $items[3]->getTitle());
 
+        $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+
+        // Different aliases separators according to Doctrine version
+        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
+            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10', $executed[1]);
+        } else {
+            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10', $executed[1]);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function shouldSortSimpleDoctrineQuery2(): void
+    {
+        $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
+
         $requestStack = $this->getRequestStack(['sort' => 'a.title', 'direction' => 'desc']);
+        $dispatcher = new EventDispatcher;
+        $dispatcher->addSubscriber(new PaginationSubscriber);
+        $dispatcher->addSubscriber(new Sortable($requestStack->getCurrentRequest()));
         $p = new Paginator($dispatcher, $requestStack);
-        $view = $p->paginate($query, 1, 10);
+
+        $this->startQueryLog();
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+        $view = $p->paginate($query);
+
         $items = $view->getItems();
         $this->assertCount(4, $items);
         $this->assertEquals('winter', $items[0]->getTitle());
@@ -91,16 +118,14 @@ class QueryTest extends BaseTestCaseORM
         $this->assertEquals('spring', $items[2]->getTitle());
         $this->assertEquals('autumn', $items[3]->getTitle());
 
-        $this->assertEquals(4, $this->queryAnalyzer->getNumExecutedQueries());
+        $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
         // Different aliases separators according to Doctrine version
         if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ ORDER BY a0_.title DESC LIMIT 10', $executed[3]);
+            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ ORDER BY a0_.title DESC LIMIT 10', $executed[1]);
         } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ ORDER BY a0_.title DESC LIMIT 10', $executed[3]);
+            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ ORDER BY a0_.title DESC LIMIT 10', $executed[1]);
         }
     }
 

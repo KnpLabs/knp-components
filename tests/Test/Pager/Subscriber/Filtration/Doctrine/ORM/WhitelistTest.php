@@ -28,7 +28,7 @@ class WhitelistTest extends BaseTestCaseORM
         $requestStack = $this->getRequestStack(['filterParam' => 'a.title', 'filterValue' => 'summer']);
         $p = new Paginator($dispatcher, $requestStack);
 
-        $filterFieldWhitelist = ['a.title'];
+        $filterFieldWhitelist = ['a.invalid'];
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
 
         $items = $view->getItems();
@@ -57,10 +57,23 @@ class WhitelistTest extends BaseTestCaseORM
 
         $items = $view->getItems();
         $this->assertEquals('autumn', $items[0]->getTitle());
+    }
+
+    /**
+     * @test
+     */
+    public function shouldFilterWithoutSpecificWhitelist2(): void
+    {
+        $this->populate();
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new PaginationSubscriber());
+        $dispatcher->addSubscriber(new Filtration());
 
         $requestStack = $this->getRequestStack(['filterParam' => 'a.id', 'filterValue' => 'autumn']);
         $p = new Paginator($dispatcher, $requestStack);
-        $view = $p->paginate($query, 1, 10);
+        $view = $p->paginate($query);
 
         $items = $view->getItems();
         $this->assertEquals(0, count($items));

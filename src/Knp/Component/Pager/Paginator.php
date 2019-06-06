@@ -106,20 +106,15 @@ class Paginator implements PaginatorInterface
         
         // default sort field and direction are set based on options (if available)
         if (isset($options[self::DEFAULT_SORT_FIELD_NAME]) && !$this->request->query->has($options[self::SORT_FIELD_PARAMETER_NAME])) {
-           $options[self::SORT_FIELD_PARAMETER_NAME] = $options[self::DEFAULT_SORT_FIELD_NAME];
-        } else {
-           $options[self::SORT_FIELD_PARAMETER_NAME] = $this->request->query->get($options[self::SORT_FIELD_PARAMETER_NAME]);
+           $this->request->query->set($options[self::SORT_FIELD_PARAMETER_NAME], $options[self::DEFAULT_SORT_FIELD_NAME]);
+
+            if (!$this->request->query->has($options[self::SORT_DIRECTION_PARAMETER_NAME])) {
+                $this->request->query->set($options[self::SORT_DIRECTION_PARAMETER_NAME], $options[self::DEFAULT_SORT_DIRECTION] ?? 'asc');
+            }
         }
 
-        if (!$this->request->query->has($options[self::SORT_DIRECTION_PARAMETER_NAME])) {
-            $options[self::SORT_DIRECTION_PARAMETER_NAME] = $options[self::DEFAULT_SORT_DIRECTION] ?? 'asc';
-        } else {
-            $options[self::SORT_DIRECTION_PARAMETER_NAME] = $this->request->query->get($options[self::SORT_DIRECTION_PARAMETER_NAME]);
-        }
-
-        
         // before pagination start
-        $beforeEvent = new Event\BeforeEvent($this->eventDispatcher);
+        $beforeEvent = new Event\BeforeEvent($this->eventDispatcher, $this->request);
         $this->eventDispatcher->dispatch('knp_pager.before', $beforeEvent);
         // items
         $itemsEvent = new Event\ItemsEvent($offset, $limit);

@@ -5,7 +5,6 @@ namespace Knp\Component\Pager\Event\Subscriber\Filtration;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Knp\Component\Pager\Event\ItemsEvent;
 
 class PropelQuerySubscriber implements EventSubscriberInterface
@@ -15,9 +14,9 @@ class PropelQuerySubscriber implements EventSubscriberInterface
      */
     private $request;
 
-    public function __construct(RequestStack $requestStack = null)
+    public function __construct(Request $request)
     {
-        $this->request = null === $requestStack ? Request::createFromGlobals() : $requestStack->getCurrentRequest();
+        $this->request = $request;
     }
 
     public function items(ItemsEvent $event): void

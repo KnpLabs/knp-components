@@ -22,13 +22,13 @@ class FiltrationSubscriber implements EventSubscriberInterface
 
         $disp = $event->getEventDispatcher();
         // hook all standard filtration subscribers
-        $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber());
-        $disp->addSubscriber(new PropelQuerySubscriber());
+        $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber($event->getRequest()));
+        $disp->addSubscriber(new PropelQuerySubscriber($event->getRequest()));
 
         $this->isLoaded = true;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             'knp_pager.before' => ['before', 1],

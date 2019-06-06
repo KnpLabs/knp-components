@@ -6,7 +6,6 @@ use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Solarium query sorting
@@ -20,9 +19,9 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
      */
     private $request;
 
-    public function __construct(RequestStack $requestStack = null)
+    public function __construct(Request $request)
     {
-        $this->request = null === $requestStack ? Request::createFromGlobals() : $requestStack->getCurrentRequest();
+        $this->request = $request;
     }
 
     public function items(ItemsEvent $event): void

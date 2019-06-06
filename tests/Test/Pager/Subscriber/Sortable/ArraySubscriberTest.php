@@ -26,7 +26,7 @@ class ArraySubscriberTest extends BaseTestCase
 
         // test asc sort
         $requestStack = $this->getRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'asc']);
-        $arraySubscriber = new ArraySubscriber(null, $requestStack);
+        $arraySubscriber = new ArraySubscriber(null, $requestStack->getCurrentRequest());
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(1, $array[0]['entry']['sortProperty']);
 
@@ -34,7 +34,7 @@ class ArraySubscriberTest extends BaseTestCase
 
         // test desc sort
         $requestStack = $this->getRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'desc']);
-        $arraySubscriber = new ArraySubscriber(null, $requestStack);
+        $arraySubscriber = new ArraySubscriber(null, $requestStack->getCurrentRequest());
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(3, $array[0]['entry']['sortProperty']);
     }
@@ -68,7 +68,7 @@ class ArraySubscriberTest extends BaseTestCase
 
         // test asc sort
         $requestStack = $this->getRequestStack(['sort' => '.name', 'ord' => 'asc']);
-        $arraySubscriber = new ArraySubscriber(null, $requestStack);
+        $arraySubscriber = new ArraySubscriber(null, $requestStack->getCurrentRequest());
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals('cold', $array[0]['name']);
 
@@ -76,7 +76,7 @@ class ArraySubscriberTest extends BaseTestCase
 
         // test desc sort
         $requestStack = $this->getRequestStack(['sort' => '.name', 'ord' => 'desc']);
-        $arraySubscriber = new ArraySubscriber(null, $requestStack);
+        $arraySubscriber = new ArraySubscriber(null, $requestStack->getCurrentRequest());
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals('hot', $array[0]['name']);
 
