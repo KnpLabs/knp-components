@@ -22,14 +22,13 @@ class WhitelistTest extends BaseTestCaseMongoODM
         $this->expectException(\UnexpectedValueException::class);
 
         $this->populate();
-        $_GET['sort'] = 'title';
-        $_GET['direction'] = 'asc';
         $query = $this->dm
             ->createQueryBuilder(Article::class)
             ->getQuery()
         ;
 
-        $p = new Paginator;
+        $requestStack = $this->getRequestStack(['sort' => 'title', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $sortFieldWhitelist = ['title'];
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
@@ -37,7 +36,8 @@ class WhitelistTest extends BaseTestCaseMongoODM
         $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
 
-        $_GET['sort'] = 'id';
+        $requestStack = $this->getRequestStack(['sort' => 'id', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
     }
 
@@ -47,20 +47,20 @@ class WhitelistTest extends BaseTestCaseMongoODM
     public function shouldSortWithoutSpecificWhitelist(): void
     {
         $this->populate();
-        $_GET['sort'] = 'title';
-        $_GET['direction'] = 'asc';
         $query = $this->dm
             ->createQueryBuilder(Article::class)
             ->getQuery()
         ;
 
-        $p = new Paginator;
+        $requestStack = $this->getRequestStack(['sort' => 'title', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $items = array_values($view->getItems());
         $this->assertEquals('autumn', $items[0]->getTitle());
 
-        $_GET['sort'] = 'id';
+        $requestStack = $this->getRequestStack(['sort' => 'id', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $items = array_values($view->getItems());
