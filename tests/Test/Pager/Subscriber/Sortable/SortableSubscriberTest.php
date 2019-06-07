@@ -17,7 +17,7 @@ class SortableSubscriberTest extends BaseTestCase
 
         $subscriber = new SortableSubscriber;
 
-        $requestStack = $this->getRequestStack([]);
+        $requestStack = $this->createRequestStack([]);
         $beforeEvent = new BeforeEvent($dispatcher, $requestStack->getCurrentRequest());
         $subscriber->before($beforeEvent);
 

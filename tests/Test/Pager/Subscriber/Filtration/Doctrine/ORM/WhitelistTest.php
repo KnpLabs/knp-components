@@ -25,7 +25,7 @@ class WhitelistTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $requestStack = $this->getRequestStack(['filterParam' => 'a.title', 'filterValue' => 'summer']);
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => 'summer']);
         $p = new Paginator($dispatcher, $requestStack);
 
         $filterFieldWhitelist = ['a.invalid'];
@@ -35,7 +35,7 @@ class WhitelistTest extends BaseTestCaseORM
         $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
 
-        $requestStack = $this->getRequestStack(['filterParam' => 'a.id', 'filterValue' => 'summer']);
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.id', 'filterValue' => 'summer']);
         $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
     }
@@ -51,7 +51,7 @@ class WhitelistTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $requestStack = $this->getRequestStack(['filterParam' => 'a.title', 'filterValue' => 'autumn']);
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => 'autumn']);
         $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
@@ -71,7 +71,7 @@ class WhitelistTest extends BaseTestCaseORM
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
 
-        $requestStack = $this->getRequestStack(['filterParam' => 'a.id', 'filterValue' => 'autumn']);
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.id', 'filterValue' => 'autumn']);
         $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query);
 

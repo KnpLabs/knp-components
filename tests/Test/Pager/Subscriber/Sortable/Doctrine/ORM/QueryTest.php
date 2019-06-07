@@ -47,7 +47,7 @@ class QueryTest extends BaseTestCaseORM
 
         $query = $em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
-        $requestStack = $this->getRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
@@ -63,7 +63,7 @@ class QueryTest extends BaseTestCaseORM
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
 
-        $requestStack = $this->getRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new PaginationSubscriber);
         $dispatcher->addSubscriber(new Sortable($requestStack->getCurrentRequest()));
@@ -100,7 +100,7 @@ class QueryTest extends BaseTestCaseORM
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
 
-        $requestStack = $this->getRequestStack(['sort' => 'a.title', 'direction' => 'desc']);
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'desc']);
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new PaginationSubscriber);
         $dispatcher->addSubscriber(new Sortable($requestStack->getCurrentRequest()));
@@ -141,7 +141,7 @@ class QueryTest extends BaseTestCaseORM
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
         ;
 
-        $requestStack = $this->getRequestStack(['sort' => '"a.title\'', 'direction' => 'asc']);
+        $requestStack = $this->createRequestStack(['sort' => '"a.title\'', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
     }
@@ -161,7 +161,7 @@ ___SQL;
         $query = $this->em->createQuery($dql);
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
-        $requestStack = $this->getRequestStack(['sort' => 'counter', 'direction' => 'asc']);
+        $requestStack = $this->createRequestStack(['sort' => 'counter', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10, [PaginatorInterface::DISTINCT => false]);
@@ -190,7 +190,7 @@ ___SQL;
         ;
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
-        $requestStack = $this->getRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
@@ -217,7 +217,7 @@ ___SQL;
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
         ;
 
-        $requestStack = $this->getRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);

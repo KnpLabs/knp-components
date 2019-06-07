@@ -25,16 +25,16 @@ class ArraySubscriberTest extends BaseTestCase
         $itemsEvent->options = [PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort', PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord'];
 
         // test asc sort
-        $requestStack = $this->getRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'asc']);
-        $arraySubscriber = new ArraySubscriber(null, $requestStack->getCurrentRequest());
+        $requestStack = $this->createRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'asc']);
+        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(1, $array[0]['entry']['sortProperty']);
 
         $itemsEvent->unsetCustomPaginationParameter('sorted');
 
         // test desc sort
-        $requestStack = $this->getRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'desc']);
-        $arraySubscriber = new ArraySubscriber(null, $requestStack->getCurrentRequest());
+        $requestStack = $this->createRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'desc']);
+        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(3, $array[0]['entry']['sortProperty']);
     }
@@ -67,16 +67,16 @@ class ArraySubscriberTest extends BaseTestCase
         ];
 
         // test asc sort
-        $requestStack = $this->getRequestStack(['sort' => '.name', 'ord' => 'asc']);
-        $arraySubscriber = new ArraySubscriber(null, $requestStack->getCurrentRequest());
+        $requestStack = $this->createRequestStack(['sort' => '.name', 'ord' => 'asc']);
+        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals('cold', $array[0]['name']);
 
         $itemsEvent->unsetCustomPaginationParameter('sorted');
 
         // test desc sort
-        $requestStack = $this->getRequestStack(['sort' => '.name', 'ord' => 'desc']);
-        $arraySubscriber = new ArraySubscriber(null, $requestStack->getCurrentRequest());
+        $requestStack = $this->createRequestStack(['sort' => '.name', 'ord' => 'desc']);
+        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals('hot', $array[0]['name']);
 

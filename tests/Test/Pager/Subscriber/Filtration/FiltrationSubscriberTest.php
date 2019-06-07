@@ -17,7 +17,7 @@ class FiltrationSubscriberTest extends BaseTestCase
 
         $subscriber = new FiltrationSubscriber;
 
-        $requestStack = $this->getRequestStack([]);
+        $requestStack = $this->createRequestStack([]);
         $beforeEvent = new BeforeEvent($dispatcher, $requestStack->getCurrentRequest());
         $subscriber->before($beforeEvent);
 

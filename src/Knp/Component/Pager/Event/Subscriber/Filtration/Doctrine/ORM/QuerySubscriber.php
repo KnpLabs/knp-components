@@ -68,7 +68,6 @@ class QuerySubscriber implements EventSubscriberInterface
 
     private function getQueryParameter(string $name): ?string
     {
-        #var_dump($name, $this->request->query->get($name));
         return $this->request->query->get($name);
     }
 }

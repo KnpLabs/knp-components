@@ -19,7 +19,7 @@ class WhitelistTest extends BaseTestCaseORM
         $this->populate();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
-        $requestStack = $this->getRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
         $sortFieldWhitelist = ['a.title'];
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
@@ -28,7 +28,7 @@ class WhitelistTest extends BaseTestCaseORM
         $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
 
-        $requestStack = $this->getRequestStack(['sort' => 'a.id', 'direction' => 'asc']);
+        $requestStack = $this->createRequestStack(['sort' => 'a.id', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
     }
@@ -41,14 +41,14 @@ class WhitelistTest extends BaseTestCaseORM
         $this->populate();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
-        $requestStack = $this->getRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();
         $this->assertEquals('autumn', $items[0]->getTitle());
 
-        $requestStack = $this->getRequestStack(['sort' => 'a.id', 'direction' => 'asc']);
+        $requestStack = $this->createRequestStack(['sort' => 'a.id', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 

@@ -31,7 +31,7 @@ class ArraySubscriber implements EventSubscriberInterface
      */
     private $request;
 
-    public function __construct(PropertyAccessorInterface $accessor = null, Request $request = null)
+    public function __construct(Request $request = null, PropertyAccessorInterface $accessor = null)
     {
         if (!$accessor && class_exists('Symfony\Component\PropertyAccess\PropertyAccess')) {
             $accessor = PropertyAccess::createPropertyAccessorBuilder()->enableMagicCall()->getPropertyAccessor();

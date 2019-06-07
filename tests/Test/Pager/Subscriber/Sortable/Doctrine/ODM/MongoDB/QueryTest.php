@@ -21,7 +21,7 @@ class QueryTest extends BaseTestCaseMongoODM
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new PaginationSubscriber);
         $dispatcher->addSubscriber(new Sortable);
-        $requestStack = $this->getRequestStack(['sort' => 'title', 'direction' => 'asc']);
+        $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'asc']);
         $p = new Paginator($dispatcher, $requestStack);
 
         $qb = $this->dm->createQueryBuilder(Article::class);
@@ -35,7 +35,7 @@ class QueryTest extends BaseTestCaseMongoODM
         $this->assertEquals('summer', $items[2]->getTitle());
         $this->assertEquals('winter', $items[3]->getTitle());
 
-        $requestStack = $this->getRequestStack(['sort' => 'title', 'direction' => 'desc']);
+        $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'desc']);
         $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = array_values($view->getItems());
@@ -57,7 +57,7 @@ class QueryTest extends BaseTestCaseMongoODM
             ->getQuery()
         ;
 
-        $requestStack = $this->getRequestStack(['sort' => '"title\'', 'direction' => 'asc']);
+        $requestStack = $this->createRequestStack(['sort' => '"title\'', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
     }

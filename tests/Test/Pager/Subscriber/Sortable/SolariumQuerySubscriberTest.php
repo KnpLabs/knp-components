@@ -32,7 +32,7 @@ class SolariumQuerySubscriberTest extends BaseTestCase
             'nbTotalResults' => 2
         ];
 
-        $requestStack = $this->getRequestStack([]);
+        $requestStack = $this->createRequestStack([]);
         $dispatcher = new EventDispatcher();
 
         $dispatcher->addSubscriber(new SolariumQuerySubscriber($requestStack->getCurrentRequest()));

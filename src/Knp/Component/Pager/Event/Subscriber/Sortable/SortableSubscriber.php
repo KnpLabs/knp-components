@@ -28,7 +28,7 @@ class SortableSubscriber implements EventSubscriberInterface
         $disp->addSubscriber(new ElasticaQuerySubscriber($request));
         $disp->addSubscriber(new PropelQuerySubscriber($request));
         $disp->addSubscriber(new SolariumQuerySubscriber($request));
-        $disp->addSubscriber(new ArraySubscriber(null, $request));
+        $disp->addSubscriber(new ArraySubscriber($request));
 
         $this->isLoaded = true;
     }

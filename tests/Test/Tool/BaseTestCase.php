@@ -19,7 +19,7 @@ abstract class BaseTestCase extends TestCase
 
     }
 
-    protected function getRequestStack(array $params): RequestStack
+    protected function createRequestStack(array $params): RequestStack
     {
         $request = new Request($params);
         $requestStack = new RequestStack();

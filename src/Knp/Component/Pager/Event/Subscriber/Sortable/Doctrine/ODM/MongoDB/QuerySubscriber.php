@@ -17,7 +17,7 @@ class QuerySubscriber implements EventSubscriberInterface
 
     public function __construct(Request $request)
     {
-        $this->request = null === $request;
+        $this->request = $request;
     }
 
     public function items(ItemsEvent $event): void
