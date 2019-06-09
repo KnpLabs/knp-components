@@ -4,6 +4,7 @@ namespace Test\Pager\Subscriber\Sortable;
 
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Sortable\ArraySubscriber;
+use Knp\Component\Pager\Fixtures\TestItem;
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\PaginatorInterface;
 
@@ -111,5 +112,58 @@ class ArraySubscriberTest extends BaseTestCase
         $_GET ['ord'] = 'desc';
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(2, $array[0]['entry']['sortProperty']);
+    }
+
+    /**
+     * @test
+     * @dataProvider getArrayData
+     */
+    public function shouldBeJustIgnoredWhenSpecifiedSortPropertyDoesNotExist($array)
+    {
+        $sameSortOrderData = array(
+            $array[0],
+            $array[1],
+            $array[2],
+        );
+        $itemsEvent = new ItemsEvent(0, 10);
+        $itemsEvent->target = &$array;
+        $itemsEvent->options = array(PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort', PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord');
+
+        $arraySubscriber = new ArraySubscriber();
+
+        // test asc sort
+        $_GET = array('sort' => 'notExistProperty', 'ord' => 'asc');
+        $arraySubscriber->items($itemsEvent);
+        $this->assertSame($sameSortOrderData, $array);
+
+        $itemsEvent->unsetCustomPaginationParameter('sorted');
+
+        // test desc sort
+        $_GET ['ord'] = 'desc';
+        $arraySubscriber->items($itemsEvent);
+        $this->assertSame($sameSortOrderData, $array);
+    }
+
+    /**
+     * @return array
+     */
+    public function getArrayData()
+    {
+        return array(
+            'Associative array case' => array(
+                'array' => [
+                    ['sortProperty' => 2],
+                    ['sortProperty' => 3],
+                    ['sortProperty' => 1],
+                ],
+            ),
+            'Object case' => array(
+                'array' => [
+                    new TestItem(2),
+                    new TestItem(3),
+                    new TestItem(1),
+                ],
+            ),
+        );
     }
 }

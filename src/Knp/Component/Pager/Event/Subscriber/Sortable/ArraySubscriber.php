@@ -87,6 +87,10 @@ class ArraySubscriber implements EventSubscriberInterface
             throw new \UnexpectedValueException('You need symfony/property-access component to use this sorting function');
         }
 
+        if (!$this->propertyAccessor->isReadable($object1, $this->currentSortingField) || !$this->propertyAccessor->isReadable($object2, $this->currentSortingField)) {
+            return 0;
+        }
+
         try {
             $fieldValue1 = $this->propertyAccessor->getValue($object1, $this->currentSortingField);
         } catch (UnexpectedTypeException $e) {
