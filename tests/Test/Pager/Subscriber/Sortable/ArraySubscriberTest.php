@@ -120,6 +120,10 @@ class ArraySubscriberTest extends BaseTestCase
      */
     public function shouldBeJustIgnoredWhenSpecifiedSortPropertyDoesNotExist($array)
     {
+        if (version_compare(PHP_VERSION, '7.0', '<')) {
+            // @see https://bugs.php.net/bug.php?id=50688
+            $this->markTestSkipped('Under PHP7 avoid usort() warning');
+        }
         $sameSortOrderData = array(
             $array[0],
             $array[1],
@@ -151,18 +155,18 @@ class ArraySubscriberTest extends BaseTestCase
     {
         return array(
             'Associative array case' => array(
-                'array' => [
-                    ['sortProperty' => 2],
-                    ['sortProperty' => 3],
-                    ['sortProperty' => 1],
-                ],
+                'array' => array(
+                    array('sortProperty' => 2),
+                    array('sortProperty' => 3),
+                    array('sortProperty' => 1),
+                 ),
             ),
             'Object case' => array(
-                'array' => [
+                'array' => array(
                     new TestItem(2),
                     new TestItem(3),
                     new TestItem(1),
-                ],
+                ),
             ),
         );
     }
