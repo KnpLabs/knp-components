@@ -35,7 +35,7 @@ class ArraySubscriberTest extends BaseTestCase
         $itemsEvent->unsetCustomPaginationParameter('sorted');
 
         // test desc sort
-        $_GET ['ord'] = 'desc';
+        $_GET['ord'] = 'desc';
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(3, $array[0]['entry']['sortProperty']);
     }
@@ -109,7 +109,7 @@ class ArraySubscriberTest extends BaseTestCase
         $itemsEvent->unsetCustomPaginationParameter('sorted');
 
         // test desc sort
-        $_GET ['ord'] = 'desc';
+        $_GET['ord'] = 'desc';
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(2, $array[0]['entry']['sortProperty']);
     }
@@ -143,7 +143,7 @@ class ArraySubscriberTest extends BaseTestCase
         $itemsEvent->unsetCustomPaginationParameter('sorted');
 
         // test desc sort
-        $_GET ['ord'] = 'desc';
+        $_GET['ord'] = 'desc';
         $arraySubscriber->items($itemsEvent);
         $this->assertSame($sameSortOrderData, $array);
     }
