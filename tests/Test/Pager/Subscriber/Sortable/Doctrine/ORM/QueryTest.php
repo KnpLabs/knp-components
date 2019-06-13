@@ -45,11 +45,10 @@ class QueryTest extends BaseTestCaseORM
         $schemaTool->createSchema($schema);
         $this->populate($em);
 
-        $_GET['sort'] = 'a.title';
-        $_GET['direction'] = 'asc';
         $query = $em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
-        $p = new Paginator;
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $query = $em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
@@ -64,13 +63,12 @@ class QueryTest extends BaseTestCaseORM
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
 
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new PaginationSubscriber);
-        $dispatcher->addSubscriber(new Sortable);
-        $p = new Paginator($dispatcher);
+        $dispatcher->addSubscriber(new Sortable($requestStack->getCurrentRequest()));
+        $p = new Paginator($dispatcher, $requestStack);
 
-        $_GET['sort'] = 'a.title';
-        $_GET['direction'] = 'asc';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
@@ -83,8 +81,36 @@ class QueryTest extends BaseTestCaseORM
         $this->assertEquals('summer', $items[2]->getTitle());
         $this->assertEquals('winter', $items[3]->getTitle());
 
-        $_GET['direction'] = 'desc';
-        $view = $p->paginate($query, 1, 10);
+        $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+
+        // Different aliases separators according to Doctrine version
+        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
+            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10', $executed[1]);
+        } else {
+            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10', $executed[1]);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function shouldSortSimpleDoctrineQuery2(): void
+    {
+        $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
+
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'desc']);
+        $dispatcher = new EventDispatcher;
+        $dispatcher->addSubscriber(new PaginationSubscriber);
+        $dispatcher->addSubscriber(new Sortable($requestStack->getCurrentRequest()));
+        $p = new Paginator($dispatcher, $requestStack);
+
+        $this->startQueryLog();
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+        $view = $p->paginate($query);
+
         $items = $view->getItems();
         $this->assertCount(4, $items);
         $this->assertEquals('winter', $items[0]->getTitle());
@@ -92,16 +118,14 @@ class QueryTest extends BaseTestCaseORM
         $this->assertEquals('spring', $items[2]->getTitle());
         $this->assertEquals('autumn', $items[3]->getTitle());
 
-        $this->assertEquals(4, $this->queryAnalyzer->getNumExecutedQueries());
+        $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
         // Different aliases separators according to Doctrine version
         if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ ORDER BY a0_.title DESC LIMIT 10', $executed[3]);
+            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ ORDER BY a0_.title DESC LIMIT 10', $executed[1]);
         } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ ORDER BY a0_.title DESC LIMIT 10', $executed[3]);
+            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ ORDER BY a0_.title DESC LIMIT 10', $executed[1]);
         }
     }
 
@@ -112,14 +136,13 @@ class QueryTest extends BaseTestCaseORM
     {
         $this->expectException(\UnexpectedValueException::class);
 
-        $_GET['sort'] = '"a.title\'';
-        $_GET['direction'] = 'asc';
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
         ;
 
-        $p = new Paginator;
+        $requestStack = $this->createRequestStack(['sort' => '"a.title\'', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
     }
 
@@ -131,8 +154,6 @@ class QueryTest extends BaseTestCaseORM
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
 
-        $_GET['sort'] = 'counter';
-        $_GET['direction'] = 'asc';
         $dql = <<<___SQL
         SELECT a, COUNT(a) AS counter
         FROM Test\Fixture\Entity\Article a
@@ -140,7 +161,8 @@ ___SQL;
         $query = $this->em->createQuery($dql);
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
-        $p = new Paginator;
+        $requestStack = $this->createRequestStack(['sort' => 'counter', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10, [PaginatorInterface::DISTINCT => false]);
 
@@ -162,15 +184,14 @@ ___SQL;
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
-        $_GET['sort'] = 'a.title';
-        $_GET['direction'] = 'asc';
         $query = $this
             ->em
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
         ;
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
-        $p = new Paginator;
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
         $this->assertInstanceOf(SlidingPagination::class, $view);
@@ -191,14 +212,13 @@ ___SQL;
      */
     public function shouldNotExecuteExtraQueriesWhenCountIsZero(): void
     {
-        $_GET['sort'] = 'a.title';
-        $_GET['direction'] = 'asc';
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
         ;
 
-        $p = new Paginator;
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
         $this->assertInstanceOf(SlidingPagination::class, $view);

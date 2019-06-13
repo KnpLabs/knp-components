@@ -17,7 +17,8 @@ class PaginationSubscriberTest extends BaseTestCase
 
         $subscriber = new PaginationSubscriber;
 
-        $beforeEvent = new BeforeEvent($dispatcher);
+        $requestStack = $this->createRequestStack([]);
+        $beforeEvent = new BeforeEvent($dispatcher, $requestStack->getCurrentRequest());
         $subscriber->before($beforeEvent);
 
         // Subsequent calls do not add more subscribers

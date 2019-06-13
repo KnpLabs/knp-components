@@ -21,10 +21,9 @@ class QueryTest extends BaseTestCaseMongoODM
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new PaginationSubscriber);
         $dispatcher->addSubscriber(new Sortable);
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'asc']);
+        $p = new Paginator($dispatcher, $requestStack);
 
-        $_GET['sort'] = 'title';
-        $_GET['direction'] = 'asc';
         $qb = $this->dm->createQueryBuilder(Article::class);
         $query = $qb->getQuery();
         $view = $p->paginate($query, 1, 10);
@@ -36,7 +35,8 @@ class QueryTest extends BaseTestCaseMongoODM
         $this->assertEquals('summer', $items[2]->getTitle());
         $this->assertEquals('winter', $items[3]->getTitle());
 
-        $_GET['direction'] = 'desc';
+        $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'desc']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = array_values($view->getItems());
         $this->assertCount(4, $items);
@@ -51,15 +51,14 @@ class QueryTest extends BaseTestCaseMongoODM
      */
     public function shouldSortOnAnyField(): void
     {
-        $_GET['sort'] = '"title\'';
-        $_GET['direction'] = 'asc';
         $query = $this
             ->getMockDocumentManager()
             ->createQueryBuilder(Article::class)
             ->getQuery()
         ;
 
-        $p = new Paginator;
+        $requestStack = $this->createRequestStack(['sort' => '"title\'', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
     }
 

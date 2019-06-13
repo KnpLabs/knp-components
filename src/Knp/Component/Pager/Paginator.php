@@ -5,6 +5,8 @@ namespace Knp\Component\Pager;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
 use Knp\Component\Pager\Event;
@@ -38,13 +40,19 @@ class Paginator implements PaginatorInterface
     ];
 
     /**
+     * @var Request
+     */
+    protected $request;
+
+    /**
      * Initialize paginator with event dispatcher
      * Can be a service in concept. By default it
      * hooks standard pagination subscriber
      *
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+     * @param EventDispatcherInterface|null $eventDispatcher
+     * @param RequestStack|null             $requestStack
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher = null)
+    public function __construct(EventDispatcherInterface $eventDispatcher = null, RequestStack $requestStack = null)
     {
         $this->eventDispatcher = $eventDispatcher;
         if (is_null($this->eventDispatcher)) {
@@ -52,6 +60,7 @@ class Paginator implements PaginatorInterface
             $this->eventDispatcher->addSubscriber(new PaginationSubscriber);
             $this->eventDispatcher->addSubscriber(new SortableSubscriber);
         }
+        $this->request = null === $requestStack ? Request::createFromGlobals() : $requestStack->getCurrentRequest();
     }
 
     /**
@@ -96,16 +105,16 @@ class Paginator implements PaginatorInterface
         }
         
         // default sort field and direction are set based on options (if available)
-        if (!isset($_GET[$options[self::SORT_FIELD_PARAMETER_NAME]]) && isset($options[self::DEFAULT_SORT_FIELD_NAME])) {
-            $_GET[$options[self::SORT_FIELD_PARAMETER_NAME]] = $options[self::DEFAULT_SORT_FIELD_NAME];
-            
-            if (!isset($_GET[$options[self::SORT_DIRECTION_PARAMETER_NAME]])) {
-                $_GET[$options[self::SORT_DIRECTION_PARAMETER_NAME]] = isset($options[self::DEFAULT_SORT_DIRECTION]) ? $options[self::DEFAULT_SORT_DIRECTION] : 'asc';
+        if (isset($options[self::DEFAULT_SORT_FIELD_NAME]) && !$this->request->query->has($options[self::SORT_FIELD_PARAMETER_NAME])) {
+           $this->request->query->set($options[self::SORT_FIELD_PARAMETER_NAME], $options[self::DEFAULT_SORT_FIELD_NAME]);
+
+            if (!$this->request->query->has($options[self::SORT_DIRECTION_PARAMETER_NAME])) {
+                $this->request->query->set($options[self::SORT_DIRECTION_PARAMETER_NAME], $options[self::DEFAULT_SORT_DIRECTION] ?? 'asc');
             }
         }
-        
+
         // before pagination start
-        $beforeEvent = new Event\BeforeEvent($this->eventDispatcher);
+        $beforeEvent = new Event\BeforeEvent($this->eventDispatcher, $this->request);
         $this->eventDispatcher->dispatch('knp_pager.before', $beforeEvent);
         // items
         $itemsEvent = new Event\ItemsEvent($offset, $limit);

@@ -17,11 +17,10 @@ class WhitelistTest extends BaseTestCaseORM
         $this->expectException(\UnexpectedValueException::class);
 
         $this->populate();
-        $_GET['sort'] = 'a.title';
-        $_GET['direction'] = 'asc';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
-        $p = new Paginator;
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $sortFieldWhitelist = ['a.title'];
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
@@ -29,7 +28,8 @@ class WhitelistTest extends BaseTestCaseORM
         $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
 
-        $_GET['sort'] = 'a.id';
+        $requestStack = $this->createRequestStack(['sort' => 'a.id', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
     }
 
@@ -39,17 +39,17 @@ class WhitelistTest extends BaseTestCaseORM
     public function shouldSortWithoutSpecificWhitelist(): void
     {
         $this->populate();
-        $_GET['sort'] = 'a.title';
-        $_GET['direction'] = 'asc';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
-        $p = new Paginator;
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();
         $this->assertEquals('autumn', $items[0]->getTitle());
 
-        $_GET['sort'] = 'a.id';
+        $requestStack = $this->createRequestStack(['sort' => 'a.id', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();

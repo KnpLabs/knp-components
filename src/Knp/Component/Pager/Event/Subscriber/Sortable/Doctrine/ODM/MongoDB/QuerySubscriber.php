@@ -6,9 +6,20 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
+    /**
+     * @var Request
+     */
+    private $request;
+
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+    }
+
     public function items(ItemsEvent $event): void
     {
         // Check if the result has already been sorted by an other sort subscriber
@@ -20,9 +31,9 @@ class QuerySubscriber implements EventSubscriberInterface
         if ($event->target instanceof Query) {
             $event->setCustomPaginationParameter('sorted', true);
 
-            if (isset($_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]])) {
-                $field = $_GET[$event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]];
-                $dir = strtolower($_GET[$event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]]) == 'asc' ? 1 : -1;
+            if ($this->request->query->has($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])) {
+                $field = $this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]);
+                $dir = strtolower($this->request->query->get($event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME])) == 'asc' ? 1 : -1;
 
                 if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
                     if (!in_array($field, $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
