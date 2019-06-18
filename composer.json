@@ -20,15 +20,16 @@
         "php": ">=7.1"
     },
     "require-dev": {
-        "symfony/event-dispatcher": "~2.5",
+        "symfony/event-dispatcher": "^3.4 || ^4.0",
         "doctrine/orm": "~2.4",
         "doctrine/mongodb-odm": "~1.0@beta",
         "doctrine/phpcr-odm": "~1.2",
         "jackalope/jackalope-doctrine-dbal": "~1.2",
         "phpunit/phpunit": "~6.3",
         "ruflin/elastica": "~1.0",
-        "symfony/property-access": ">=2.3",
-        "symfony/http-foundation": "^3.4 || ^4.0"
+        "symfony/property-access": "^3.4 || ^4.0",
+        "symfony/http-foundation": "^3.4 || ^4.0",
+        "symfony/http-kernel": "^3.4 || ^4.0"
     },
     "suggest": {
         "symfony/property-access": "To allow sorting arrays",

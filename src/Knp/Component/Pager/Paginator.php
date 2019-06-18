@@ -7,6 +7,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Contracts\EventDispatcher\Event as ContractEvent;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
 use Knp\Component\Pager\Event;
@@ -21,7 +23,7 @@ use Knp\Component\Pager\Pagination\PaginationInterface;
 class Paginator implements PaginatorInterface
 {
     /**
-     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+     * @var EventDispatcherInterface
      */
     protected $eventDispatcher;
 
@@ -56,7 +58,7 @@ class Paginator implements PaginatorInterface
     {
         $this->eventDispatcher = $eventDispatcher;
         if (is_null($this->eventDispatcher)) {
-            $this->eventDispatcher = new EventDispatcher;
+            $this->eventDispatcher = new EventDispatcher();
             $this->eventDispatcher->addSubscriber(new PaginationSubscriber);
             $this->eventDispatcher->addSubscriber(new SortableSubscriber);
         }
@@ -115,12 +117,12 @@ class Paginator implements PaginatorInterface
 
         // before pagination start
         $beforeEvent = new Event\BeforeEvent($this->eventDispatcher, $this->request);
-        $this->eventDispatcher->dispatch('knp_pager.before', $beforeEvent);
+        $this->dispatch('knp_pager.before', $beforeEvent);
         // items
         $itemsEvent = new Event\ItemsEvent($offset, $limit);
         $itemsEvent->options = &$options;
         $itemsEvent->target = &$target;
-        $this->eventDispatcher->dispatch('knp_pager.items', $itemsEvent);
+        $this->dispatch('knp_pager.items', $itemsEvent);
         if (!$itemsEvent->isPropagationStopped()) {
             throw new \RuntimeException('One of listeners must count and slice given target');
         }
@@ -128,7 +130,7 @@ class Paginator implements PaginatorInterface
         $paginationEvent = new Event\PaginationEvent;
         $paginationEvent->target = &$target;
         $paginationEvent->options = &$options;
-        $this->eventDispatcher->dispatch('knp_pager.pagination', $paginationEvent);
+        $this->dispatch('knp_pager.pagination', $paginationEvent);
         if (!$paginationEvent->isPropagationStopped()) {
             throw new \RuntimeException('One of listeners must create pagination view');
         }
@@ -143,7 +145,7 @@ class Paginator implements PaginatorInterface
 
         // after
         $afterEvent = new Event\AfterEvent($paginationView);
-        $this->eventDispatcher->dispatch('knp_pager.after', $afterEvent);
+        $this->dispatch('knp_pager.after', $afterEvent);
         return $paginationView;
     }
 
@@ -167,5 +169,20 @@ class Paginator implements PaginatorInterface
     public function connect(string $eventName, $listener, int $priority = 0): void
     {
         $this->eventDispatcher->addListener($eventName, $listener, $priority);
+    }
+
+    /**
+     * Provide a BC way to dispatch events.
+     *
+     * @param string $eventName
+     * @param \Event $event
+     */
+    protected function dispatch(string $eventName, Event\Event $event): void
+    {
+        if ('42' !== Kernel::MAJOR_VERSION.Kernel::MINOR_VERSION && class_exists(ContractEvent::class)) {
+            $this->eventDispatcher->dispatch($event, $eventName);
+        } else {
+            $this->eventDispatcher->dispatch($eventName, $event);
+        }
     }
 }

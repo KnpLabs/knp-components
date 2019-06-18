@@ -2,8 +2,6 @@
 
 namespace Knp\Component\Pager\Event;
 
-use Symfony\Component\EventDispatcher\Event;
-
 /**
  * Specific Event class for paginator
  */
