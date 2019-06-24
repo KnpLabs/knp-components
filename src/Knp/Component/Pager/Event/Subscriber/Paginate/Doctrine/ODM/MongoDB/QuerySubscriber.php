@@ -18,7 +18,7 @@ class QuerySubscriber implements EventSubscriberInterface
             }
             static $reflectionProperty;
             if (is_null($reflectionProperty)) {
-                $reflectionClass = new \ReflectionClass('Doctrine\MongoDB\Query\Query');
+                $reflectionClass = new \ReflectionClass('Doctrine\ODM\MongoDB\Query\Query');
                 $reflectionProperty = $reflectionClass->getProperty('query');
                 $reflectionProperty->setAccessible(true);
             }
@@ -32,7 +32,7 @@ class QuerySubscriber implements EventSubscriberInterface
             $cursor = $resultQuery->execute();
 
             // set the count from the cursor
-            $event->count = $cursor->count();
+            $event->count = iterator_count($cursor);
 
             $event->items = array();
             // iterator_to_array for GridFS results in 1 item
