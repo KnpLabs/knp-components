@@ -23,16 +23,17 @@ class QuerySubscriber implements EventSubscriberInterface
                 $reflectionProperty->setAccessible(true);
             }
             $queryOptions = $reflectionProperty->getValue($event->target);
+            $resultCount = clone $event->target;
+            $reflectionProperty->setValue($resultCount, $queryOptions);
+            $cursor = $resultCount->execute();
+            $event->count = iterator_count($cursor);
 
+            $queryOptions = $reflectionProperty->getValue($event->target);
             $queryOptions['limit'] = $event->getLimit();
             $queryOptions['skip'] = $event->getOffset();
-
             $resultQuery = clone $event->target;
             $reflectionProperty->setValue($resultQuery, $queryOptions);
             $cursor = $resultQuery->execute();
-
-            // set the count from the cursor
-            $event->count = iterator_count($cursor);
 
             $event->items = [];
             // iterator_to_array for GridFS results in 1 item
@@ -42,7 +43,6 @@ class QuerySubscriber implements EventSubscriberInterface
             $event->stopPropagation();
         }
     }
-
     public static function getSubscribedEvents(): array
     {
         return [
