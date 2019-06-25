@@ -44,6 +44,7 @@ class QuerySubscriber implements EventSubscriberInterface
             $event->stopPropagation();
         }
     }
+
     public static function getSubscribedEvents(): array
     {
         return [
