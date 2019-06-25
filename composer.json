@@ -17,12 +17,12 @@
         }
     ],
     "require": {
-        "php": ">=7.1"
+        "php": ">=7.2"
     },
     "require-dev": {
         "symfony/event-dispatcher": "^3.4 || ^4.0",
         "doctrine/orm": "~2.4",
-        "doctrine/mongodb-odm": "~1.0@beta",
+        "doctrine/mongodb-odm": "^2.0.0-RC1",
         "doctrine/phpcr-odm": "~1.2",
         "jackalope/jackalope-doctrine-dbal": "~1.2",
         "phpunit/phpunit": "~6.3",
