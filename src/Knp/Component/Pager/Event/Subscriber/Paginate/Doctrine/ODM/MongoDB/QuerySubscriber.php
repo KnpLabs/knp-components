@@ -24,11 +24,12 @@ class QuerySubscriber implements EventSubscriberInterface
             }
             $queryOptions = $reflectionProperty->getValue($event->target);
             $resultCount = clone $event->target;
+            $queryOptions['type'] = Query::TYPE_COUNT;
             $reflectionProperty->setValue($resultCount, $queryOptions);
-            $cursor = $resultCount->execute();
-            $event->count = iterator_count($cursor);
+            $event->count = $resultCount->execute();
 
             $queryOptions = $reflectionProperty->getValue($event->target);
+            $queryOptions['type'] = Query::TYPE_FIND;
             $queryOptions['limit'] = $event->getLimit();
             $queryOptions['skip'] = $event->getOffset();
             $resultQuery = clone $event->target;
