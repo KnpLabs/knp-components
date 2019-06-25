@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\Query\Query;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
         if ($event->target instanceof Query) {
             // items
@@ -34,7 +34,7 @@ class QuerySubscriber implements EventSubscriberInterface
             // set the count from the cursor
             $event->count = iterator_count($cursor);
 
-            $event->items = array();
+            $event->items = [];
             // iterator_to_array for GridFS results in 1 item
             foreach ($cursor as $item) {
                 $event->items[] = $item;
@@ -43,10 +43,10 @@ class QuerySubscriber implements EventSubscriberInterface
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 0)
-        );
+        return [
+            'knp_pager.items' => ['items', 0]
+        ];
     }
 }
