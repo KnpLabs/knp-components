@@ -31,7 +31,7 @@ class Article
         return $this->id;
     }
 
-    public function setTitle($title)
+    public function setTitle($title): void
     {
         $this->title = $title;
     }
@@ -41,7 +41,7 @@ class Article
         return $this->title;
     }
 
-    public function setEnabled($enabled)
+    public function setEnabled($enabled): void
     {
         $this->enabled = $enabled;
     }

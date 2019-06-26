@@ -41,7 +41,7 @@ class QueryAnalyzer implements SQLLogger
      *
      * @var array
      */
-    private $queries = array();
+    private $queries = [];
 
     /**
      * Query execution times indexed
@@ -49,7 +49,7 @@ class QueryAnalyzer implements SQLLogger
      *
      * @var array
      */
-    private $queryExecutionTimes = array();
+    private $queryExecutionTimes = [];
 
     /**
      * Initialize log listener with database
@@ -66,7 +66,7 @@ class QueryAnalyzer implements SQLLogger
     /**
      * {@inheritdoc}
      */
-    public function startQuery($sql, array $params = null, array $types = null)
+    public function startQuery($sql, array $params = null, array $types = null): void
     {
         $this->queryStartTime = microtime(true);
         $this->queries[] = $this->generateSql($sql, $params, $types);
@@ -75,7 +75,7 @@ class QueryAnalyzer implements SQLLogger
     /**
      * {@inheritdoc}
      */
-    public function stopQuery()
+    public function stopQuery(): void
     {
         $ms = round(microtime(true) - $this->queryStartTime, 4) * 1000;
         $this->queryExecutionTimes[] = $ms;
@@ -89,8 +89,8 @@ class QueryAnalyzer implements SQLLogger
      */
     public function cleanUp()
     {
-        $this->queries = array();
-        $this->queryExecutionTimes = array();
+        $this->queries = [];
+        $this->queryExecutionTimes = [];
         $this->totalExecutionTime = 0;
         return $this;
     }
@@ -212,7 +212,7 @@ class QueryAnalyzer implements SQLLogger
      */
     private function getConvertedParams($params, $types)
     {
-        $result = array();
+        $result = [];
         foreach ($params as $position => $value) {
             if (isset($types[$position])) {
                 $type = $types[$position];

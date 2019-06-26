@@ -11,12 +11,12 @@ class QueryBuilderSubscriberTest extends BaseTestCasePHPCRODM
     /**
      * @test
      */
-    public function shouldSupportPaginateStrategySubscriber()
+    public function shouldSupportPaginateStrategySubscriber(): void
     {
         $this->populate();
 
         $qb = $this->dm->createQueryBuilder();
-        $qb->fromDocument('Test\Fixture\Document\PHPCR\Article', 'a');
+        $qb->fromDocument(Article::class, 'a');
 
         $p = new Paginator();
         $pagination = $p->paginate($qb, 1, 2);
@@ -26,12 +26,12 @@ class QueryBuilderSubscriberTest extends BaseTestCasePHPCRODM
 
         $items = $pagination->getItems();
 
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items->first()->getTitle());
         $this->assertEquals('winter', $items->last()->getTitle());
     }
 
-    private function populate()
+    private function populate(): void
     {
         $dm = $this->getMockDocumentManager();
 

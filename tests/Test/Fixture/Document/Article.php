@@ -34,7 +34,7 @@ class Article
         return $this->id;
     }
 
-    public function setTitle($title)
+    public function setTitle($title): void
     {
         $this->title = $title;
     }
@@ -67,3 +67,4 @@ class Article
         return $this->createdAt;
     }
 }
+

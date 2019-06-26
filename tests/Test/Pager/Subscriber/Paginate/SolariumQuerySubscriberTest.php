@@ -3,23 +3,23 @@
 namespace Test\Pager\Subscriber\Paginate;
 
 use Knp\Component\Pager\Paginator;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Event\Subscriber\Paginate\ArraySubscriber;
 use Knp\Component\Pager\Event\Subscriber\Paginate\SolariumQuerySubscriber;
 
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 
-class SolariumQuerySubscriberTest extends \PHPUnit_Framework_TestCase
+class SolariumQuerySubscriberTest extends TestCase
 {
     /**
      * @test
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage One of listeners must count and slice given target
      */
-    function testArrayShouldNotBeHandled()
+    public function arrayShouldNotBeHandled(): void
     {
-        $array = array(1 => 'foo', 2 => 'bar');
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('One of listeners must count and slice given target');
+
+        $array = [1 => 'foo', 2 => 'bar'];
 
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new SolariumQuerySubscriber);

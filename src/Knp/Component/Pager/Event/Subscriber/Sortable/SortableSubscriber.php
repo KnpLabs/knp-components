@@ -13,7 +13,7 @@ class SortableSubscriber implements EventSubscriberInterface
      */
     private $isLoaded = false;
 
-    public function before(BeforeEvent $event)
+    public function before(BeforeEvent $event): void
     {
         // Do not lazy-load more than once
         if ($this->isLoaded) {
@@ -22,20 +22,21 @@ class SortableSubscriber implements EventSubscriberInterface
 
         $disp = $event->getEventDispatcher();
         // hook all standard sortable subscribers
-        $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber());
-        $disp->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber());
-        $disp->addSubscriber(new ElasticaQuerySubscriber());
-        $disp->addSubscriber(new PropelQuerySubscriber());
-        $disp->addSubscriber(new SolariumQuerySubscriber());
-        $disp->addSubscriber(new ArraySubscriber());
+        $request = $event->getRequest();
+        $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber($request));
+        $disp->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber($request));
+        $disp->addSubscriber(new ElasticaQuerySubscriber($request));
+        $disp->addSubscriber(new PropelQuerySubscriber($request));
+        $disp->addSubscriber(new SolariumQuerySubscriber($request));
+        $disp->addSubscriber(new ArraySubscriber($request));
 
         $this->isLoaded = true;
     }
 
     public static function getSubscribedEvents()
     {
-        return array(
-            'knp_pager.before' => array('before', 1)
-        );
+        return [
+            'knp_pager.before' => ['before', 1]
+        ];
     }
 }

@@ -7,24 +7,18 @@ cache:
         - $HOME/.composer/cache
 
 php:
-    - 5.4
-    - 5.5
-    - 5.6
-    - 7.0
-    - hhvm
+    - 7.2
+    - 7.3
+    - 7.4snapshot
+    - nightly
 
 matrix:
-    include:
-        - php: 5.3
-          dist: precise
     allow_failures:
-        - php: 7.0
-        - php: hhvm
+        - php: nightly
 
 before_script:
-    # The mongo extension is not yet available on PHP 7
-    - if [[ "$TRAVIS_PHP_VERSION" != "7.0" ]] && [[ "$TRAVIS_PHP_VERSION" != "hhvm" ]]; then echo 'extension=mongo.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini; fi
-    - if [[ "$TRAVIS_PHP_VERSION" = "7.0" ]] || [[ "$TRAVIS_PHP_VERSION" = "hhvm" ]]; then composer remove --dev --no-update doctrine/mongodb-odm; fi
+    - pecl install -f mongodb-stable;
     - composer install --prefer-dist
+    - phpunit --version
 
 script: phpunit

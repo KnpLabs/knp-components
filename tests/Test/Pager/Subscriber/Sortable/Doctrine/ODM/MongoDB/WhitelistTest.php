@@ -16,57 +16,58 @@ class WhitelistTest extends BaseTestCaseMongoODM
 {
     /**
      * @test
-     * @expectedException UnexpectedValueException
      */
-    function shouldWhitelistSortableFields()
+    public function shouldWhitelistSortableFields(): void
     {
+        $this->expectException(\UnexpectedValueException::class);
+
         $this->populate();
-        $_GET['sort'] = 'title';
-        $_GET['direction'] = 'asc';
         $query = $this->dm
-            ->createQueryBuilder('Test\Fixture\Document\Article')
+            ->createQueryBuilder(Article::class)
             ->getQuery()
         ;
 
-        $p = new Paginator;
-        $sortFieldWhitelist = array('title');
+        $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
+        $sortFieldWhitelist = ['title'];
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
         $items = array_values($view->getItems());
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
 
-        $_GET['sort'] = 'id';
+        $requestStack = $this->createRequestStack(['sort' => 'id', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
     }
 
     /**
      * @test
      */
-    function shouldSortWithoutSpecificWhitelist()
+    public function shouldSortWithoutSpecificWhitelist(): void
     {
         $this->populate();
-        $_GET['sort'] = 'title';
-        $_GET['direction'] = 'asc';
         $query = $this->dm
-            ->createQueryBuilder('Test\Fixture\Document\Article')
+            ->createQueryBuilder(Article::class)
             ->getQuery()
         ;
 
-        $p = new Paginator;
+        $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $items = array_values($view->getItems());
         $this->assertEquals('autumn', $items[0]->getTitle());
 
-        $_GET['sort'] = 'id';
+        $requestStack = $this->createRequestStack(['sort' => 'id', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $items = array_values($view->getItems());
         $this->assertEquals('summer', $items[0]->getTitle());
     }
 
-    private function populate()
+    private function populate(): void
     {
         $em = $this->getMockDocumentManager();
         $summer = new Article;

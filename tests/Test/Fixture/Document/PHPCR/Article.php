@@ -34,12 +34,12 @@ class Article
         return $this->parent;
     }
 
-    public function setParent($parent)
+    public function setParent($parent): void
     {
         $this->parent = $parent;
     }
 
-    public function setTitle($title)
+    public function setTitle($title): void
     {
         $this->title = $title;
     }
