@@ -17,6 +17,7 @@ matrix:
         - php: nightly
 
 before_script:
+    - pecl install -f mongodb-stable;
     - composer install --prefer-dist
     - phpunit --version
 
