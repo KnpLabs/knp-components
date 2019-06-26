@@ -8,6 +8,13 @@ cache:
 
 php:
     - 7.2
+    - 7.3
+    - 7.4snapshot
+    - nightly
+
+matrix:
+    allow_failures:
+        - php: nightly
 
 before_script:
     # mongo extension is not available on PHP 7
