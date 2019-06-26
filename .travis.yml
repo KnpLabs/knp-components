@@ -17,9 +17,6 @@ matrix:
         - php: nightly
 
 before_script:
-    # mongo extension is not available on PHP 7
-    # this is a workaround till doctrine/mongodb-odm move to mongodb extension
-    - composer remove --dev --no-update doctrine/mongodb-odm;
     - composer install --prefer-dist
     - phpunit --version
 
