@@ -44,6 +44,16 @@ class QueryTest extends BaseTestCaseMongoODM
         $this->assertEquals('summer', $items[1]->getTitle());
         $this->assertEquals('spring', $items[2]->getTitle());
         $this->assertEquals('autumn', $items[3]->getTitle());
+
+        $requestStack = $this->createRequestStack(['sort' => 'status+created_at', 'direction' => 'desc']);
+        $p = new Paginator($dispatcher, $requestStack);
+        $view = $p->paginate($query);
+        $items = array_values($view->getItems());
+        $this->assertEquals(4, count($items));
+        $this->assertEquals('autumn', $items[0]->getTitle());
+        $this->assertEquals('summer', $items[1]->getTitle());
+        $this->assertEquals('winter', $items[2]->getTitle());
+        $this->assertEquals('spring', $items[3]->getTitle());
     }
 
     /**
@@ -67,15 +77,23 @@ class QueryTest extends BaseTestCaseMongoODM
         $em = $this->getMockDocumentManager();
         $summer = new Article;
         $summer->setTitle('summer');
+        $summer->setStatus('published');
+        $summer->setCreatedAt(new \DateTime('2016-06-06'));
 
         $winter = new Article;
         $winter->setTitle('winter');
+        $summer->setStatus('draft');
+        $summer->setCreatedAt(new \DateTime('2019-09-09'));
 
         $autumn = new Article;
         $autumn->setTitle('autumn');
+        $summer->setStatus('published');
+        $summer->setCreatedAt(new \DateTime('2018-08-08'));
 
         $spring = new Article;
         $spring->setTitle('spring');
+        $summer->setStatus('draft');
+        $summer->setCreatedAt(new \DateTime('2017-07-07'));
 
         $em->persist($summer);
         $em->persist($winter);

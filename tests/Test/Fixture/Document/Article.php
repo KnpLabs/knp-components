@@ -19,6 +19,16 @@ class Article
      */
     private $title;
 
+    /**
+     * @ODM\Field(type="bool", name="status")
+     */
+    private $status;
+
+    /**
+     * @ODM\Field(type="date", name="created_at")
+     */
+    private $createdAt;
+
     public function getId()
     {
         return $this->id;
@@ -32,5 +42,28 @@ class Article
     public function getTitle()
     {
         return $this->title;
+    }
+
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     */
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 }

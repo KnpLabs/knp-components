@@ -4,6 +4,7 @@ namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 
 use Knp\Component\Pager\Event\ItemsEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -102,7 +103,7 @@ class ArraySubscriber implements EventSubscriberInterface
      * @param mixed $object1 first object to compare
      * @param mixed $object2 second object to compare
      *
-     * @return boolean
+     * @return int
      */
     private function sortFunction($object1, $object2)
     {
@@ -110,8 +111,17 @@ class ArraySubscriber implements EventSubscriberInterface
             throw new \UnexpectedValueException('You need symfony/property-access component to use this sorting function');
         }
 
-        $fieldValue1 = $this->propertyAccessor->getValue($object1, $this->currentSortingField);
-        $fieldValue2 = $this->propertyAccessor->getValue($object2, $this->currentSortingField);
+        try {
+            $fieldValue1 = $this->propertyAccessor->getValue($object1, $this->currentSortingField);
+        } catch (UnexpectedTypeException $e) {
+            return -1 * $this->getSortCoefficient();
+        }
+
+        try {
+            $fieldValue2 = $this->propertyAccessor->getValue($object2, $this->currentSortingField);
+        } catch (UnexpectedTypeException $e) {
+            return 1 * $this->getSortCoefficient();
+        }
 
         if (is_string($fieldValue1)) {
             $fieldValue1 = mb_strtolower($fieldValue1);
@@ -125,7 +135,12 @@ class ArraySubscriber implements EventSubscriberInterface
             return 0;
         }
 
-        return ($fieldValue1 > $fieldValue2 ? 1 : -1) * ($this->sortDirection === 'asc' ? 1 : -1);
+        return ($fieldValue1 > $fieldValue2 ? 1 : -1) * $this->getSortCoefficient();
+    }
+
+    private function getSortCoefficient()
+    {
+        return $this->sortDirection === 'asc' ? 1 : -1;
     }
 
     public static function getSubscribedEvents()

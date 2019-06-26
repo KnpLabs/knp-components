@@ -6,6 +6,7 @@ use ModelCriteria;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
+use Knp\Component\Pager\PaginatorInterface;
 
 class PropelQuerySubscriber implements EventSubscriberInterface
 {
