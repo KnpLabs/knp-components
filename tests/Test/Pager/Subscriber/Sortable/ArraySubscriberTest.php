@@ -115,58 +115,57 @@ class ArraySubscriberTest extends BaseTestCase
 
     /**
      * @test
-     * @dataProvider getArrayData
+     * @dataProvider getItemsData
      */
-    public function shouldBeJustIgnoredWhenSpecifiedSortPropertyDoesNotExist($array)
+    public function shouldBeKeptTheOrderWhenSortPropertyDoesNotExist(array $items): void
     {
-        if (version_compare(PHP_VERSION, '7.0', '<')) {
-            // @see https://bugs.php.net/bug.php?id=50688
-            $this->markTestSkipped('Under PHP7 avoid usort() warning');
-        }
-        $sameSortOrderData = array(
-            $array[0],
-            $array[1],
-            $array[2],
-        );
+        $sameSortOrderItems = [
+            $items[0],
+            $items[1],
+            $items[2],
+        ];
         $itemsEvent = new ItemsEvent(0, 10);
-        $itemsEvent->target = &$array;
-        $itemsEvent->options = array(PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort', PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord');
-
-        $arraySubscriber = new ArraySubscriber();
+        $itemsEvent->target = &$items;
+        $itemsEvent->options = [
+            PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort',
+            PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord',
+        ];
 
         // test asc sort
-        $_GET = array('sort' => 'notExistProperty', 'ord' => 'asc');
+        $requestStack = $this->createRequestStack(['sort' => 'notExistProperty', 'ord' => 'asc']);
+        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
         $arraySubscriber->items($itemsEvent);
-        $this->assertSame($sameSortOrderData, $array);
+        $this->assertSame($sameSortOrderItems, $items);
 
         $itemsEvent->unsetCustomPaginationParameter('sorted');
 
         // test desc sort
-        $_GET['ord'] = 'desc';
+        $requestStack = $this->createRequestStack(['sort' => 'notExistProperty', 'ord' => 'desc']);
+        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
         $arraySubscriber->items($itemsEvent);
-        $this->assertSame($sameSortOrderData, $array);
+        $this->assertSame($sameSortOrderItems, $items);
     }
 
     /**
      * @return array
      */
-    public function getArrayData()
+    public function getItemsData(): array
     {
-        return array(
-            'Associative array case' => array(
-                'array' => array(
-                    array('sortProperty' => 2),
-                    array('sortProperty' => 3),
-                    array('sortProperty' => 1),
-                 ),
-            ),
-            'Object case' => array(
-                'array' => array(
+        return [
+            'Associative array case' => [
+                'items' => [
+                    ['sortProperty' => 2],
+                    ['sortProperty' => 3],
+                    ['sortProperty' => 1],
+                ],
+            ],
+            'Object case' => [
+                'items' => [
                     new TestItem(2),
                     new TestItem(3),
                     new TestItem(1),
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 }
