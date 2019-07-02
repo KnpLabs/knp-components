@@ -11,7 +11,7 @@ use Knp\Component\Pager\Event\ItemsEvent;
  */
 class QuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
         if (!$event->target instanceof Query) {
             return;
@@ -28,10 +28,10 @@ class QuerySubscriber implements EventSubscriberInterface
         $event->stopPropagation();
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 0)
-        );
+        return [
+            'knp_pager.items' => ['items', 0]
+        ];
     }
 }

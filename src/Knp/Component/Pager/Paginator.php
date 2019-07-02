@@ -5,9 +5,14 @@ namespace Knp\Component\Pager;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Contracts\EventDispatcher\Event as ContractEvent;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
 use Knp\Component\Pager\Event;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 
 /**
  * Paginator uses event dispatcher to trigger pagination
@@ -18,7 +23,7 @@ use Knp\Component\Pager\Event;
 class Paginator implements PaginatorInterface
 {
     /**
-     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+     * @var EventDispatcherInterface
      */
     protected $eventDispatcher;
 
@@ -27,30 +32,37 @@ class Paginator implements PaginatorInterface
      *
      * @var array
      */
-    protected $defaultOptions = array(
+    protected $defaultOptions = [
         self::PAGE_PARAMETER_NAME => 'page',
         self::SORT_FIELD_PARAMETER_NAME => 'sort',
         self::SORT_DIRECTION_PARAMETER_NAME => 'direction',
         self::FILTER_FIELD_PARAMETER_NAME => 'filterParam',
         self::FILTER_VALUE_PARAMETER_NAME => 'filterValue',
         self::DISTINCT => true
-    );
+    ];
+
+    /**
+     * @var Request
+     */
+    protected $request;
 
     /**
      * Initialize paginator with event dispatcher
      * Can be a service in concept. By default it
      * hooks standard pagination subscriber
      *
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+     * @param EventDispatcherInterface|null $eventDispatcher
+     * @param RequestStack|null             $requestStack
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher = null)
+    public function __construct(EventDispatcherInterface $eventDispatcher = null, RequestStack $requestStack = null)
     {
         $this->eventDispatcher = $eventDispatcher;
         if (is_null($this->eventDispatcher)) {
-            $this->eventDispatcher = new EventDispatcher;
+            $this->eventDispatcher = new EventDispatcher();
             $this->eventDispatcher->addSubscriber(new PaginationSubscriber);
             $this->eventDispatcher->addSubscriber(new SortableSubscriber);
         }
+        $this->request = null === $requestStack ? Request::createFromGlobals() : $requestStack->getCurrentRequest();
     }
 
     /**
@@ -59,7 +71,7 @@ class Paginator implements PaginatorInterface
      *
      * @param array $options
      */
-    public function setDefaultPaginatorOptions(array $options)
+    public function setDefaultPaginatorOptions(array $options): void
     {
         $this->defaultOptions = array_merge($this->defaultOptions, $options);
     }
@@ -71,16 +83,16 @@ class Paginator implements PaginatorInterface
      * responsible for the pagination result representation
      *
      * @param mixed $target - anything what needs to be paginated
-     * @param integer $page - page number, starting from 1
-     * @param integer $limit - number of items per page
+     * @param int $page - page number, starting from 1
+     * @param int $limit - number of items per page
      * @param array $options - less used options:
      *     boolean $distinct - default true for distinction of results
      *     string $alias - pagination alias, default none
      *     array $whitelist - sortable whitelist for target fields being paginated
      * @throws \LogicException
-     * @return \Knp\Component\Pager\Pagination\PaginationInterface
+     * @return PaginationInterface
      */
-    public function paginate($target, $page = 1, $limit = 10, array $options = array())
+    public function paginate($target, int $page = 1, int $limit = 10, array $options = []): PaginationInterface
     {
         $page = (int) $page; 
         $limit = intval(abs($limit));
@@ -96,22 +108,22 @@ class Paginator implements PaginatorInterface
         }
         
         // default sort field and direction are set based on options (if available)
-        if (!isset($_GET[$options[self::SORT_FIELD_PARAMETER_NAME]]) && isset($options[self::DEFAULT_SORT_FIELD_NAME])) {
-            $_GET[$options[self::SORT_FIELD_PARAMETER_NAME]] = $options[self::DEFAULT_SORT_FIELD_NAME];
-            
-            if (!isset($_GET[$options[self::SORT_DIRECTION_PARAMETER_NAME]])) {
-                $_GET[$options[self::SORT_DIRECTION_PARAMETER_NAME]] = isset($options[self::DEFAULT_SORT_DIRECTION]) ? $options[self::DEFAULT_SORT_DIRECTION] : 'asc';
+        if (isset($options[self::DEFAULT_SORT_FIELD_NAME]) && !$this->request->query->has($options[self::SORT_FIELD_PARAMETER_NAME])) {
+           $this->request->query->set($options[self::SORT_FIELD_PARAMETER_NAME], $options[self::DEFAULT_SORT_FIELD_NAME]);
+
+            if (!$this->request->query->has($options[self::SORT_DIRECTION_PARAMETER_NAME])) {
+                $this->request->query->set($options[self::SORT_DIRECTION_PARAMETER_NAME], $options[self::DEFAULT_SORT_DIRECTION] ?? 'asc');
             }
         }
-        
+
         // before pagination start
-        $beforeEvent = new Event\BeforeEvent($this->eventDispatcher);
-        $this->eventDispatcher->dispatch('knp_pager.before', $beforeEvent);
+        $beforeEvent = new Event\BeforeEvent($this->eventDispatcher, $this->request);
+        $this->dispatch('knp_pager.before', $beforeEvent);
         // items
         $itemsEvent = new Event\ItemsEvent($offset, $limit);
         $itemsEvent->options = &$options;
         $itemsEvent->target = &$target;
-        $this->eventDispatcher->dispatch('knp_pager.items', $itemsEvent);
+        $this->dispatch('knp_pager.items', $itemsEvent);
         if (!$itemsEvent->isPropagationStopped()) {
             throw new \RuntimeException('One of listeners must count and slice given target');
         }
@@ -119,7 +131,7 @@ class Paginator implements PaginatorInterface
         $paginationEvent = new Event\PaginationEvent;
         $paginationEvent->target = &$target;
         $paginationEvent->options = &$options;
-        $this->eventDispatcher->dispatch('knp_pager.pagination', $paginationEvent);
+        $this->dispatch('knp_pager.pagination', $paginationEvent);
         if (!$paginationEvent->isPropagationStopped()) {
             throw new \RuntimeException('One of listeners must create pagination view');
         }
@@ -134,7 +146,7 @@ class Paginator implements PaginatorInterface
 
         // after
         $afterEvent = new Event\AfterEvent($paginationView);
-        $this->eventDispatcher->dispatch('knp_pager.after', $afterEvent);
+        $this->dispatch('knp_pager.after', $afterEvent);
         return $paginationView;
     }
 
@@ -143,7 +155,7 @@ class Paginator implements PaginatorInterface
      *
      * @param \Symfony\Component\EventDispatcher\EventSubscriberInterface $subscriber
      */
-    public function subscribe(EventSubscriberInterface $subscriber)
+    public function subscribe(EventSubscriberInterface $subscriber): void
     {
         $this->eventDispatcher->addSubscriber($subscriber);
     }
@@ -155,8 +167,23 @@ class Paginator implements PaginatorInterface
      * @param object $listener
      * @param integer $priority
      */
-    public function connect($eventName, $listener, $priority = 0)
+    public function connect(string $eventName, $listener, int $priority = 0): void
     {
         $this->eventDispatcher->addListener($eventName, $listener, $priority);
+    }
+
+    /**
+     * Provide a BC way to dispatch events.
+     *
+     * @param string $eventName
+     * @param \Event $event
+     */
+    protected function dispatch(string $eventName, Event\Event $event): void
+    {
+        if ('42' !== Kernel::MAJOR_VERSION.Kernel::MINOR_VERSION && class_exists(ContractEvent::class)) {
+            $this->eventDispatcher->dispatch($event, $eventName);
+        } else {
+            $this->eventDispatcher->dispatch($eventName, $event);
+        }
     }
 }

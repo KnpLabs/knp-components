@@ -13,7 +13,7 @@ class FiltrationSubscriber implements EventSubscriberInterface
      */
     private $isLoaded = false;
 
-    public function before(BeforeEvent $event)
+    public function before(BeforeEvent $event): void
     {
         // Do not lazy-load more than once
         if ($this->isLoaded) {
@@ -22,16 +22,16 @@ class FiltrationSubscriber implements EventSubscriberInterface
 
         $disp = $event->getEventDispatcher();
         // hook all standard filtration subscribers
-        $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber());
-        $disp->addSubscriber(new PropelQuerySubscriber());
+        $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber($event->getRequest()));
+        $disp->addSubscriber(new PropelQuerySubscriber($event->getRequest()));
 
         $this->isLoaded = true;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.before' => array('before', 1),
-        );
+        return [
+            'knp_pager.before' => ['before', 1],
+        ];
     }
 }

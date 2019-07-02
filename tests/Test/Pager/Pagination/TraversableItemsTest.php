@@ -2,16 +2,13 @@
 
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Paginator;
-use Knp\Component\Pager\Pagination\SlidingPagination;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 
 class TraversableItemsTest extends BaseTestCase
 {
     /**
      * @test
      */
-    function shouldBeAbleToUseTraversableItems()
+    public function shouldBeAbleToUseTraversableItems(): void
     {
         $p = new Paginator;
 
@@ -24,7 +21,7 @@ class TraversableItemsTest extends BaseTestCase
         $this->assertEquals('custom', (string)$view);
 
         $items = $view->getItems();
-        $this->assertTrue($items instanceof \ArrayObject);
+        $this->assertInstanceOf(\ArrayObject::class, $items);
         $i = 21;
         foreach ($view as $item) {
             $this->assertEquals($i++, $item);

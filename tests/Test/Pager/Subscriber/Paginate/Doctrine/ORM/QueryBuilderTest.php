@@ -11,7 +11,7 @@ class QueryBuilderTest extends BaseTestCaseORM
     /**
      * @test
      */
-    function shouldPaginateSimpleDoctrineQuery()
+    public function shouldPaginateSimpleDoctrineQuery(): void
     {
         $this->populate();
         $p = new Paginator;
@@ -19,7 +19,7 @@ class QueryBuilderTest extends BaseTestCaseORM
         $qb = $this->em->createQueryBuilder();
         $qb
             ->select('a')
-            ->from('Test\Fixture\Entity\Article', 'a')
+            ->from(Article::class, 'a')
         ;
         $view = $p->paginate($qb, 1, 2);
 
@@ -28,17 +28,17 @@ class QueryBuilderTest extends BaseTestCaseORM
         $this->assertEquals(4, $view->getTotalItemCount());
 
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
-        return array('Test\Fixture\Entity\Article');
+        return [Article::class];
     }
 
-    private function populate()
+    private function populate(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $summer = new Article;

@@ -8,23 +8,36 @@ use Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM\Query\WhereWalk
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\Helper as QueryHelper;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    /**
+     * @var Request
+     */
+    private $request;
+
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+    }
+
+    public function items(ItemsEvent $event): void
     {
         if ($event->target instanceof Query) {
-            if (!isset($_GET[$event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]]) || (empty($_GET[$event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]]) && $_GET[$event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]] !== "0")) {
+            $filterValue = $this->getQueryParameter($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
+            if (null === $filterValue || (empty($filterValue) && $filterValue !== '0')) {
                 return;
             }
-            if (!empty($_GET[$event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]])) {
-                $columns = $_GET[$event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]];
+            $filterName = $this->getQueryParameter($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]);
+            if (!empty($filterName)) {
+                $columns = $filterName;
             } elseif (!empty($event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS])) {
                 $columns = $event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS];
             } else {
                 return;
             }
-            $value = $_GET[$event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]];
+            $value = $this->getQueryParameter($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
             if (false !== strpos($value, '*')) {
                 $value = str_replace('*', '%', $value);
             }
@@ -42,14 +55,19 @@ class QuerySubscriber implements EventSubscriberInterface
             $event->target
                     ->setHint(WhereWalker::HINT_PAGINATOR_FILTER_VALUE, $value)
                     ->setHint(WhereWalker::HINT_PAGINATOR_FILTER_COLUMNS, $columns);
-            QueryHelper::addCustomTreeWalker($event->target, 'Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM\Query\WhereWalker');
+            QueryHelper::addCustomTreeWalker($event->target, WhereWalker::class);
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-                'knp_pager.items' => array('items', 0),
-        );
+        return [
+            'knp_pager.items' => ['items', 0],
+        ];
+    }
+
+    private function getQueryParameter(string $name): ?string
+    {
+        return $this->request->query->get($name);
     }
 }

@@ -12,7 +12,7 @@ class DBALQueryBuilderTest extends BaseTestCaseORM
     /**
      * @test
      */
-    function shouldPaginateSimpleDoctrineQuery()
+    public function shouldPaginateSimpleDoctrineQuery(): void
     {
         $this->populate();
         $p = new Paginator;
@@ -28,17 +28,17 @@ class DBALQueryBuilderTest extends BaseTestCaseORM
         $this->assertEquals(4, $view->getTotalItemCount());
 
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]['title']);
         $this->assertEquals('winter', $items[1]['title']);
     }
 
     protected function getUsedEntityFixtures()
     {
-        return array('Test\Fixture\Entity\Article');
+        return [Article::class];
     }
 
-    private function populate()
+    private function populate(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $summer = new Article;

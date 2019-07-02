@@ -11,14 +11,14 @@ class CustomParameterTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldGiveCustomParametersToPaginationView()
+    public function shouldGiveCustomParametersToPaginationView(): void
     {
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new CustomParameterSubscriber);
         $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
         $p = new Paginator($dispatcher);
 
-        $items = array('first', 'second');
+        $items = ['first', 'second'];
         $view = $p->paginate($items, 1, 10);
 
         $this->assertEquals('val', $view->getCustomParameter('test'));
