@@ -17,10 +17,11 @@
         }
     ],
     "require": {
-        "php": "^7.2"
+        "php": "^7.2",
+        "symfony/event-dispatcher": "^3.4 || ^4.0",
+        "symfony/http-foundation": "^3.4 || ^4.0"
     },
     "require-dev": {
-        "symfony/event-dispatcher": "^3.4 || ^4.0",
         "doctrine/orm": "~2.4",
         "doctrine/mongodb-odm": "^2.0.0-RC1",
         "doctrine/phpcr-odm": "~1.2",
@@ -28,7 +29,6 @@
         "phpunit/phpunit": "^7.0 || ^8.0",
         "ruflin/elastica": "~1.0",
         "symfony/property-access": "^3.4 || ^4.0",
-        "symfony/http-foundation": "^3.4 || ^4.0",
         "symfony/http-kernel": "^3.4 || ^4.0"
     },
     "suggest": {
