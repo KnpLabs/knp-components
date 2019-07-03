@@ -4,6 +4,7 @@ namespace Test\Pager\Subscriber\Sortable;
 
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Sortable\ArraySubscriber;
+use Knp\Component\Pager\Fixtures\TestItem;
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\PaginatorInterface;
 
@@ -110,5 +111,61 @@ class ArraySubscriberTest extends BaseTestCase
         $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(2, $array[0]['entry']['sortProperty']);
+    }
+
+    /**
+     * @test
+     * @dataProvider getItemsData
+     */
+    public function shouldBeKeptTheOrderWhenSortPropertyDoesNotExist(array $items): void
+    {
+        $sameSortOrderItems = [
+            $items[0],
+            $items[1],
+            $items[2],
+        ];
+        $itemsEvent = new ItemsEvent(0, 10);
+        $itemsEvent->target = &$items;
+        $itemsEvent->options = [
+            PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort',
+            PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord',
+        ];
+
+        // test asc sort
+        $requestStack = $this->createRequestStack(['sort' => 'notExistProperty', 'ord' => 'asc']);
+        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
+        $arraySubscriber->items($itemsEvent);
+        $this->assertSame($sameSortOrderItems, $items);
+
+        $itemsEvent->unsetCustomPaginationParameter('sorted');
+
+        // test desc sort
+        $requestStack = $this->createRequestStack(['sort' => 'notExistProperty', 'ord' => 'desc']);
+        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
+        $arraySubscriber->items($itemsEvent);
+        $this->assertSame($sameSortOrderItems, $items);
+    }
+
+    /**
+     * @return array
+     */
+    public function getItemsData(): array
+    {
+        return [
+            'Associative array case' => [
+                'items' => [
+                    ['sortProperty' => 2],
+                    ['sortProperty' => 3],
+                    ['sortProperty' => 1],
+                ],
+            ],
+            'Object case' => [
+                'items' => [
+                    new TestItem(2),
+                    new TestItem(3),
+                    new TestItem(1),
+                ],
+            ],
+        ];
     }
 }
