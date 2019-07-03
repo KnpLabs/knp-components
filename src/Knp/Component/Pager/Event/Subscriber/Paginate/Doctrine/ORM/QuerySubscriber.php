@@ -2,7 +2,6 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM;
 
-use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Doctrine\ORM\Query;
