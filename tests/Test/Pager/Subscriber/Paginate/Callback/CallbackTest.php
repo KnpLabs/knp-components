@@ -8,7 +8,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 
-class CallbackTest extends BaseTestCase
+final class CallbackTest extends BaseTestCase
 {
     const ITEMS_PER_PAGE = 10;
     const TOTAL_NUMBER_OF_ITEMS = 35;
