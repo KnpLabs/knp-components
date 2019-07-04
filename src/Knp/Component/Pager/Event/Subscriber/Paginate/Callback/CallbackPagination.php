@@ -2,6 +2,11 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Paginate\Callback;
 
+/**
+ * Callback pagination.
+ *
+ * @author Piotr Pelczar <me@athlan.pl>
+ */
 class CallbackPagination
 {
     /**
@@ -24,20 +29,12 @@ class CallbackPagination
         $this->items = $items;
     }
 
-    /**
-     * @return int
-     */
     public function getPaginationCount(): int
     {
         return call_user_func($this->count);
     }
 
-    /**
-     * @param $offset
-     * @param $limit
-     * @return array
-     */
-    public function getPaginationItems($offset, $limit): array
+    public function getPaginationItems(int $offset, int $limit): array
     {
         return call_user_func_array($this->items, array($offset, $limit));
     }
