@@ -13,7 +13,7 @@ class PaginationSubscriberTest extends BaseTestCase
     public function shouldRegisterExpectedSubscribersOnlyOnce(): void
     {
         $dispatcher = $this->getMockBuilder(EventDispatcherInterface::class)->getMock();
-        $dispatcher->expects($this->exactly(12))->method('addSubscriber');
+        $dispatcher->expects($this->exactly(13))->method('addSubscriber');
 
         $subscriber = new PaginationSubscriber;
 
