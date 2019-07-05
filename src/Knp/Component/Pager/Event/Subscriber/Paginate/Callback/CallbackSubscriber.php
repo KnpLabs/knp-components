@@ -31,7 +31,7 @@ class CallbackSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return array(
-            'knp_pager.items' => array('items', 0)
+            'knp_pager.items' => ['items', 0]
         );
     }
 }

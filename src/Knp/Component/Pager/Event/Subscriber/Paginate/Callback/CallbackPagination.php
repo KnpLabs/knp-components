@@ -36,6 +36,6 @@ class CallbackPagination
 
     public function getPaginationItems(int $offset, int $limit): array
     {
-        return call_user_func_array($this->items, array($offset, $limit));
+        return call_user_func_array($this->items, [$offset, $limit]);
     }
 }
