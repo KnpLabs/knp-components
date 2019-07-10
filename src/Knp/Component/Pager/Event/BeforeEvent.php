@@ -14,7 +14,7 @@ class BeforeEvent extends Event
 
     private $request;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher, Request $request)
+    public function __construct(EventDispatcherInterface $eventDispatcher, ?Request $request)
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->request = $request;
@@ -27,6 +27,6 @@ class BeforeEvent extends Event
 
     public function getRequest(): Request
     {
-        return $this->request;
+        return $this->request ?? Request::createFromGlobals();
     }
 }
