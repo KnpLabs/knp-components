@@ -17,9 +17,9 @@ class QuerySubscriber implements EventSubscriberInterface
      */
     private $request;
 
-    public function __construct(Request $request)
+    public function __construct(?Request $request)
     {
-        $this->request = $request;
+        $this->request = $request ?? Request::createFromGlobals();
     }
 
     public function items(ItemsEvent $event): void
