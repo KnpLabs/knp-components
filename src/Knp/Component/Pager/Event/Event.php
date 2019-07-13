@@ -9,7 +9,7 @@ use Symfony\Contracts\EventDispatcher\Event as ContractEvent;
 /**
  * Base class for events, BC compatible.
  */
-if ('42' !== Kernel::MAJOR_VERSION.Kernel::MINOR_VERSION && class_exists(ContractEvent::class)) {
+if (Kernel::VERSION_ID >= 40300 && class_exists(ContractEvent::class)) {
     class Event extends ContractEvent
     {
     }

@@ -5,10 +5,9 @@ namespace Knp\Component\Pager;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\LegacyEventDispatcherProxy;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Contracts\EventDispatcher\Event as ContractEvent;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
 use Knp\Component\Pager\Event;
@@ -56,7 +55,7 @@ class Paginator implements PaginatorInterface
      */
     public function __construct(EventDispatcherInterface $eventDispatcher = null, RequestStack $requestStack = null)
     {
-        $this->eventDispatcher = $eventDispatcher;
+        $this->eventDispatcher = \class_exists(LegacyEventDispatcherProxy::class) ? LegacyEventDispatcherProxy::decorate($eventDispatcher) : $eventDispatcher;
         if (is_null($this->eventDispatcher)) {
             $this->eventDispatcher = new EventDispatcher();
             $this->eventDispatcher->addSubscriber(new PaginationSubscriber);
@@ -175,11 +174,11 @@ class Paginator implements PaginatorInterface
      * Provide a BC way to dispatch events.
      *
      * @param string $eventName
-     * @param \Event $event
+     * @param Event\Event $event
      */
     protected function dispatch(string $eventName, Event\Event $event): void
     {
-        if ('42' !== Kernel::MAJOR_VERSION.Kernel::MINOR_VERSION && class_exists(ContractEvent::class)) {
+        if (\class_exists(LegacyEventDispatcherProxy::class)) {
             $this->eventDispatcher->dispatch($event, $eventName);
         } else {
             $this->eventDispatcher->dispatch($eventName, $event);
