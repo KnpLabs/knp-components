@@ -9,7 +9,7 @@ use Test\Fixture\Entity\Shop\Product;
 use Test\Fixture\Entity\Shop\Tag;
 use Doctrine\ORM\Query;
 
-class QueryTest extends BaseTestCaseORM
+final class QueryTest extends BaseTestCaseORM
 {
     /**
      * @test

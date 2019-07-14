@@ -8,7 +8,7 @@ use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Composite;
 
-class CompositeKeyTest extends BaseTestCaseORM
+final class CompositeKeyTest extends BaseTestCaseORM
 {
     /**
      * @test

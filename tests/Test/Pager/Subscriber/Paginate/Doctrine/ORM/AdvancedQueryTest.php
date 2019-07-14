@@ -8,7 +8,7 @@ use Test\Fixture\Entity\Shop\Product;
 use Test\Fixture\Entity\Shop\Tag;
 use Doctrine\ORM\Query;
 
-class AdvancedQueryTest extends BaseTestCaseORM
+final class AdvancedQueryTest extends BaseTestCaseORM
 {
     /**
      * Its not possible to make distinction and predict

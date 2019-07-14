@@ -1,5 +1,7 @@
 <?php
 
+namespace Test\Pager\Pagination;
+
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -7,7 +9,7 @@ use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Paginate\ArraySubscriber;
 use Knp\Component\Pager\PaginatorInterface;
 
-class AbstractPaginationTest extends BaseTestCase
+final class AbstractPaginationTest extends BaseTestCase
 {
     /**
      * @test

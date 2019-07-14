@@ -1,11 +1,13 @@
 <?php
 
+namespace Test\Pager\Subscriber\Paginate;
+
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\BeforeEvent;
 
-class PaginationSubscriberTest extends BaseTestCase
+final class PaginationSubscriberTest extends BaseTestCase
 {
     /**
      * @test

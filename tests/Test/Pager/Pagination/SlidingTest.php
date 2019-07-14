@@ -1,9 +1,11 @@
 <?php
 
+namespace Test\Pager\Pagination;
+
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Paginator;
 
-class SlidingTest extends BaseTestCase
+final class SlidingTest extends BaseTestCase
 {
     /**
      * @test

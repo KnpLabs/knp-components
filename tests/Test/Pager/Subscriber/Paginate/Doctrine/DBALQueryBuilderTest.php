@@ -7,7 +7,7 @@ use Doctrine\DBAL\Query\QueryBuilder;
 use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Article;
 
-class DBALQueryBuilderTest extends BaseTestCaseORM
+final class DBALQueryBuilderTest extends BaseTestCaseORM
 {
     /**
      * @test

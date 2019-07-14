@@ -1,9 +1,11 @@
 <?php
 
+namespace Test\Pager\Pagination;
+
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Paginator;
 
-class TraversableItemsTest extends BaseTestCase
+final class TraversableItemsTest extends BaseTestCase
 {
     /**
      * @test
