@@ -13,7 +13,7 @@ use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber as Filt
 use Test\Fixture\Entity\Article;
 use Knp\Component\Pager\PaginatorInterface;
 
-class QueryTest extends BaseTestCaseORM
+final class QueryTest extends BaseTestCaseORM
 {
     /**
      * @test

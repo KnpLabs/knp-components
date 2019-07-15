@@ -10,7 +10,7 @@ use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ODM\MongoDB\QuerySubs
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Test\Fixture\Document\Article;
 
-class QueryTest extends BaseTestCaseMongoODM
+final class QueryTest extends BaseTestCaseMongoODM
 {
     /**
      * @test

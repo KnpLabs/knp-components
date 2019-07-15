@@ -10,7 +10,7 @@ use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber as Filtration;
 use Test\Fixture\Entity\Article;
 
-class WhitelistTest extends BaseTestCaseORM
+final class WhitelistTest extends BaseTestCaseORM
 {
     /**
      * @test

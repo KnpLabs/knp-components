@@ -1,5 +1,7 @@
 <?php
 
+namespace Test\Pager\Subscriber\Paginate;
+
 use Elastica\SearchableInterface;
 use Elastica\ResultSet;
 use Elastica\Query;
@@ -11,7 +13,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 use Test\Tool\BaseTestCase;
 
-class ElasticaTest extends BaseTestCase
+final class ElasticaTest extends BaseTestCase
 {
     public function testElasticaSubscriber(): void
     {

@@ -6,7 +6,7 @@ use Test\Tool\BaseTestCaseMongoODM;
 use Knp\Component\Pager\Paginator;
 use Test\Fixture\Document\Image;
 
-class GridFsTest extends BaseTestCaseMongoODM
+final class GridFsTest extends BaseTestCaseMongoODM
 {
     /**
      * @test

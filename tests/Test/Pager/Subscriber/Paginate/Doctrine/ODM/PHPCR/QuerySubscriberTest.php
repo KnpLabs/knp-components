@@ -10,7 +10,7 @@ use Test\Fixture\Document\PHPCR\Article;
 use Test\Mock\PaginationSubscriber;
 use Test\Tool\BaseTestCasePHPCRODM;
 
-class QuerySubscriberTest extends BaseTestCasePHPCRODM
+final class QuerySubscriberTest extends BaseTestCasePHPCRODM
 {
     /**
      * @test

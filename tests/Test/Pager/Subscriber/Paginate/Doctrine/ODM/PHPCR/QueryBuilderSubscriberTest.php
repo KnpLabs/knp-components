@@ -6,7 +6,7 @@ use Knp\Component\Pager\Paginator;
 use Test\Fixture\Document\PHPCR\Article;
 use Test\Tool\BaseTestCasePHPCRODM;
 
-class QueryBuilderSubscriberTest extends BaseTestCasePHPCRODM
+final class QueryBuilderSubscriberTest extends BaseTestCasePHPCRODM
 {
     /**
      * @test

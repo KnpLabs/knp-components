@@ -6,7 +6,7 @@ use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Article;
 
-class QueryBuilderTest extends BaseTestCaseORM
+final class QueryBuilderTest extends BaseTestCaseORM
 {
     /**
      * @test

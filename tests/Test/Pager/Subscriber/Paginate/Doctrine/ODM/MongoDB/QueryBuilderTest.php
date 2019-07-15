@@ -6,7 +6,7 @@ use Test\Tool\BaseTestCaseMongoODM;
 use Knp\Component\Pager\Paginator;
 use Test\Fixture\Document\Article;
 
-class QueryBuilderTest extends BaseTestCaseMongoODM
+final class QueryBuilderTest extends BaseTestCaseMongoODM
 {
     /**
      * @test

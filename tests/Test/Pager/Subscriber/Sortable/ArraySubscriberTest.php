@@ -8,7 +8,7 @@ use Knp\Component\Pager\Fixtures\TestItem;
 use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\PaginatorInterface;
 
-class ArraySubscriberTest extends BaseTestCase
+final class ArraySubscriberTest extends BaseTestCase
 {
     /**
      * @test

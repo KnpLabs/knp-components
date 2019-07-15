@@ -13,7 +13,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  * @link http://www.gediminasm.org
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-class QueryAnalyzer implements SQLLogger
+final class QueryAnalyzer implements SQLLogger
 {
     /**
      * Used database platform
@@ -87,11 +87,12 @@ class QueryAnalyzer implements SQLLogger
      *
      * @return QueryAnalyzer
      */
-    public function cleanUp()
+    public function cleanUp(): QueryAnalyzer
     {
         $this->queries = [];
         $this->queryExecutionTimes = [];
         $this->totalExecutionTime = 0;
+
         return $this;
     }
 
@@ -99,9 +100,10 @@ class QueryAnalyzer implements SQLLogger
      * Dump the statistics of executed queries
      *
      * @param boolean $dumpOnlySql
-     * @return void
+     *
+     * @return string|null
      */
-    public function getOutput($dumpOnlySql = false)
+    public function getOutput($dumpOnlySql = false): ?string
     {
         $output = '';
         if (!$dumpOnlySql) {
@@ -115,15 +117,16 @@ class QueryAnalyzer implements SQLLogger
             $output .= $sql . ';' . PHP_EOL;
         }
         $output .= PHP_EOL;
+
         return $output;
     }
 
     /**
      * Index of the slowest query executed
      *
-     * @return integer
+     * @return int
      */
-    public function getSlowestQueryIndex()
+    public function getSlowestQueryIndex(): int
     {
         $index = 0;
         $slowest = 0;
@@ -139,9 +142,9 @@ class QueryAnalyzer implements SQLLogger
     /**
      * Get total execution time of queries
      *
-     * @return integer
+     * @return int
      */
-    public function getTotalExecutionTime()
+    public function getTotalExecutionTime(): int
     {
         return $this->totalExecutionTime;
     }
@@ -151,7 +154,7 @@ class QueryAnalyzer implements SQLLogger
      *
      * @return array
      */
-    public function getExecutedQueries()
+    public function getExecutedQueries(): array
     {
         return $this->queries;
     }
@@ -159,9 +162,9 @@ class QueryAnalyzer implements SQLLogger
     /**
      * Get number of executed queries
      *
-     * @return integer
+     * @return int
      */
-    public function getNumExecutedQueries()
+    public function getNumExecutedQueries(): int
     {
         return count($this->queries);
     }
@@ -171,7 +174,7 @@ class QueryAnalyzer implements SQLLogger
      *
      * @return array
      */
-    public function getExecutionTimes()
+    public function getExecutionTimes(): array
     {
         return $this->queryExecutionTimes;
     }
@@ -182,9 +185,10 @@ class QueryAnalyzer implements SQLLogger
      * @param string $sql
      * @param array $params
      * @param array $types
-     * @return sql
+     *
+     * @return string
      */
-    private function generateSql($sql, $params, $types)
+    private function generateSql($sql, $params, $types): string
     {
         if (!count($params)) {
             return $sql;
@@ -208,9 +212,10 @@ class QueryAnalyzer implements SQLLogger
      *
      * @param array $params
      * @param array $types
+     *
      * @return array
      */
-    private function getConvertedParams($params, $types)
+    private function getConvertedParams(array $params, array $types): array
     {
         $result = [];
         foreach ($params as $position => $value) {
@@ -237,6 +242,7 @@ class QueryAnalyzer implements SQLLogger
             }
             $result[$position] = $value;
         }
+
         return $result;
     }
 }

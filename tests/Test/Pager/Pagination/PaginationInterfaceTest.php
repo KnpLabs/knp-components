@@ -5,7 +5,7 @@ namespace Test\Pager\Pagination;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Test\Tool\BaseTestCase;
 
-class PaginationInterfaceTest extends BaseTestCase
+final class PaginationInterfaceTest extends BaseTestCase
 {
     private $reflection;
 

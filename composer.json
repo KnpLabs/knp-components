@@ -47,13 +47,13 @@
         }
     },
     "autoload": {
-        "psr-0": {
-            "Knp\\Component": "src"
+        "psr-4": {
+            "Knp\\Component\\": "src/Knp/Component"
         }
     },
     "autoload-dev": {
-        "psr-0": {
-            "Test": "tests"
+        "psr-4": {
+            "Test\\": "tests/Test"
         }
     },
     "scripts": {
