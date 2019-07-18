@@ -2,6 +2,7 @@
 
 namespace Knp\Component\Pager;
 
+use Knp\Component\Pager\Exception\PagerBadArgumentException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -88,16 +89,15 @@ class Paginator implements PaginatorInterface
      *     boolean $distinct - default true for distinction of results
      *     string $alias - pagination alias, default none
      *     array $whitelist - sortable whitelist for target fields being paginated
-     * @throws \LogicException
+     * @throws PagerBadArgumentException
      * @return PaginationInterface
      */
     public function paginate($target, int $page = 1, int $limit = 10, array $options = []): PaginationInterface
     {
-        $limit = intval(abs($limit));
-        if (!$limit) {
-            throw new \LogicException("Invalid item per page number, must be a positive number");
+        if ( $limit<=0 or $page<=0) {
+            throw new PagerBadArgumentException("Invalid item per page number. Limit: $limit and Page: $page, must be positive non-zero integers");
         }
-        $offset = abs($page - 1) * $limit;
+        $offset =  ($page - 1) * $limit;
         $options = array_merge($this->defaultOptions, $options);
 
         // normalize default sort field
