@@ -93,18 +93,17 @@ class Paginator implements PaginatorInterface
      */
     public function paginate($target, int $page = 1, int $limit = 10, array $options = []): PaginationInterface
     {
-        $limit = intval(abs($limit));
-        if (!$limit) {
-            throw new \LogicException("Invalid item per page number, must be a positive number");
+        if ($limit <= 0 or $page <= 0) {
+            throw new \LogicException("Invalid item per page number. Limit: $limit and Page: $page, must be positive non-zero integers");
         }
-        $offset = abs($page - 1) * $limit;
+        $offset = ($page - 1) * $limit;
         $options = array_merge($this->defaultOptions, $options);
 
         // normalize default sort field
         if (isset($options[self::DEFAULT_SORT_FIELD_NAME]) && is_array($options[self::DEFAULT_SORT_FIELD_NAME])) {
             $options[self::DEFAULT_SORT_FIELD_NAME] = implode('+', $options[self::DEFAULT_SORT_FIELD_NAME]);
         }
-        
+
         // default sort field and direction are set based on options (if available)
         if (isset($options[self::DEFAULT_SORT_FIELD_NAME]) && !$this->request->query->has($options[self::SORT_FIELD_PARAMETER_NAME])) {
            $this->request->query->set($options[self::SORT_FIELD_PARAMETER_NAME], $options[self::DEFAULT_SORT_FIELD_NAME]);
