@@ -89,22 +89,22 @@ class Paginator implements PaginatorInterface
      *     boolean $distinct - default true for distinction of results
      *     string $alias - pagination alias, default none
      *     array $whitelist - sortable whitelist for target fields being paginated
-     * @throws PagerBadArgumentException
+     * @throws \LogicException
      * @return PaginationInterface
      */
     public function paginate($target, int $page = 1, int $limit = 10, array $options = []): PaginationInterface
     {
-        if ( $limit<=0 or $page<=0) {
-            throw new PagerBadArgumentException("Invalid item per page number. Limit: $limit and Page: $page, must be positive non-zero integers");
+        if ($limit <= 0 or $page <= 0) {
+            throw new \LogicException("Invalid item per page number. Limit: $limit and Page: $page, must be positive non-zero integers");
         }
-        $offset =  ($page - 1) * $limit;
+        $offset = ($page - 1) * $limit;
         $options = array_merge($this->defaultOptions, $options);
 
         // normalize default sort field
         if (isset($options[self::DEFAULT_SORT_FIELD_NAME]) && is_array($options[self::DEFAULT_SORT_FIELD_NAME])) {
             $options[self::DEFAULT_SORT_FIELD_NAME] = implode('+', $options[self::DEFAULT_SORT_FIELD_NAME]);
         }
-        
+
         // default sort field and direction are set based on options (if available)
         if (isset($options[self::DEFAULT_SORT_FIELD_NAME]) && !$this->request->query->has($options[self::SORT_FIELD_PARAMETER_NAME])) {
            $this->request->query->set($options[self::SORT_FIELD_PARAMETER_NAME], $options[self::DEFAULT_SORT_FIELD_NAME]);
