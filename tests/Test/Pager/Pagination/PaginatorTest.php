@@ -5,7 +5,8 @@ namespace Test\Pager\Pagination;
 use Knp\Component\Pager\Paginator;
 use Test\Tool\BaseTestCase;
 
-final class PaginatorTest extends BaseTestCase {
+final class PaginatorTest extends BaseTestCase
+{
     /**
      * @test
      */
