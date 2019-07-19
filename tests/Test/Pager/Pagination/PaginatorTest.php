@@ -10,7 +10,8 @@ final class PaginatorTest extends BaseTestCase
     /**
      * @test
      */
-    public function shouldThrowExceptionOnInvalidPageAndLimitArgs(): void {
+    public function shouldThrowExceptionOnInvalidPageAndLimitArgs(): void
+    {
         $exceptionTrown = false;
         try {
             (new Paginator())->paginate(['a', 'b'], -1, 0);

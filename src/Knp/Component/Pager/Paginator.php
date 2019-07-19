@@ -2,7 +2,6 @@
 
 namespace Knp\Component\Pager;
 
-use Knp\Component\Pager\Exception\PagerBadArgumentException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
