@@ -13,9 +13,17 @@ PHPUnit 7 or newer is required.
 To setup and run tests follow these steps:
 
 - go to the root directory of components
-- run: 
+- run:
 
 ```bash
     composer install
     composer test
 ```
+
+## Maintainers
+
+Please read [this post](https://knplabs.com/en/blog/news-for-our-foss-projects-maintenance) first.
+
+This library is maintained by the following people (alphabetically sorted) :
+- @garak
+- @polc
