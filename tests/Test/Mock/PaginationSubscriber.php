@@ -2,11 +2,11 @@
 
 namespace Test\Mock;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\PaginationEvent;
 use Knp\Component\Pager\Pagination\SlidingPagination;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class PaginationSubscriber implements EventSubscriberInterface
+final class PaginationSubscriber implements EventSubscriberInterface
 {
     public static function getSubscribedEvents(): array
     {

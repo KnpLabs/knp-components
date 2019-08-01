@@ -2,11 +2,11 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
-use Test\Tool\BaseTestCaseORM;
+use Doctrine\ORM\Query;
 use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Shop\Product;
 use Test\Fixture\Entity\Shop\Tag;
-use Doctrine\ORM\Query;
+use Test\Tool\BaseTestCaseORM;
 
 final class AdvancedQueryTest extends BaseTestCaseORM
 {

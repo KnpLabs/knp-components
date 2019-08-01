@@ -7,7 +7,7 @@ use Doctrine\ODM\PHPCR\Mapping\Annotations as PHPCR;
 /**
  * @PHPCR\Document
  */
-class Article
+final class Article
 {
     /**
      * @PHPCR\Id

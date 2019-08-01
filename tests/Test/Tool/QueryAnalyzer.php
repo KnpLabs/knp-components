@@ -3,8 +3,8 @@
 namespace Test\Tool;
 
 use Doctrine\DBAL\Logging\SQLLogger;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>

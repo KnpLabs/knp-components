@@ -2,10 +2,10 @@
 
 namespace Test\Pager\Subscriber;
 
+use Knp\Component\Pager\Event\BeforeEvent;
+use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Test\Tool\BaseTestCase;
-use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber;
-use Knp\Component\Pager\Event\BeforeEvent;
 
 final class FiltrationSubscriberTest extends BaseTestCase
 {

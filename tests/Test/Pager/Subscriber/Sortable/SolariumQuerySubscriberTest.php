@@ -2,9 +2,9 @@
 
 namespace Test\Pager\Subscriber\Sortable;
 
+use Knp\Component\Pager\Event\Subscriber\Sortable\SolariumQuerySubscriber;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Event\Subscriber\Sortable\SolariumQuerySubscriber;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 use Test\Tool\BaseTestCase;
 

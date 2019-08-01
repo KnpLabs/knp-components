@@ -2,8 +2,8 @@
 
 namespace Test\Pager\Pagination;
 
-use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\Paginator;
+use Test\Tool\BaseTestCase;
 
 final class TraversableItemsTest extends BaseTestCase
 {

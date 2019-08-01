@@ -2,10 +2,10 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine;
 
-use Test\Tool\BaseTestCaseORM;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Article;
+use Test\Tool\BaseTestCaseORM;
 
 final class DBALQueryBuilderTest extends BaseTestCaseORM
 {

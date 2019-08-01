@@ -2,13 +2,13 @@
 
 namespace Test\Pager\Subscriber\Paginate;
 
-use Elastica\SearchableInterface;
-use Elastica\ResultSet;
 use Elastica\Query;
 use Elastica\Query\Term;
 use Elastica\Result;
-use Knp\Component\Pager\Paginator;
+use Elastica\ResultSet;
+use Elastica\SearchableInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\ElasticaQuerySubscriber;
+use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 use Test\Tool\BaseTestCase;
@@ -28,16 +28,16 @@ final class ElasticaTest extends BaseTestCase
         $response = $this->getMockBuilder(ResultSet::class)->disableOriginalConstructor()->getMock();
         $response->expects($this->once())
             ->method('getTotalHits')
-            ->will($this->returnValue(2));
+            ->willReturn(2);
         $response->expects($this->once())
             ->method('getResults')
-            ->will($this->returnValue([new Result([]), new Result([])]));
+            ->willReturn([new Result([]), new Result([])]);
 
         $searchable = $this->getMockBuilder(SearchableInterface::class)->getMock();
         $searchable->expects($this->once())
             ->method('search')
             ->with($query)
-            ->will($this->returnValue($response));
+            ->willReturn($response);
 
         $view = $p->paginate([$searchable, $query], 1, 10);
 

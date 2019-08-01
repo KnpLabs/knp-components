@@ -2,12 +2,12 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ORM;
 
-use Knp\Component\Pager\PaginatorInterface;
-use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\PaginatorInterface;
 use Test\Fixture\Entity\Article;
+use Test\Tool\BaseTestCaseORM;
 
-class WhitelistTest extends BaseTestCaseORM
+final class WhitelistTest extends BaseTestCaseORM
 {
     /**
      * @test

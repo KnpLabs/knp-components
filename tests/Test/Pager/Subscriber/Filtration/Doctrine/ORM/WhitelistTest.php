@@ -2,13 +2,13 @@
 
 namespace Test\Pager\Subscriber\Filtration\Doctrine\ORM;
 
-use Knp\Component\Pager\PaginatorInterface;
-use Test\Tool\BaseTestCaseORM;
-use Knp\Component\Pager\Paginator;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber as Filtration;
+use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
+use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Entity\Article;
+use Test\Tool\BaseTestCaseORM;
 
 final class WhitelistTest extends BaseTestCaseORM
 {
@@ -76,7 +76,7 @@ final class WhitelistTest extends BaseTestCaseORM
         $view = $p->paginate($query);
 
         $items = $view->getItems();
-        $this->assertEquals(0, count($items));
+        $this->assertCount(0, $items);
     }
 
     protected function getUsedEntityFixtures(): array

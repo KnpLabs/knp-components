@@ -2,13 +2,13 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine;
 
-use Test\Tool\BaseTestCase;
+use Doctrine\Common\Collections\ArrayCollection;
+use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\CollectionSubscriber;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\CollectionSubscriber;
-use Doctrine\Common\Collections\ArrayCollection;
+use Test\Tool\BaseTestCase;
 
 final class CollectionTest extends BaseTestCase
 {
