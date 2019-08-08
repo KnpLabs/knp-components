@@ -2,12 +2,12 @@
 
 namespace Test\Pager\Pagination;
 
-use Test\Tool\BaseTestCase;
+use Knp\Component\Pager\Event\Subscriber\Paginate\ArraySubscriber;
 use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
-use Knp\Component\Pager\Event\Subscriber\Paginate\ArraySubscriber;
-use Knp\Component\Pager\PaginatorInterface;
+use Test\Tool\BaseTestCase;
 
 final class AbstractPaginationTest extends BaseTestCase
 {

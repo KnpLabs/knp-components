@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /**
  * @ODM\Document
  */
-class Image
+final class Image
 {
     /**
      * @ODM\Id

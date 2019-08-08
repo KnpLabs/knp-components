@@ -2,10 +2,10 @@
 
 namespace Test\Pager\Subscriber\Paginate;
 
+use Knp\Component\Pager\Event\Subscriber\Paginate\SolariumQuerySubscriber;
 use Knp\Component\Pager\Paginator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Event\Subscriber\Paginate\SolariumQuerySubscriber;
 
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 

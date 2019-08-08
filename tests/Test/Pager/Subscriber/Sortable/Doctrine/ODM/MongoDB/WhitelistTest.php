@@ -2,17 +2,17 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ODM\MongoDB;
 
-use Knp\Component\Pager\PaginatorInterface;
-use Test\Tool\BaseTestCaseMongoODM;
-use Knp\Component\Pager\Paginator;
-use Knp\Component\Pager\Pagination\SlidingPagination;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ODM\MongoDB\QuerySubscriber as Sortable;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Knp\Component\Pager\Pagination\SlidingPagination;
+use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Document\Article;
+use Test\Tool\BaseTestCaseMongoODM;
 
-class WhitelistTest extends BaseTestCaseMongoODM
+final class WhitelistTest extends BaseTestCaseMongoODM
 {
     /**
      * @test

@@ -2,19 +2,19 @@
 
 namespace Test\Tool;
 
+use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Platforms\MySqlPlatform;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-use Doctrine\ORM\EntityManager;
-use Doctrine\Common\EventManager;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\DBAL\Driver;
-use Doctrine\DBAL\Platforms\MySqlPlatform;
-use Doctrine\DBAL\Connection;
-use Doctrine\ORM\Configuration;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\EntityRepository;
 
 /**
  * Base test case contains common mock objects
@@ -111,7 +111,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
         $driver = $this->createMock(Driver::class);
         $driver->expects($this->once())
             ->method('getDatabasePlatform')
-            ->will($this->returnValue($this->createMock(MySqlPlatform::class)));
+            ->willReturn($this->createMock(MySqlPlatform::class));
 
         $connection = $this->getMockBuilder(Connection::class)
             ->setConstructorArgs([[], $driver])
@@ -119,7 +119,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
 
         $connection->expects($this->once())
             ->method('getEventManager')
-            ->will($this->returnValue($evm ?: $this->getEventManager()));
+            ->willReturn($evm ?: $this->getEventManager());
 
         $config = $this->getMockAnnotatedConfig();
         $this->em = EntityManager::create($connection, $config);
@@ -142,7 +142,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
             ->getConfiguration()
             ->expects($this->any())
             ->method('getSQLLogger')
-            ->will($this->returnValue($this->queryAnalyzer));
+            ->willReturn($this->queryAnalyzer);
     }
 
     /**
@@ -215,25 +215,25 @@ abstract class BaseTestCaseORM extends BaseTestCase
         $config
             ->expects($this->once())
             ->method('getProxyDir')
-            ->will($this->returnValue(__DIR__.'/../../temp'))
+            ->willReturn(__DIR__.'/../../temp')
         ;
 
         $config
             ->expects($this->once())
             ->method('getProxyNamespace')
-            ->will($this->returnValue('Proxy'))
+            ->willReturn('Proxy')
         ;
 
         $config
             ->expects($this->once())
             ->method('getAutoGenerateProxyClasses')
-            ->will($this->returnValue(true))
+            ->willReturn(true)
         ;
 
         $config
             ->expects($this->once())
             ->method('getClassMetadataFactoryName')
-            ->will($this->returnValue(ClassMetadataFactory::class))
+            ->willReturn(ClassMetadataFactory::class)
         ;
 
         $mappingDriver = $this->getMetadataDriverImplementation();
@@ -241,37 +241,37 @@ abstract class BaseTestCaseORM extends BaseTestCase
         $config
             ->expects($this->any())
             ->method('getMetadataDriverImpl')
-            ->will($this->returnValue($mappingDriver))
+            ->willReturn($mappingDriver)
         ;
 
         $config
             ->expects($this->any())
             ->method('getDefaultRepositoryClassName')
-            ->will($this->returnValue(EntityRepository::class))
+            ->willReturn(EntityRepository::class)
         ;
 
         $config
             ->expects($this->any())
             ->method('getQuoteStrategy')
-            ->will($this->returnValue(new DefaultQuoteStrategy()))
+            ->willReturn(new DefaultQuoteStrategy())
         ;
 
         $config
             ->expects($this->any())
             ->method('getNamingStrategy')
-            ->will($this->returnValue(new DefaultNamingStrategy()))
+            ->willReturn(new DefaultNamingStrategy())
         ;
 
         $config
             ->expects($this->any())
             ->method('getCustomHydrationMode')
-            ->will($this->returnValue('Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\AsIsHydrator'))
+            ->willReturn('Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\AsIsHydrator')
         ;
 
         $config
             ->expects($this->any())
             ->method('getDefaultQueryHints')
-            ->will($this->returnValue([]))
+            ->willReturn([])
         ;
 
         return $config;
