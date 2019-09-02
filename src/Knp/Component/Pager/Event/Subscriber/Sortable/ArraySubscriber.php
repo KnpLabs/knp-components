@@ -92,7 +92,8 @@ class ArraySubscriber implements EventSubscriberInterface
         return 'desc';
     }
 
-    private function proxySortFunction(&$target, $sortField, $sortDirection) {
+    private function proxySortFunction(&$target, $sortField, $sortDirection): bool
+    {
         $this->currentSortingField = $sortField;
         $this->sortDirection = $sortDirection;
 
@@ -105,7 +106,7 @@ class ArraySubscriber implements EventSubscriberInterface
      *
      * @return int
      */
-    private function sortFunction($object1, $object2)
+    private function sortFunction($object1, $object2): int
     {
         if (!$this->propertyAccessor) {
             throw new \UnexpectedValueException('You need symfony/property-access component to use this sorting function');
@@ -142,12 +143,12 @@ class ArraySubscriber implements EventSubscriberInterface
         return ($fieldValue1 > $fieldValue2 ? 1 : -1) * $this->getSortCoefficient();
     }
 
-    private function getSortCoefficient()
+    private function getSortCoefficient(): int
     {
         return $this->sortDirection === 'asc' ? 1 : -1;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             'knp_pager.items' => ['items', 1]
