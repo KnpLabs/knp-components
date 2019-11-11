@@ -42,7 +42,7 @@ class QuerySubscriber implements EventSubscriberInterface
                 }
                 static $reflectionProperty;
                 if (is_null($reflectionProperty)) {
-                    $reflectionClass = new \ReflectionClass('Doctrine\MongoDB\Query\Query');
+                    $reflectionClass = new \ReflectionClass(Query::class);
                     $reflectionProperty = $reflectionClass->getProperty('query');
                     $reflectionProperty->setAccessible(true);
                 }
