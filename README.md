@@ -9,7 +9,7 @@ fancy paginator component
 
 ## Running unit tests
 
-PHPUnit 7 or newer is required.
+PHPUnit 8 or newer is required.
 To setup and run tests follow these steps:
 
 - go to the root directory of components
