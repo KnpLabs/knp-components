@@ -23,8 +23,8 @@
     ],
     "require": {
         "php": "^7.2",
-        "symfony/event-dispatcher": "^3.4 || ^4.0",
-        "symfony/http-foundation": "^3.4 || ^4.0"
+        "symfony/event-dispatcher": "^3.4 || ^4.0 || ^5.0",
+        "symfony/http-foundation": "^3.4 || ^4.0 || ^5.0"
     },
     "require-dev": {
         "doctrine/mongodb-odm": "^2.0",
@@ -33,8 +33,8 @@
         "jackalope/jackalope-doctrine-dbal": "^1.2",
         "phpunit/phpunit": "^8.0",
         "ruflin/elastica": "^1.0",
-        "symfony/http-kernel": "^3.4 || ^4.0",
-        "symfony/property-access": "^3.4 || ^4.0"
+        "symfony/http-kernel": "^3.4 || ^4.0 || ^5.0",
+        "symfony/property-access": "^3.4 || ^4.0 || ^5.0"
     },
     "suggest": {
         "doctrine/common": "to allow usage pagination with Doctrine ArrayCollection",
