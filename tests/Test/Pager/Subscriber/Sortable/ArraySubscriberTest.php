@@ -57,7 +57,7 @@ final class ArraySubscriberTest extends BaseTestCase
             PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort',
             PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord',
             'sortFunction' => static function (&$target, $sortField, $sortDirection): void {
-                usort($target, static function($object1, $object2) use ($sortField, $sortDirection) {
+                \usort($target, static function ($object1, $object2) use ($sortField, $sortDirection) {
                     if ($object1[$sortField] === $object2[$sortField]) {
                         return 0;
                     }
@@ -80,7 +80,6 @@ final class ArraySubscriberTest extends BaseTestCase
         $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals('hot', $array[0]['name']);
-
     }
 
     /**

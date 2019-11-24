@@ -2,7 +2,7 @@
 
 namespace Knp\Component\Pager\Pagination;
 
-use Countable, Traversable, ArrayAccess;
+use ArrayAccess, Countable, Traversable;
 
 /**
  * Pagination interface strictly defines

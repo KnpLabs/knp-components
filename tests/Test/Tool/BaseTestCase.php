@@ -16,7 +16,6 @@ abstract class BaseTestCase extends TestCase
      */
     protected function setUp(): void
     {
-
     }
 
     protected function createRequestStack(array $params): RequestStack

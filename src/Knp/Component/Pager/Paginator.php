@@ -2,16 +2,16 @@
 
 namespace Knp\Component\Pager;
 
+use Knp\Component\Pager\Event;
+use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
+use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\LegacyEventDispatcherProxy;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
-use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
-use Knp\Component\Pager\Event;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 
 /**
  * Paginator uses event dispatcher to trigger pagination

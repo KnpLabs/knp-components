@@ -2,11 +2,11 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\Query;
 
-use Doctrine\ORM\Query\TreeWalkerAdapter,
-    Doctrine\ORM\Query\AST\SelectStatement,
-    Doctrine\ORM\Query\AST\PathExpression,
+use Doctrine\ORM\Query\AST\OrderByClause,
     Doctrine\ORM\Query\AST\OrderByItem,
-    Doctrine\ORM\Query\AST\OrderByClause;
+    Doctrine\ORM\Query\AST\PathExpression,
+    Doctrine\ORM\Query\AST\SelectStatement,
+    Doctrine\ORM\Query\TreeWalkerAdapter;
 
 /**
  * OrderBy Query TreeWalker for Sortable functionality

@@ -44,7 +44,6 @@ abstract class BaseTestCaseORM extends BaseTestCase
      */
     protected function setUp(): void
     {
-
     }
 
     /**
@@ -65,7 +64,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
         $config = $this->getMockAnnotatedConfig();
         $em = EntityManager::create($conn, $config, $evm ?: $this->getEventManager());
 
-        $schema = array_map(function($class) use ($em) {
+        $schema = \array_map(function ($class) use ($em) {
             return $em->getClassMetadata($class);
         }, (array)$this->getUsedEntityFixtures());
 
@@ -89,7 +88,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
         $config = $this->getMockAnnotatedConfig();
         $em = EntityManager::create($conn, $config, $evm ?: $this->getEventManager());
 
-        $schema = array_map(function($class) use ($em) {
+        $schema = \array_map(function ($class) use ($em) {
             return $em->getClassMetadata($class);
         }, (array)$this->getUsedEntityFixtures());
 
@@ -156,10 +155,10 @@ abstract class BaseTestCaseORM extends BaseTestCase
     protected function stopQueryLog($dumpOnlySql = false, $writeToLog = false): void
     {
         if ($this->queryAnalyzer) {
-            ob_start();
+            \ob_start();
             $this->queryAnalyzer->getOutput($dumpOnlySql);
-            $output = ob_get_contents();
-            ob_end_clean();
+            $output = \ob_get_contents();
+            \ob_end_clean();
 
             if (!$writeToLog) {
                 echo $output;
@@ -167,13 +166,13 @@ abstract class BaseTestCaseORM extends BaseTestCase
                 return;
             }
 
-            $fileName = __DIR__.'/../../temp/query_debug_'.time().'.log';
-            if (($file = fopen($fileName, 'wb+')) !== false) {
+            $fileName = __DIR__.'/../../temp/query_debug_'.\time().'.log';
+            if (($file = \fopen($fileName, 'wb+')) !== false) {
                 throw new \RuntimeException('Unable to write to the log file');
             }
 
-            fwrite($file, $output);
-            fclose($file);
+            \fwrite($file, $output);
+            \fclose($file);
         }
     }
 

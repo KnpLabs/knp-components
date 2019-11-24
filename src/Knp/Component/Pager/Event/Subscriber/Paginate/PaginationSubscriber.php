@@ -2,10 +2,10 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Paginate;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Knp\Component\Pager\Event\PaginationEvent;
 use Knp\Component\Pager\Event\BeforeEvent;
+use Knp\Component\Pager\Event\PaginationEvent;
 use Knp\Component\Pager\Pagination\SlidingPagination;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PaginationSubscriber implements EventSubscriberInterface
 {

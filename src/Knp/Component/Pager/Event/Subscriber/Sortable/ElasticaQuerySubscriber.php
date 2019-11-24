@@ -2,12 +2,12 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Knp\Component\Pager\Event\ItemsEvent;
 use Elastica\Query;
 use Elastica\SearchableInterface;
+use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class ElasticaQuerySubscriber implements EventSubscriberInterface
 {

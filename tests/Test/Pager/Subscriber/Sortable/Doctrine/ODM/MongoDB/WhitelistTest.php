@@ -30,15 +30,15 @@ final class WhitelistTest extends BaseTestCaseMongoODM
         $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
         $sortFieldWhitelist = ['title'];
-        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
-        $items = array_values($view->getItems());
+        $items = \array_values($view->getItems());
         $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
 
         $requestStack = $this->createRequestStack(['sort' => 'id', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
-        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
     }
 
     /**
@@ -56,14 +56,14 @@ final class WhitelistTest extends BaseTestCaseMongoODM
         $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
-        $items = array_values($view->getItems());
+        $items = \array_values($view->getItems());
         $this->assertEquals('autumn', $items[0]->getTitle());
 
         $requestStack = $this->createRequestStack(['sort' => 'id', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
-        $items = array_values($view->getItems());
+        $items = \array_values($view->getItems());
         $this->assertEquals('summer', $items[0]->getTitle());
     }
 

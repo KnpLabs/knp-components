@@ -68,7 +68,7 @@ final class QueryAnalyzer implements SQLLogger
      */
     public function startQuery($sql, array $params = null, array $types = null): void
     {
-        $this->queryStartTime = microtime(true);
+        $this->queryStartTime = \microtime(true);
         $this->queries[] = $this->generateSql($sql, $params, $types);
     }
 
@@ -77,7 +77,7 @@ final class QueryAnalyzer implements SQLLogger
      */
     public function stopQuery(): void
     {
-        $ms = round(microtime(true) - $this->queryStartTime, 4) * 1000;
+        $ms = \round(\microtime(true) - $this->queryStartTime, 4) * 1000;
         $this->queryExecutionTimes[] = $ms;
         $this->totalExecutionTime += $ms;
     }
@@ -108,7 +108,7 @@ final class QueryAnalyzer implements SQLLogger
         $output = '';
         if (!$dumpOnlySql) {
             $output .= 'Platform: ' . $this->platform->getName() . PHP_EOL;
-            $output .= 'Executed queries: ' . count($this->queries) . ', total time: ' . $this->totalExecutionTime . ' ms' . PHP_EOL;
+            $output .= 'Executed queries: ' . \count($this->queries) . ', total time: ' . $this->totalExecutionTime . ' ms' . PHP_EOL;
         }
         foreach ($this->queries as $index => $sql) {
             if (!$dumpOnlySql) {
@@ -166,7 +166,7 @@ final class QueryAnalyzer implements SQLLogger
      */
     public function getNumExecutedQueries(): int
     {
-        return count($this->queries);
+        return \count($this->queries);
     }
 
     /**
@@ -190,18 +190,18 @@ final class QueryAnalyzer implements SQLLogger
      */
     private function generateSql($sql, $params, $types): string
     {
-        if (!count($params)) {
+        if (!\count($params)) {
             return $sql;
         }
         $converted = $this->getConvertedParams($params, $types);
-        if (is_int(key($params))) {
-            $index = key($converted);
-            $sql = preg_replace_callback('@\?@sm', function($match) use (&$index, $converted) {
-                return implode(' ', $converted[$index++]);
+        if (\is_int(\key($params))) {
+            $index = \key($converted);
+            $sql = \preg_replace_callback('@\?@sm', function ($match) use (&$index, $converted) {
+                return \implode(' ', $converted[$index++]);
             }, $sql);
         } else {
             foreach ($converted as $key => $value) {
-                $sql = str_replace(':' . $key, $value, $sql);
+                $sql = \str_replace(':' . $key, $value, $sql);
             }
         }
         return $sql;
@@ -221,23 +221,23 @@ final class QueryAnalyzer implements SQLLogger
         foreach ($params as $position => $value) {
             if (isset($types[$position])) {
                 $type = $types[$position];
-                if (is_string($type)) {
+                if (\is_string($type)) {
                     $type = Type::getType($type);
                 }
                 if ($type instanceof Type) {
                     $value = $type->convertToDatabaseValue($value, $this->platform);
                 }
             } else {
-                if (is_object($value) && $value instanceof \DateTime) {
+                if (\is_object($value) && $value instanceof \DateTime) {
                     $value = $value->format($this->platform->getDateTimeFormatString());
-                } elseif (!is_null($value)) {
-                    $type = Type::getType(gettype($value));
+                } elseif (!\is_null($value)) {
+                    $type = Type::getType(\gettype($value));
                     $value = $type->convertToDatabaseValue($value, $this->platform);
                 }
             }
-            if (is_string($value)) {
+            if (\is_string($value)) {
                 $value = "'{$value}'";
-            } elseif (is_null($value)) {
+            } elseif (\is_null($value)) {
                 $value = 'NULL';
             }
             $result[$position] = $value;

@@ -19,7 +19,7 @@ final class QueryTest extends BaseTestCaseORM
      */
     public function shouldHandleApcQueryCache(): void
     {
-        if (!extension_loaded('apc') || !ini_get('apc.enable_cli')) {
+        if (!\extension_loaded('apc') || !\ini_get('apc.enable_cli')) {
             $this->markTestSkipped('APC extension is not loaded.');
         }
         $config = new \Doctrine\ORM\Configuration();
@@ -36,7 +36,7 @@ final class QueryTest extends BaseTestCaseORM
         ];
 
         $em = \Doctrine\ORM\EntityManager::create($conn, $config);
-        $schema = array_map(function($class) use ($em) {
+        $schema = \array_map(function ($class) use ($em) {
             return $em->getClassMetadata($class);
         }, (array)$this->getUsedEntityFixtures());
 
@@ -85,7 +85,7 @@ final class QueryTest extends BaseTestCaseORM
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
         // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
+        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
             $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10', $executed[1]);
         } else {
             $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10', $executed[1]);
@@ -122,7 +122,7 @@ final class QueryTest extends BaseTestCaseORM
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
         // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
+        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
             $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ ORDER BY a0_.title DESC LIMIT 10', $executed[1]);
         } else {
             $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ ORDER BY a0_.title DESC LIMIT 10', $executed[1]);
@@ -170,7 +170,7 @@ ___SQL;
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
         // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
+        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
             $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2, COUNT(a0_.id) AS sclr3 FROM Article a0_ ORDER BY sclr3 ASC LIMIT 10', $executed[1]);
         } else {
             $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2, COUNT(a0_.id) AS sclr_3 FROM Article a0_ ORDER BY sclr_3 ASC LIMIT 10', $executed[1]);
@@ -200,7 +200,7 @@ ___SQL;
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
         // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
+        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
             $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10', $executed[1]);
         } else {
             $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10', $executed[1]);

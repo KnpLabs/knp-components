@@ -2,9 +2,9 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Knp\Component\Pager\Event\ItemsEvent;
 use Doctrine\ORM\QueryBuilder;
+use Knp\Component\Pager\Event\ItemsEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class QueryBuilderSubscriber implements EventSubscriberInterface
 {

@@ -2,9 +2,9 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Knp\Component\Pager\Event\ItemsEvent;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Knp\Component\Pager\Event\ItemsEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * DBALQueryBuilderSubscriber.php

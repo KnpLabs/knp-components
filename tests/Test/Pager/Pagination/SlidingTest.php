@@ -14,10 +14,10 @@ final class SlidingTest extends BaseTestCase
     {
         $p = new Paginator;
 
-        $items = range(1, 23);
+        $items = \range(1, 23);
         $view = $p->paginate($items, 1, 10);
 
-        $view->renderer = function($data) {
+        $view->renderer = function ($data) {
             return 'custom';
         };
         $this->assertEquals('custom', (string)$view);
@@ -45,7 +45,7 @@ final class SlidingTest extends BaseTestCase
     {
         $p = new Paginator;
 
-        $items = range(1, 43);
+        $items = \range(1, 43);
         $view = $p->paginate($items, 4, 5);
         $pagination = $view->getPaginationData();
 
@@ -72,7 +72,7 @@ final class SlidingTest extends BaseTestCase
     {
         $p = new Paginator;
 
-        $items = range(1, 43);
+        $items = \range(1, 43);
         $view = $p->paginate($items, 4, 5);
         $view->setPageRange(4);
         $pagination = $view->getPaginationData();
@@ -98,7 +98,7 @@ final class SlidingTest extends BaseTestCase
     {
         $p = new Paginator;
 
-        $view = $p->paginate(range(1, 9), 2, 10);
+        $view = $p->paginate(\range(1, 9), 2, 10);
         $items = $view->getItems();
         $this->assertEmpty($items);
     }

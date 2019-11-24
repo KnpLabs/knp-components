@@ -28,7 +28,7 @@ final class QueryTest extends BaseTestCaseMongoODM
         $query = $qb->getQuery();
         $view = $p->paginate($query, 1, 10);
 
-        $items = array_values($view->getItems());
+        $items = \array_values($view->getItems());
         $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
         $this->assertEquals('spring', $items[1]->getTitle());
@@ -38,7 +38,7 @@ final class QueryTest extends BaseTestCaseMongoODM
         $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'desc']);
         $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
-        $items = array_values($view->getItems());
+        $items = \array_values($view->getItems());
         $this->assertCount(4, $items);
         $this->assertEquals('winter', $items[0]->getTitle());
         $this->assertEquals('summer', $items[1]->getTitle());
@@ -48,7 +48,7 @@ final class QueryTest extends BaseTestCaseMongoODM
         $requestStack = $this->createRequestStack(['sort' => 'status+created_at', 'direction' => 'desc']);
         $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query);
-        $items = array_values($view->getItems());
+        $items = \array_values($view->getItems());
         $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
         $this->assertEquals('summer', $items[1]->getTitle());
