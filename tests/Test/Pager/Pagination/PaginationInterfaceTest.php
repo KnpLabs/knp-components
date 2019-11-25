@@ -17,7 +17,7 @@ final class PaginationInterfaceTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldBeCountable(): void
+    public function shouldBeCountable(): void
     {
         $this->assertTrue($this->reflection->implementsInterface(\Countable::class));
     }
@@ -25,7 +25,7 @@ final class PaginationInterfaceTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldBeTraversable(): void
+    public function shouldBeTraversable(): void
     {
         $this->assertTrue($this->reflection->implementsInterface(\Traversable::class));
         $this->assertFalse($this->reflection->implementsInterface(\Iterator::class));
@@ -35,7 +35,7 @@ final class PaginationInterfaceTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldBeArrayAccessible(): void
+    public function shouldBeArrayAccessible(): void
     {
         $this->assertTrue($this->reflection->implementsInterface(\ArrayAccess::class));
     }

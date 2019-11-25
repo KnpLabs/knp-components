@@ -2,8 +2,8 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\BeforeEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SortableSubscriber implements EventSubscriberInterface
 {

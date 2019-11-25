@@ -41,7 +41,7 @@ final class CollectionTest extends BaseTestCase
         $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
         $p = new Paginator($dispatcher);
 
-        $items = new ArrayCollection(range('a', 'u'));
+        $items = new ArrayCollection(\range('a', 'u'));
         $view = $p->paginate($items, 2, 10);
 
         $this->assertEquals(2, $view->getCurrentPageNumber());

@@ -29,7 +29,7 @@ final class WhitelistTest extends BaseTestCaseORM
         $p = new Paginator($dispatcher, $requestStack);
 
         $filterFieldWhitelist = ['a.invalid'];
-        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
 
         $items = $view->getItems();
         $this->assertCount(1, $items);
@@ -37,7 +37,7 @@ final class WhitelistTest extends BaseTestCaseORM
 
         $requestStack = $this->createRequestStack(['filterParam' => 'a.id', 'filterValue' => 'summer']);
         $p = new Paginator($dispatcher, $requestStack);
-        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
     }
 
     /**

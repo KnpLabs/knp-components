@@ -68,5 +68,4 @@ final class CompositeKeyTest extends BaseTestCaseORM
         $em->persist($spring);
         $em->flush();
     }
-
 }

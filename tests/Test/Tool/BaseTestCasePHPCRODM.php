@@ -23,7 +23,7 @@ abstract class BaseTestCasePHPCRODM extends TestCase
 
     protected function setUp(): void
     {
-        if (!class_exists(Query::class)) {
+        if (!\class_exists(Query::class)) {
             $this->markTestSkipped('Doctrine PHPCR-ODM is not available');
         }
     }

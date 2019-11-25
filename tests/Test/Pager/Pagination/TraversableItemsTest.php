@@ -14,10 +14,10 @@ final class TraversableItemsTest extends BaseTestCase
     {
         $p = new Paginator;
 
-        $items = new \ArrayObject(range(1, 23));
+        $items = new \ArrayObject(\range(1, 23));
         $view = $p->paginate($items, 3, 10);
 
-        $view->renderer = function($data) {
+        $view->renderer = function ($data) {
             return 'custom';
         };
         $this->assertEquals('custom', (string)$view);

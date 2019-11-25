@@ -22,7 +22,7 @@ final class WhitelistTest extends BaseTestCaseORM
         $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
         $sortFieldWhitelist = ['a.title'];
-        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
         $items = $view->getItems();
         $this->assertCount(4, $items);
@@ -30,7 +30,7 @@ final class WhitelistTest extends BaseTestCaseORM
 
         $requestStack = $this->createRequestStack(['sort' => 'a.id', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
-        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
     }
 
     /**

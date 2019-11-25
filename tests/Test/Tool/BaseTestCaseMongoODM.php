@@ -25,7 +25,7 @@ abstract class BaseTestCaseMongoODM extends BaseTestCase
      */
     protected function setUp(): void
     {
-        if (!class_exists('MongoClient')) {
+        if (!\class_exists('MongoClient')) {
             $this->markTestSkipped('Missing Mongo extension.');
         }
     }

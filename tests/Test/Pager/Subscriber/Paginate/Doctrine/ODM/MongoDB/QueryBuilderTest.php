@@ -24,7 +24,7 @@ final class QueryBuilderTest extends BaseTestCaseMongoODM
         $this->assertEquals(2, $pagination->getItemNumberPerPage());
         $this->assertEquals(4, $pagination->getTotalItemCount());
 
-        $items = array_values($pagination->getItems());
+        $items = \array_values($pagination->getItems());
         $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());

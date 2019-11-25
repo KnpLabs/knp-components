@@ -2,10 +2,10 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ODM\MongoDB;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Knp\Component\Pager\Event\ItemsEvent;
 use Doctrine\ODM\MongoDB\Query\Query;
+use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class QuerySubscriber implements EventSubscriberInterface
@@ -50,7 +50,7 @@ class QuerySubscriber implements EventSubscriberInterface
 
                 // handle multi sort
                 $sortFields = explode('+', $field);
-                $sortOption = array();
+                $sortOption = [];
                 foreach ($sortFields as $sortField) {
                     $sortOption[$sortField] = $dir;
                 }
