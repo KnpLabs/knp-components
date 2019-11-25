@@ -1,3 +1,17 @@
+## 2.3.0
+
+*Released at 2019-11-25*
+
+* allowed Symfony 5 components
+* fixed bug MongoDb query
+* added coding standard via php-cs-fixer
+
+## 2.2.0
+
+*Released at 2019-09-02*
+
+* added some missing return types
+
 ## 2.1.0
 
 *Released at 2019-07-15*
