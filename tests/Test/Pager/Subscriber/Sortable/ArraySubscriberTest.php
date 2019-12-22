@@ -4,8 +4,8 @@ namespace Test\Pager\Subscriber\Sortable;
 
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Sortable\ArraySubscriber;
-use Knp\Component\Pager\Fixtures\TestItem;
 use Knp\Component\Pager\PaginatorInterface;
+use Test\Fixture\TestItem;
 use Test\Tool\BaseTestCase;
 
 final class ArraySubscriberTest extends BaseTestCase
