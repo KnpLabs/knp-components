@@ -12,7 +12,7 @@ final class TraversableItemsTest extends BaseTestCase
      */
     public function shouldBeAbleToUseTraversableItems(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
 
         $items = new \ArrayObject(\range(1, 23));
         $view = $p->paginate($items, 3, 10);

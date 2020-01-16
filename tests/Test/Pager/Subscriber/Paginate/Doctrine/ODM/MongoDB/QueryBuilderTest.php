@@ -18,7 +18,7 @@ final class QueryBuilderTest extends BaseTestCaseMongoODM
             ->getMockDocumentManager()
             ->createQueryBuilder(Article::class)
         ;
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $pagination = $p->paginate($qb, 1, 2);
         $this->assertEquals(1, $pagination->getCurrentPageNumber());
         $this->assertEquals(2, $pagination->getItemNumberPerPage());

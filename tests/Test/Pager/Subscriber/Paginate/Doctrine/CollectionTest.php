@@ -80,7 +80,7 @@ final class CollectionTest extends BaseTestCase
     public function shouldSupportPaginateStrategySubscriber(): void
     {
         $items = new ArrayCollection(['first', 'second']);
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($items, 1, 10);
         $this->assertInstanceOf(PaginationInterface::class, $view);
     }

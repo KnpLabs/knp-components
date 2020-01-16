@@ -2,10 +2,12 @@
 
 namespace Knp\Component\Pager\Event;
 
+use Symfony\Contracts\EventDispatcher\Event;
+
 /**
  * Specific Event class for paginator
  */
-class ItemsEvent extends Event
+final class ItemsEvent extends Event
 {
     /**
      * A target being paginated

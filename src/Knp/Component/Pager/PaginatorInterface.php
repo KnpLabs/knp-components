@@ -36,15 +36,14 @@ interface PaginatorInterface
      * pagination object (might be aggregated helper object)
      * responsible for the pagination result representation
      *
-     * @param mixed $target - anything what needs to be paginated
-     * @param int $page - page number, starting from 1
-     * @param int $limit - number of items per page
-     * @param array $options - less used options:
-     *     boolean $distinct - default true for distinction of results
-     *     string $alias - pagination alias, default none
-     *     array $sortFieldWhitelist - sortable whitelist for target fields being paginated
+     * @param mixed $target  anything what needs to be paginated
+     * @param int   $page    page number, starting from 1
+     * @param int   $limit   number of items per page
+     * @param array $options less used options:
+     *                          bool   $distinct           default true for distinction of results
+     *                          string $alias              pagination alias, default none
+     *                          array  $sortFieldAllowList sortable allow list for target fields being paginated
      * @throws \LogicException
-     * @return \Knp\Component\Pager\Pagination\PaginationInterface
      */
     public function paginate($target, int $page = 1, int $limit = 10, array $options = []): PaginationInterface;
 }

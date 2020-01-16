@@ -14,7 +14,7 @@ final class QueryBuilderTest extends BaseTestCaseORM
     public function shouldPaginateSimpleDoctrineQuery(): void
     {
         $this->populate();
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
 
         $qb = $this->em->createQueryBuilder();
         $qb

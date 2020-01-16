@@ -48,7 +48,7 @@ final class QueryTest extends BaseTestCaseORM
         $query = $em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
         $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
-        $p = new Paginator(null, $requestStack);
+        $p = $this->getPaginatorInstance($requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $query = $em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
@@ -132,7 +132,7 @@ final class QueryTest extends BaseTestCaseORM
         ;
 
         $requestStack = $this->createRequestStack(['sort' => '"a.title\'', 'direction' => 'asc']);
-        $p = new Paginator(null, $requestStack);
+        $p = $this->getPaginatorInstance($requestStack);
         $view = $p->paginate($query, 1, 10);
     }
 
@@ -152,7 +152,7 @@ ___SQL;
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
         $requestStack = $this->createRequestStack(['sort' => 'counter', 'direction' => 'asc']);
-        $p = new Paginator(null, $requestStack);
+        $p = $this->getPaginatorInstance($requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10, [PaginatorInterface::DISTINCT => false]);
 
@@ -176,7 +176,7 @@ ___SQL;
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
         $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
-        $p = new Paginator(null, $requestStack);
+        $p = $this->getPaginatorInstance($requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
         $this->assertInstanceOf(SlidingPagination::class, $view);
@@ -198,7 +198,7 @@ ___SQL;
         ;
 
         $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
-        $p = new Paginator(null, $requestStack);
+        $p = $this->getPaginatorInstance($requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
         $this->assertInstanceOf(SlidingPagination::class, $view);

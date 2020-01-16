@@ -28,17 +28,17 @@ final class AllowListTest extends BaseTestCaseMongoODM
         ;
 
         $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'asc']);
-        $p = new Paginator(null, $requestStack);
-        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOW_LIST));
+        $p = $this->getPaginatorInstance($requestStack);
         $sortFieldAllowList = ['title'];
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
         $items = \array_values($view->getItems());
         self::assertCount(4, $items);
         self::assertEquals('autumn', $items[0]->getTitle());
 
         $requestStack = $this->createRequestStack(['sort' => 'id', 'direction' => 'asc']);
-        $p = new Paginator(null, $requestStack);
-        $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOW_LIST));
+        $p = $this->getPaginatorInstance($requestStack);
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
     }
 
     /**
@@ -53,14 +53,14 @@ final class AllowListTest extends BaseTestCaseMongoODM
         ;
 
         $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'asc']);
-        $p = new Paginator(null, $requestStack);
+        $p = $this->getPaginatorInstance($requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $items = \array_values($view->getItems());
         $this->assertEquals('autumn', $items[0]->getTitle());
 
         $requestStack = $this->createRequestStack(['sort' => 'id', 'direction' => 'asc']);
-        $p = new Paginator(null, $requestStack);
+        $p = $this->getPaginatorInstance($requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $items = \array_values($view->getItems());
