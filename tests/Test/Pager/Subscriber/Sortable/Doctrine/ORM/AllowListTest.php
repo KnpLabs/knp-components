@@ -21,7 +21,7 @@ final class AllowListTest extends BaseTestCaseORM
         $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
         $p = $this->getPaginatorInstance($requestStack);
         $sortFieldAllowList = ['a.title'];
-        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOW_LIST));
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
         $items = $view->getItems();
         self::assertCount(4, $items);
