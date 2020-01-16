@@ -15,7 +15,7 @@ final class DBALQueryBuilderTest extends BaseTestCaseORM
     public function shouldPaginateSimpleDoctrineQuery(): void
     {
         $this->populate();
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
 
         $qb = new QueryBuilder($this->em->getConnection());
         $qb->select('*')

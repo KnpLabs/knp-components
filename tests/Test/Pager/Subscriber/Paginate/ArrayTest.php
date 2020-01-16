@@ -56,7 +56,7 @@ final class ArrayTest extends BaseTestCase
     public function shouldSupportPaginateStrategySubscriber(): void
     {
         $items = ['first', 'second'];
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($items, 1, 10);
         $this->assertInstanceOf(PaginationInterface::class, $view);
     }
@@ -68,7 +68,7 @@ final class ArrayTest extends BaseTestCase
     {
         $items = ['first', 'second'];
         $array = new \ArrayObject($items);
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($array, 1, 10);
         $this->assertInstanceOf(PaginationInterface::class, $view);
     }

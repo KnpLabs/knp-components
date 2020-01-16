@@ -14,7 +14,8 @@ final class PaginatorTest extends BaseTestCase
     {
         $exceptionTrown = false;
         try {
-            (new Paginator())->paginate(['a', 'b'], -1, 0);
+            $paginator = $this->getPaginatorInstance();
+            $paginator->paginate(['a', 'b'], -1, 0);
         } catch (\LogicException $e) {
             $exceptionTrown = true;
         }

@@ -50,7 +50,7 @@ final class QueryTest extends BaseTestCaseORM
 
         $requestStack = $this->createRequestStack(['filterField' => 'a.title', 'filterValue' => 'summer']);
 
-        $p = new Paginator(null, $requestStack);
+        $p = $this->getPaginatorInstance($requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $query = $em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
@@ -582,14 +582,11 @@ SQL;
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
-        $query = $this
-            ->em
-            ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
-        ;
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
         $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => 'summer']);
-        $p = new Paginator(null, $requestStack);
+        $p = $this->getPaginatorInstance($requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
         $this->assertInstanceOf(SlidingPagination::class, $view);
@@ -611,7 +608,7 @@ SQL;
         ;
 
         $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => 'asc']);
-        $p = new Paginator(null, $requestStack);
+        $p = $this->getPaginatorInstance($requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
         $this->assertInstanceOf(SlidingPagination::class, $view);

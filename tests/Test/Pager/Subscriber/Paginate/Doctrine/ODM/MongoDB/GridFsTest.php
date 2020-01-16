@@ -20,7 +20,7 @@ final class GridFsTest extends BaseTestCaseMongoODM
             ->getQuery()
         ;
 
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($query, 1, 10);
 
         $cursor = $query->execute();
