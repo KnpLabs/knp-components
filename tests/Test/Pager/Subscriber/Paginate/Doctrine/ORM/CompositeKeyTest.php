@@ -15,7 +15,7 @@ final class CompositeKeyTest extends BaseTestCaseORM
      */
     public function shouldBeHandledByQueryHintByPassingCount(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
 

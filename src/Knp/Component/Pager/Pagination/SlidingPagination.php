@@ -9,12 +9,12 @@ use Closure;
  *
  * Sliding pagination
  */
-class SlidingPagination extends AbstractPagination
+final class SlidingPagination extends AbstractPagination
 {
     /**
      * Pagination page range
      *
-     * @var integer
+     * @var int
      */
     private $range = 5;
 
@@ -27,7 +27,7 @@ class SlidingPagination extends AbstractPagination
 
     public function setPageRange(int $range): void
     {
-        $this->range = intval(abs($range));
+        $this->range = abs($range);
     }
 
     /**
@@ -47,7 +47,7 @@ class SlidingPagination extends AbstractPagination
 
     public function getPaginationData(): array
     {
-        $pageCount = intval(ceil($this->totalCount / $this->numItemsPerPage));
+        $pageCount = (int) ceil($this->totalCount / $this->numItemsPerPage);
         $current = $this->currentPageNumber;
 
         if ($this->range > $pageCount) {

@@ -133,9 +133,9 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
     /**
      * {@inheritDoc}
      */
-    public function getPaginatorOption($name)
+    public function getPaginatorOption(string $name)
     {
-        return isset($this->paginatorOptions[$name]) ? $this->paginatorOptions[$name] : null;
+        return $this->paginatorOptions[$name] ?? null;
     }
 
     /**

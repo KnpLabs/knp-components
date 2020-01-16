@@ -68,7 +68,7 @@ final class QueryTest extends BaseTestCaseMongoODM
         ;
 
         $requestStack = $this->createRequestStack(['sort' => '"title\'', 'direction' => 'asc']);
-        $p = new Paginator(null, $requestStack);
+        $p = $this->getPaginatorInstance($requestStack);
         $view = $p->paginate($query, 1, 10);
     }
 

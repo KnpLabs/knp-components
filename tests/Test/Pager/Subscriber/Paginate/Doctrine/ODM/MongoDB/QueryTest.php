@@ -49,7 +49,7 @@ final class QueryTest extends BaseTestCaseMongoODM
             ->createQueryBuilder(Article::class)
             ->getQuery()
         ;
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $pagination = $p->paginate($query, 1, 10);
         $this->assertInstanceOf(SlidingPagination::class, $pagination);
     }
