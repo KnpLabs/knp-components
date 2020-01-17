@@ -2,29 +2,49 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Knp\Component\Pager\Event\ItemsEvent;
-use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\Query\OrderByWalker;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\Helper as QueryHelper;
 use Doctrine\ORM\Query;
+use Knp\Component\Pager\Event\ItemsEvent;
+use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\Helper as QueryHelper;
+use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\Query\OrderByWalker;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
-    {
-        if ($event->target instanceof Query) {
-            if (isset($_GET[$event->options['sortFieldParameterName']])) {
-                $dir = isset($_GET[$event->options['sortDirectionParameterName']]) && strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc';
+    /**
+     * @var Request
+     */
+    private $request;
 
-                if (isset($event->options['sortFieldWhitelist'])) {
-                    if (!in_array($_GET[$event->options['sortFieldParameterName']], $event->options['sortFieldWhitelist'])) {
-                        throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options['sortFieldParameterName']]}] this field is not in whitelist");
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+    }
+
+    public function items(ItemsEvent $event): void
+    {
+        // Check if the result has already been sorted by an other sort subscriber
+        $customPaginationParameters = $event->getCustomPaginationParameters();
+        if (!empty($customPaginationParameters['sorted']) ) {
+            return;
+        }
+
+        if ($event->target instanceof Query) {
+            $event->setCustomPaginationParameter('sorted', true);
+
+            if ($this->request->query->has($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])) {
+                $dir = $this->request->query->has($event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]) && strtolower($this->request->query->get($event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME])) === 'asc' ? 'asc' : 'desc';
+
+                if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
+                    if (!in_array($this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]), $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
+                        throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])}] this field is not in whitelist");
                     }
                 }
 
-                $sortFieldParameterNames = $_GET[$event->options['sortFieldParameterName']];
-                $fields = array();
-                $aliases = array();
+                $sortFieldParameterNames = $this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]);
+                $fields = [];
+                $aliases = [];
                 foreach (explode('+', $sortFieldParameterNames) as $sortFieldParameterName) {
                     $parts = explode('.', $sortFieldParameterName, 2);
 
@@ -40,15 +60,15 @@ class QuerySubscriber implements EventSubscriberInterface
                     ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_ALIAS, $aliases)
                 ;
 
-                QueryHelper::addCustomTreeWalker($event->target, 'Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\Query\OrderByWalker');
+                QueryHelper::addCustomTreeWalker($event->target, OrderByWalker::class);
             }
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 1)
-        );
+        return [
+            'knp_pager.items' => ['items', 1]
+        ];
     }
 }

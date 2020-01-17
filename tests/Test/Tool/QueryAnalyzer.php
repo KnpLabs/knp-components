@@ -3,8 +3,8 @@
 namespace Test\Tool;
 
 use Doctrine\DBAL\Logging\SQLLogger;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
@@ -13,7 +13,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  * @link http://www.gediminasm.org
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-class QueryAnalyzer implements SQLLogger
+final class QueryAnalyzer implements SQLLogger
 {
     /**
      * Used database platform
@@ -41,7 +41,7 @@ class QueryAnalyzer implements SQLLogger
      *
      * @var array
      */
-    private $queries = array();
+    private $queries = [];
 
     /**
      * Query execution times indexed
@@ -49,7 +49,7 @@ class QueryAnalyzer implements SQLLogger
      *
      * @var array
      */
-    private $queryExecutionTimes = array();
+    private $queryExecutionTimes = [];
 
     /**
      * Initialize log listener with database
@@ -66,18 +66,18 @@ class QueryAnalyzer implements SQLLogger
     /**
      * {@inheritdoc}
      */
-    public function startQuery($sql, array $params = null, array $types = null)
+    public function startQuery($sql, array $params = null, array $types = null): void
     {
-        $this->queryStartTime = microtime(true);
+        $this->queryStartTime = \microtime(true);
         $this->queries[] = $this->generateSql($sql, $params, $types);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function stopQuery()
+    public function stopQuery(): void
     {
-        $ms = round(microtime(true) - $this->queryStartTime, 4) * 1000;
+        $ms = \round(\microtime(true) - $this->queryStartTime, 4) * 1000;
         $this->queryExecutionTimes[] = $ms;
         $this->totalExecutionTime += $ms;
     }
@@ -87,11 +87,12 @@ class QueryAnalyzer implements SQLLogger
      *
      * @return QueryAnalyzer
      */
-    public function cleanUp()
+    public function cleanUp(): QueryAnalyzer
     {
-        $this->queries = array();
-        $this->queryExecutionTimes = array();
+        $this->queries = [];
+        $this->queryExecutionTimes = [];
         $this->totalExecutionTime = 0;
+
         return $this;
     }
 
@@ -99,14 +100,15 @@ class QueryAnalyzer implements SQLLogger
      * Dump the statistics of executed queries
      *
      * @param boolean $dumpOnlySql
-     * @return void
+     *
+     * @return string|null
      */
-    public function getOutput($dumpOnlySql = false)
+    public function getOutput($dumpOnlySql = false): ?string
     {
         $output = '';
         if (!$dumpOnlySql) {
             $output .= 'Platform: ' . $this->platform->getName() . PHP_EOL;
-            $output .= 'Executed queries: ' . count($this->queries) . ', total time: ' . $this->totalExecutionTime . ' ms' . PHP_EOL;
+            $output .= 'Executed queries: ' . \count($this->queries) . ', total time: ' . $this->totalExecutionTime . ' ms' . PHP_EOL;
         }
         foreach ($this->queries as $index => $sql) {
             if (!$dumpOnlySql) {
@@ -115,15 +117,16 @@ class QueryAnalyzer implements SQLLogger
             $output .= $sql . ';' . PHP_EOL;
         }
         $output .= PHP_EOL;
+
         return $output;
     }
 
     /**
      * Index of the slowest query executed
      *
-     * @return integer
+     * @return int
      */
-    public function getSlowestQueryIndex()
+    public function getSlowestQueryIndex(): int
     {
         $index = 0;
         $slowest = 0;
@@ -139,9 +142,9 @@ class QueryAnalyzer implements SQLLogger
     /**
      * Get total execution time of queries
      *
-     * @return integer
+     * @return int
      */
-    public function getTotalExecutionTime()
+    public function getTotalExecutionTime(): int
     {
         return $this->totalExecutionTime;
     }
@@ -151,7 +154,7 @@ class QueryAnalyzer implements SQLLogger
      *
      * @return array
      */
-    public function getExecutedQueries()
+    public function getExecutedQueries(): array
     {
         return $this->queries;
     }
@@ -159,11 +162,11 @@ class QueryAnalyzer implements SQLLogger
     /**
      * Get number of executed queries
      *
-     * @return integer
+     * @return int
      */
-    public function getNumExecutedQueries()
+    public function getNumExecutedQueries(): int
     {
-        return count($this->queries);
+        return \count($this->queries);
     }
 
     /**
@@ -171,7 +174,7 @@ class QueryAnalyzer implements SQLLogger
      *
      * @return array
      */
-    public function getExecutionTimes()
+    public function getExecutionTimes(): array
     {
         return $this->queryExecutionTimes;
     }
@@ -182,22 +185,23 @@ class QueryAnalyzer implements SQLLogger
      * @param string $sql
      * @param array $params
      * @param array $types
-     * @return sql
+     *
+     * @return string
      */
-    private function generateSql($sql, $params, $types)
+    private function generateSql($sql, $params, $types): string
     {
-        if (!count($params)) {
+        if (!\count($params)) {
             return $sql;
         }
         $converted = $this->getConvertedParams($params, $types);
-        if (is_int(key($params))) {
-            $index = key($converted);
-            $sql = preg_replace_callback('@\?@sm', function($match) use (&$index, $converted) {
-                return implode(' ', $converted[$index++]);
+        if (\is_int(\key($params))) {
+            $index = \key($converted);
+            $sql = \preg_replace_callback('@\?@sm', function ($match) use (&$index, $converted) {
+                return \implode(' ', $converted[$index++]);
             }, $sql);
         } else {
             foreach ($converted as $key => $value) {
-                $sql = str_replace(':' . $key, $value, $sql);
+                $sql = \str_replace(':' . $key, $value, $sql);
             }
         }
         return $sql;
@@ -208,35 +212,37 @@ class QueryAnalyzer implements SQLLogger
      *
      * @param array $params
      * @param array $types
+     *
      * @return array
      */
-    private function getConvertedParams($params, $types)
+    private function getConvertedParams(array $params, array $types): array
     {
-        $result = array();
+        $result = [];
         foreach ($params as $position => $value) {
             if (isset($types[$position])) {
                 $type = $types[$position];
-                if (is_string($type)) {
+                if (\is_string($type)) {
                     $type = Type::getType($type);
                 }
                 if ($type instanceof Type) {
                     $value = $type->convertToDatabaseValue($value, $this->platform);
                 }
             } else {
-                if (is_object($value) && $value instanceof \DateTime) {
+                if (\is_object($value) && $value instanceof \DateTime) {
                     $value = $value->format($this->platform->getDateTimeFormatString());
-                } elseif (!is_null($value)) {
-                    $type = Type::getType(gettype($value));
+                } elseif (!\is_null($value)) {
+                    $type = Type::getType(\gettype($value));
                     $value = $type->convertToDatabaseValue($value, $this->platform);
                 }
             }
-            if (is_string($value)) {
+            if (\is_string($value)) {
                 $value = "'{$value}'";
-            } elseif (is_null($value)) {
+            } elseif (\is_null($value)) {
                 $value = 'NULL';
             }
             $result[$position] = $value;
         }
+
         return $result;
     }
 }

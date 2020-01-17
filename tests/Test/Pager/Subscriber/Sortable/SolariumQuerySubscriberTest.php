@@ -2,41 +2,43 @@
 
 namespace Test\Pager\Subscriber\Sortable;
 
+use Knp\Component\Pager\Event\Subscriber\Sortable\SolariumQuerySubscriber;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Event\Subscriber\Sortable\SolariumQuerySubscriber;
-
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
+use Test\Tool\BaseTestCase;
 
-class SolariumQuerySubscriberTest extends \PHPUnit_Framework_TestCase
+final class SolariumQuerySubscriberTest extends BaseTestCase
 {
     /**
      * @test
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage One of listeners must count and slice given target
      */
-    function testArrayShouldNotBeHandled()
+    public function testArrayShouldNotBeHandled(): void
     {
-        $array = array(
-            'results' => array(
-                0 => array(
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('One of listeners must count and slice given target');
+
+        $array = [
+            'results' => [
+                0 => [
                     'city'   => 'Lyon',
                     'market' => 'E'
-                ),
-                1 => array(
+                ],
+                1 => [
                     'city'   => 'Paris',
                     'market' => 'G'
-                ),
-            ),
+                ],
+            ],
             'nbTotalResults' => 2
-        );
+        ];
 
-        $dispatcher = new EventDispatcher;
-        $dispatcher->addSubscriber(new SolariumQuerySubscriber);
-        $dispatcher->addSubscriber(new MockPaginationSubscriber);
+        $requestStack = $this->createRequestStack([]);
+        $dispatcher = new EventDispatcher();
 
-        $p = new Paginator($dispatcher);
-        $p->paginate($array, 1, 10);
+        $dispatcher->addSubscriber(new SolariumQuerySubscriber($requestStack->getCurrentRequest()));
+        $dispatcher->addSubscriber(new MockPaginationSubscriber());
+
+        $paginator = new Paginator($dispatcher);
+        $paginator->paginate($array, 1, 10);
     }
 }

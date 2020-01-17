@@ -2,18 +2,18 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
-use Test\Tool\BaseTestCaseORM;
+use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
 use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Composite;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber\UsesPaginator;
-use Doctrine\ORM\Query;
+use Test\Tool\BaseTestCaseORM;
 
-class CompositeKeyTest extends BaseTestCaseORM
+final class CompositeKeyTest extends BaseTestCaseORM
 {
     /**
      * @test
      */
-    function shouldBeHandledByQueryHintByPassingCount()
+    public function shouldBeHandledByQueryHintByPassingCount(): void
     {
         $p = new Paginator;
         $em = $this->getMockSqliteEntityManager();
@@ -28,19 +28,19 @@ class CompositeKeyTest extends BaseTestCaseORM
             ->createQuery('SELECT c FROM Test\Fixture\Entity\Composite c')
             ->setHint('knp_paginator.count', $count)
         ;
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
-        $view = $p->paginate($query, 1, 10, array('wrap-queries' => true));
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+        $view = $p->paginate($query, 1, 10, ['wrap-queries' => true]);
 
         $items = $view->getItems();
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
-        return array('Test\Fixture\Entity\Composite');
+        return [Composite::class];
     }
 
-    private function populate($em)
+    private function populate(EntityManagerInterface $em): void
     {
         $summer = new Composite;
         $summer->setId(1);
@@ -68,5 +68,4 @@ class CompositeKeyTest extends BaseTestCaseORM
         $em->persist($spring);
         $em->flush();
     }
-
 }

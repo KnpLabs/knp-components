@@ -2,10 +2,10 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Paginate;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Knp\Component\Pager\Event\PaginationEvent;
 use Knp\Component\Pager\Event\BeforeEvent;
+use Knp\Component\Pager\Event\PaginationEvent;
 use Knp\Component\Pager\Pagination\SlidingPagination;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PaginationSubscriber implements EventSubscriberInterface
 {
@@ -15,13 +15,13 @@ class PaginationSubscriber implements EventSubscriberInterface
      */
     private $isLoaded = false;
 
-    public function pagination(PaginationEvent $event)
+    public function pagination(PaginationEvent $event): void
     {
         $event->setPagination(new SlidingPagination);
         $event->stopPropagation();
     }
 
-    public function before(BeforeEvent $event)
+    public function before(BeforeEvent $event): void
     {
         // Do not lazy-load more than once
         if ($this->isLoaded) {
@@ -31,8 +31,8 @@ class PaginationSubscriber implements EventSubscriberInterface
         $disp = $event->getEventDispatcher();
         // hook all standard subscribers
         $disp->addSubscriber(new ArraySubscriber);
+        $disp->addSubscriber(new Callback\CallbackSubscriber);
         $disp->addSubscriber(new Doctrine\ORM\QueryBuilderSubscriber);
-        $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber\UsesPaginator);
         $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber);
         $disp->addSubscriber(new Doctrine\ODM\MongoDB\QueryBuilderSubscriber);
         $disp->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber);
@@ -47,11 +47,11 @@ class PaginationSubscriber implements EventSubscriberInterface
         $this->isLoaded = true;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.before' => array('before', 0),
-            'knp_pager.pagination' => array('pagination', 0)
-        );
+        return [
+            'knp_pager.before' => ['before', 0],
+            'knp_pager.pagination' => ['pagination', 0]
+        ];
     }
 }

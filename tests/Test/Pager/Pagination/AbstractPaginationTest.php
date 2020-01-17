@@ -1,62 +1,64 @@
 <?php
 
-use Test\Tool\BaseTestCase;
+namespace Test\Pager\Pagination;
+
+use Knp\Component\Pager\Event\Subscriber\Paginate\ArraySubscriber;
 use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
-use Test\Mock\CustomParameterSubscriber;
-use Knp\Component\Pager\Event\Subscriber\Paginate\ArraySubscriber;
+use Test\Tool\BaseTestCase;
 
-class AbstractPaginationTest extends BaseTestCase
+final class AbstractPaginationTest extends BaseTestCase
 {
     /**
      * @test
      */
-    function shouldCustomizeParameterNames()
+    public function shouldCustomizeParameterNames(): void
     {
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
         $dispatcher->addSubscriber(new ArraySubscriber);
         $p = new Paginator($dispatcher);
 
-        $items = array('first', 'second');
+        $items = ['first', 'second'];
         $view = $p->paginate($items, 1, 10);
 
         // test default names first
-        $this->assertEquals('page', $view->getPaginatorOption('pageParameterName'));
-        $this->assertEquals('sort', $view->getPaginatorOption('sortFieldParameterName'));
-        $this->assertEquals('direction', $view->getPaginatorOption('sortDirectionParameterName'));
-        $this->assertTrue($view->getPaginatorOption('distinct'));
-        $this->assertNull($view->getPaginatorOption('sortFieldWhitelist'));
+        $this->assertEquals('page', $view->getPaginatorOption(PaginatorInterface::PAGE_PARAMETER_NAME));
+        $this->assertEquals('sort', $view->getPaginatorOption(PaginatorInterface::SORT_FIELD_PARAMETER_NAME));
+        $this->assertEquals('direction', $view->getPaginatorOption(PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME));
+        $this->assertTrue($view->getPaginatorOption(PaginatorInterface::DISTINCT));
+        $this->assertNull($view->getPaginatorOption(PaginatorInterface::SORT_FIELD_WHITELIST));
 
         // now customize
-        $options = array(
-            'pageParameterName' => 'p',
-            'sortFieldParameterName' => 's',
-            'sortDirectionParameterName' => 'd',
-            'distinct' => false,
-            'sortFieldWhitelist' => array('a.f', 'a.d')
-        );
+        $options = [
+            PaginatorInterface::PAGE_PARAMETER_NAME => 'p',
+            PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 's',
+            PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'd',
+            PaginatorInterface::DISTINCT => false,
+            PaginatorInterface::SORT_FIELD_WHITELIST => ['a.f', 'a.d']
+        ];
 
         $view = $p->paginate($items, 1, 10, $options);
 
-        $this->assertEquals('p', $view->getPaginatorOption('pageParameterName'));
-        $this->assertEquals('s', $view->getPaginatorOption('sortFieldParameterName'));
-        $this->assertEquals('d', $view->getPaginatorOption('sortDirectionParameterName'));
-        $this->assertFalse($view->getPaginatorOption('distinct'));
-        $this->assertEquals(array('a.f', 'a.d'), $view->getPaginatorOption('sortFieldWhitelist'));
+        $this->assertEquals('p', $view->getPaginatorOption(PaginatorInterface::PAGE_PARAMETER_NAME));
+        $this->assertEquals('s', $view->getPaginatorOption(PaginatorInterface::SORT_FIELD_PARAMETER_NAME));
+        $this->assertEquals('d', $view->getPaginatorOption(PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME));
+        $this->assertFalse($view->getPaginatorOption(PaginatorInterface::DISTINCT));
+        $this->assertEquals(['a.f', 'a.d'], $view->getPaginatorOption(PaginatorInterface::SORT_FIELD_WHITELIST));
 
         // change default paginator options
-        $p->setDefaultPaginatorOptions(array(
-            'pageParameterName' => 'pg',
-            'sortFieldParameterName' => 'srt',
-            'sortDirectionParameterName' => 'dir'
-        ));
+        $p->setDefaultPaginatorOptions([
+            PaginatorInterface::PAGE_PARAMETER_NAME => 'pg',
+            PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'srt',
+            PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'dir'
+        ]);
         $view = $p->paginate($items, 1, 10);
 
-        $this->assertEquals('pg', $view->getPaginatorOption('pageParameterName'));
-        $this->assertEquals('srt', $view->getPaginatorOption('sortFieldParameterName'));
-        $this->assertEquals('dir', $view->getPaginatorOption('sortDirectionParameterName'));
-        $this->assertTrue($view->getPaginatorOption('distinct'));
+        $this->assertEquals('pg', $view->getPaginatorOption(PaginatorInterface::PAGE_PARAMETER_NAME));
+        $this->assertEquals('srt', $view->getPaginatorOption(PaginatorInterface::SORT_FIELD_PARAMETER_NAME));
+        $this->assertEquals('dir', $view->getPaginatorOption(PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME));
+        $this->assertTrue($view->getPaginatorOption(PaginatorInterface::DISTINCT));
     }
 }

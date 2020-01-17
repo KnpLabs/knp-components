@@ -2,73 +2,89 @@
 
 namespace Test\Pager\Subscriber\Filtration\Doctrine\ORM;
 
-use Test\Tool\BaseTestCaseORM;
-use Knp\Component\Pager\Paginator;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber as Filtration;
+use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
+use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Entity\Article;
+use Test\Tool\BaseTestCaseORM;
 
-class WhitelistTest extends BaseTestCaseORM
+final class WhitelistTest extends BaseTestCaseORM
 {
     /**
      * @test
-     * @expectedException \UnexpectedValueException
      */
-    public function shouldWhitelistFiltrationFields()
+    public function shouldWhitelistFiltrationFields(): void
     {
+        $this->expectException(\UnexpectedValueException::class);
+
         $this->populate();
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = 'summer';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
-        $filterFieldWhitelist = array('a.title');
-        $view = $p->paginate($query, 1, 10, compact('filterFieldWhitelist'));
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
+
+        $filterFieldWhitelist = ['a.invalid'];
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
 
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
 
-        $_GET['filterParam'] = 'a.id';
-        $view = $p->paginate($query, 1, 10, compact('filterFieldWhitelist'));
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.id', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
     }
 
     /**
      * @test
      */
-    public function shouldFilterWithoutSpecificWhitelist()
+    public function shouldFilterWithoutSpecificWhitelist(): void
     {
         $this->populate();
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = 'autumn';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => 'autumn']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();
         $this->assertEquals('autumn', $items[0]->getTitle());
+    }
 
-        $_GET['filterParam'] = 'a.id';
-        $view = $p->paginate($query, 1, 10);
+    /**
+     * @test
+     */
+    public function shouldFilterWithoutSpecificWhitelist2(): void
+    {
+        $this->populate();
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new PaginationSubscriber());
+        $dispatcher->addSubscriber(new Filtration());
+
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.id', 'filterValue' => 'autumn']);
+        $p = new Paginator($dispatcher, $requestStack);
+        $view = $p->paginate($query);
 
         $items = $view->getItems();
-        $this->assertEquals(0, count($items));
+        $this->assertCount(0, $items);
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
-        return array('Test\Fixture\Entity\Article');
+        return [Article::class];
     }
 
-    private function populate()
+    private function populate(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $summer = new Article();

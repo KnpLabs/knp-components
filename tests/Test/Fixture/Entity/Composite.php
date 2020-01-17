@@ -31,7 +31,7 @@ class Composite
      *
      * @param mixed $uid
      */
-    public function setUid($uid)
+    public function setUid($uid): void
     {
         $this->uid = $uid;
     }
@@ -51,7 +51,7 @@ class Composite
      *
      * @param $id
      */
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -66,7 +66,7 @@ class Composite
         return $this->id;
     }
 
-    public function setTitle($title)
+    public function setTitle($title): void
     {
         $this->title = $title;
     }

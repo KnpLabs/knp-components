@@ -2,35 +2,31 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
-use Test\Tool\BaseTestCaseORM;
+use Doctrine\ORM\Query;
 use Knp\Component\Pager\Paginator;
-use Knp\Component\Pager\Pagination\SlidingPagination;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Test\Fixture\Entity\Shop\Product;
 use Test\Fixture\Entity\Shop\Tag;
-use Doctrine\ORM\Query;
+use Test\Tool\BaseTestCaseORM;
 
-class AdvancedQueryTest extends BaseTestCaseORM
+final class AdvancedQueryTest extends BaseTestCaseORM
 {
     /**
      * Its not possible to make distinction and predict
      * count of such query
      *
      * @test
-     * @expectedException RuntimeException
      */
-    function shouldFailToPaginateMultiRootQuery()
+    public function shouldFailToPaginateMultiRootQuery(): void
     {
+        $this->expectException(\RuntimeException::class);
+
         $this->populate();
 
-        $dql = <<<___SQL
+        $dql = <<<SQL
     SELECT p FROM
       Test\Fixture\Entity\Shop\Product p,
       Test\Fixture\Entity\Shop\Tag t
-___SQL;
+SQL;
         $q = $this->em->createQuery($dql);
 
         $p = new Paginator;
@@ -41,41 +37,41 @@ ___SQL;
     /**
      * @test
      */
-    function shouldBeAbleToPaginateWithHavingClause()
+    public function shouldBeAbleToPaginateWithHavingClause(): void
     {
         $this->populate();
 
-        $dql = <<<___SQL
+        $dql = <<<SQL
         SELECT p, t
         FROM Test\Fixture\Entity\Shop\Product p
         INNER JOIN p.tags t
         GROUP BY p.id
         HAVING p.numTags = COUNT(t)
-___SQL;
+SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $p = new Paginator;
-        $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
-        $this->assertEquals(3, count($view));
+        $view = $p->paginate($q, 1, 10, ['wrap-queries' => true]);
+        $this->assertCount(3, $view);
     }
 
     /**
      * @test
      */
-    function shouldBeAbleToPaginateMixedKeyArray()
+    public function shouldBeAbleToPaginateMixedKeyArray(): void
     {
         $this->populate();
 
-        $dql = <<<___SQL
+        $dql = <<<SQL
         SELECT p, t, p.title FROM
           Test\Fixture\Entity\Shop\Product p
         LEFT JOIN
           p.tags t
-___SQL;
+SQL;
         $q = $this->em->createQuery($dql);
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10);
-        $this->assertEquals(3, count($view));
+        $this->assertCount(3, $view);
         $items = $view->getItems();
         // and should be hydrated as array
         $this->assertTrue(isset($items[0]['title']));
@@ -84,14 +80,14 @@ ___SQL;
     /**
      * @test
      */
-    function shouldBeAbleToPaginateCaseBasedQuery()
+    public function shouldBeAbleToPaginateCaseBasedQuery(): void
     {
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.2.0-DEV', '<')) {
+        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.2.0-DEV', '<')) {
             $this->markTestSkipped('Only recent orm version can test against this query.');
         }
         $this->populate();
 
-        $dql = <<<___SQL
+        $dql = <<<SQL
             SELECT p,
               CASE
                 WHEN p.title LIKE :keyword
@@ -113,13 +109,13 @@ ___SQL;
             )
             GROUP BY p.id
             ORDER BY relevance ASC, p.id DESC
-___SQL;
+SQL;
         $q = $this->em->createQuery($dql);
         $q->setParameter('keyword', '%Star%');
         $q->setHydrationMode(\Doctrine\ORM\Query::HYDRATE_ARRAY);
         $p = new Paginator;
         $view = $p->paginate($q, 1, 10);
-        $this->assertEquals(1, count($view));
+        $this->assertCount(1, $view);
         $items = $view->getItems();
         // and should be hydrated as array
         $this->assertEquals('Starship', $items[0][0]['title']);
@@ -129,33 +125,33 @@ ___SQL;
     /**
      * @test
      */
-    function shouldUseOutputWalkersIfHinted()
+    public function shouldUseOutputWalkersIfHinted(): void
     {
         $this->populate();
 
-        $dql = <<<___SQL
+        $dql = <<<SQL
         SELECT p, t
         FROM Test\Fixture\Entity\Shop\Product p
         INNER JOIN p.tags t
         GROUP BY p.id
         HAVING p.numTags = COUNT(t)
-___SQL;
+SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $p = new Paginator;
-        $view = $p->paginate($q, 1, 10, array('wrap-queries' => true));
-        $this->assertEquals(3, count($view));
+        $view = $p->paginate($q, 1, 10, ['wrap-queries' => true]);
+        $this->assertCount(3, $view);
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
-        return array(
-            'Test\Fixture\Entity\Shop\Product',
-            'Test\Fixture\Entity\Shop\Tag'
-        );
+        return [
+            Product::class,
+            Tag::class
+        ];
     }
 
-    private function populate()
+    private function populate(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $cheep = new Tag;

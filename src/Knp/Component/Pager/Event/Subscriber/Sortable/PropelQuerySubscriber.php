@@ -2,25 +2,45 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class PropelQuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    /**
+     * @var Request
+     */
+    private $request;
+
+    public function __construct(Request $request)
     {
+        $this->request = $request;
+    }
+
+    public function items(ItemsEvent $event): void
+    {
+        // Check if the result has already been sorted by an other sort subscriber
+        $customPaginationParameters = $event->getCustomPaginationParameters();
+        if (!empty($customPaginationParameters['sorted']) ) {
+            return;
+        }
+
         $query = $event->target;
         if ($query instanceof \ModelCriteria) {
-            if (isset($_GET[$event->options['sortFieldParameterName']])) {
-                $part = $_GET[$event->options['sortFieldParameterName']];
-                $directionParam = $event->options['sortDirectionParameterName'];
+            $event->setCustomPaginationParameter('sorted', true);
 
-                $direction = (isset($_GET[$directionParam]) && strtolower($_GET[$directionParam]) === 'asc')
+            if ($this->request->query->has($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])) {
+                $part = $this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]);
+                $directionParam = $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME];
+
+                $direction = ($this->request->query->has($directionParam) && strtolower($this->request->query->get($directionParam)) === 'asc')
                                 ? 'asc' : 'desc';
 
-                if (isset($event->options['sortFieldWhitelist'])) {
-                    if (!in_array($_GET[$event->options['sortFieldParameterName']], $event->options['sortFieldWhitelist'])) {
-                        throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options['sortFieldParameterName']]}] this field is not in whitelist");
+                if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
+                    if (!in_array($this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]), $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
+                        throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])}] this field is not in whitelist");
                     }
                 }
 
@@ -29,10 +49,10 @@ class PropelQuerySubscriber implements EventSubscriberInterface
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 1)
-        );
+        return [
+            'knp_pager.items' => ['items', 1]
+        ];
     }
 }

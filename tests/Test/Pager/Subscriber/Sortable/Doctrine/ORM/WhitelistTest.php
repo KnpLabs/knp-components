@@ -2,70 +2,66 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ORM;
 
-use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
-use Knp\Component\Pager\Pagination\SlidingPagination;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
-use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\QuerySubscriber as Sortable;
+use Knp\Component\Pager\PaginatorInterface;
 use Test\Fixture\Entity\Article;
+use Test\Tool\BaseTestCaseORM;
 
-class WhitelistTest extends BaseTestCaseORM
+final class WhitelistTest extends BaseTestCaseORM
 {
     /**
      * @test
-     * @expectedException UnexpectedValueException
      */
-    function shouldWhitelistSortableFields()
+    public function shouldWhitelistSortableFields(): void
     {
+        $this->expectException(\UnexpectedValueException::class);
+
         $this->populate();
-        $_GET['sort'] = 'a.title';
-        $_GET['direction'] = 'asc';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
-        $p = new Paginator;
-        $sortFieldWhitelist = array('a.title');
-        $view = $p->paginate($query, 1, 10, compact('sortFieldWhitelist'));
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
+        $sortFieldWhitelist = ['a.title'];
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
 
         $items = $view->getItems();
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
         $this->assertEquals('autumn', $items[0]->getTitle());
 
-        $_GET['sort'] = 'a.id';
-        $view = $p->paginate($query, 1, 10, compact('sortFieldWhitelist'));
+        $requestStack = $this->createRequestStack(['sort' => 'a.id', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
     }
 
     /**
      * @test
      */
-    function shouldSortWithoutSpecificWhitelist()
+    public function shouldSortWithoutSpecificWhitelist(): void
     {
         $this->populate();
-        $_GET['sort'] = 'a.title';
-        $_GET['direction'] = 'asc';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
-        $p = new Paginator;
+        $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();
         $this->assertEquals('autumn', $items[0]->getTitle());
 
-        $_GET['sort'] = 'a.id';
+        $requestStack = $this->createRequestStack(['sort' => 'a.id', 'direction' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();
         $this->assertEquals('summer', $items[0]->getTitle());
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
-        return array('Test\Fixture\Entity\Article');
+        return [Article::class];
     }
 
-    private function populate()
+    private function populate(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $summer = new Article;

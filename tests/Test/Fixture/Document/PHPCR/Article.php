@@ -7,7 +7,7 @@ use Doctrine\ODM\PHPCR\Mapping\Annotations as PHPCR;
 /**
  * @PHPCR\Document
  */
-class Article
+final class Article
 {
     /**
      * @PHPCR\Id
@@ -20,7 +20,7 @@ class Article
     private $parent;
 
     /**
-     * @PHPCR\String
+     * @PHPCR\Field(type="string")
      */
     private $title;
 
@@ -34,12 +34,12 @@ class Article
         return $this->parent;
     }
 
-    public function setParent($parent)
+    public function setParent($parent): void
     {
         $this->parent = $parent;
     }
 
-    public function setTitle($title)
+    public function setTitle($title): void
     {
         $this->title = $title;
     }
