@@ -82,9 +82,6 @@ SQL;
      */
     public function shouldBeAbleToPaginateCaseBasedQuery(): void
     {
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.2.0-DEV', '<')) {
-            $this->markTestSkipped('Only recent orm version can test against this query.');
-        }
         $this->populate();
 
         $dql = <<<SQL

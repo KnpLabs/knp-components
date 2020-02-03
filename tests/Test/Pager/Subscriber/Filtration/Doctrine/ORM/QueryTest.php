@@ -85,12 +85,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' LIMIT 10', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' LIMIT 10', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' LIMIT 10', $executed[1]);
     }
 
     /**
@@ -120,12 +115,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title LIKE \'summer\' LIMIT 10', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'summer\' LIMIT 10', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'summer\' LIMIT 10', $executed[1]);
     }
 
     /**
@@ -154,12 +144,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.enabled = 1 LIMIT 10', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 1 LIMIT 10', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 1 LIMIT 10', $executed[1]);
     }
 
     /**
@@ -188,12 +173,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.enabled = 1 LIMIT 10', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 1 LIMIT 10', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 1 LIMIT 10', $executed[1]);
     }
 
     /**
@@ -221,12 +201,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.enabled = 0 LIMIT 10', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 0 LIMIT 10', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 0 LIMIT 10', $executed[1]);
     }
 
     /**
@@ -254,12 +229,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.enabled = 0 LIMIT 10', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 0 LIMIT 10', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 0 LIMIT 10', $executed[1]);
     }
 
     /**
@@ -286,12 +256,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ LIMIT 10', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[1]);
     }
 
     /**
@@ -319,12 +284,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title = 0 LIMIT 10', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title = 0 LIMIT 10', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title = 0 LIMIT 10', $executed[1]);
     }
 
     /**
@@ -352,12 +312,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title = 1 LIMIT 10', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title = 1 LIMIT 10', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title = 1 LIMIT 10', $executed[1]);
     }
 
     /**
@@ -384,12 +339,7 @@ final class QueryTest extends BaseTestCaseORM
 
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10', $executed[1]);
     }
 
     /**
@@ -432,16 +382,9 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('winter', $items[1]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND (a0_.title <> \'\' OR (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\')) LIMIT 10', $executed[3]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' LIMIT 10', $executed[5]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND (a0_.title <> \'\' OR (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\')) LIMIT 10', $executed[3]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' LIMIT 10', $executed[5]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10', $executed[1]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND (a0_.title <> \'\' OR (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\')) LIMIT 10', $executed[3]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' LIMIT 10', $executed[5]);
     }
 
     /**
@@ -469,12 +412,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('winter', $items[1]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' AND a0_.title <> \'\' LIMIT 10', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' AND a0_.title <> \'\' LIMIT 10', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' AND a0_.title <> \'\' LIMIT 10', $executed[1]);
     }
 
     /**
@@ -509,14 +447,8 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('winter', $items[1]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\' LIMIT 10', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\' LIMIT 10', $executed[3]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\' LIMIT 10', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\' LIMIT 10', $executed[3]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\' LIMIT 10', $executed[1]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\' LIMIT 10', $executed[3]);
     }
 
     /**
@@ -543,12 +475,7 @@ final class QueryTest extends BaseTestCaseORM
 
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10', $executed[1]);
     }
 
     /**
@@ -645,12 +572,7 @@ SQL;
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2, a0_.title AS title3 FROM Article a0_ WHERE a0_.title LIKE \'%er\' LIMIT 10', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2, a0_.title AS title_3 FROM Article a0_ WHERE a0_.title LIKE \'%er\' LIMIT 10', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2, a0_.title AS title_3 FROM Article a0_ WHERE a0_.title LIKE \'%er\' LIMIT 10', $executed[1]);
     }
 
     /**
@@ -675,12 +597,7 @@ SQL;
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ LIMIT 10', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[1]);
     }
 
     /**
@@ -736,16 +653,9 @@ SQL;
         $this->assertEquals('summer', $items[0]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title LIKE \'summer\' LIMIT 10', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.id LIKE \'summer\' OR a0_.title LIKE \'summer\' LIMIT 10', $executed[3]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.id LIKE \'summer\' OR a0_.title LIKE \'summer\' LIMIT 10', $executed[5]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'summer\' LIMIT 10', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'summer\' OR a0_.title LIKE \'summer\' LIMIT 10', $executed[3]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'summer\' OR a0_.title LIKE \'summer\' LIMIT 10', $executed[5]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'summer\' LIMIT 10', $executed[1]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'summer\' OR a0_.title LIKE \'summer\' LIMIT 10', $executed[3]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'summer\' OR a0_.title LIKE \'summer\' LIMIT 10', $executed[5]);
     }
 
     /**
@@ -782,16 +692,9 @@ SQL;
         $this->assertCount(4, $items);
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (\version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ LIMIT 10', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ LIMIT 10', $executed[3]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ LIMIT 10', $executed[5]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[3]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[5]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[1]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[3]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[5]);
     }
 
     protected function getUsedEntityFixtures(): array
