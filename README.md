@@ -4,7 +4,7 @@
 
 ## Components in this library:
 
-- [Pager](https://github.com/knplabs/knp-components/tree/master/doc/pager/intro.md)
+- [Pager](https://github.com/knplabs/knp-components/tree/master/docs/pager/intro.md)
 fancy paginator component
 
 ## Running unit tests
