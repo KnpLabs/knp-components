@@ -34,6 +34,31 @@ final class CollectionTest extends BaseTestCase
     /**
      * @test
      */
+    public function shouldLoopOverPagination(): void
+    {
+        $dispatcher = new EventDispatcher;
+        $dispatcher->addSubscriber(new CollectionSubscriber);
+        $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
+        $p = new Paginator($dispatcher);
+
+        $items = new ArrayCollection(['first', 'second']);
+        $view = $p->paginate($items, 1, 10);
+
+        $counter = 0;
+
+        foreach ($view as $item) {
+            $this->assertEquals($items[$counter], $item);
+
+            ++$counter;
+        }
+
+        $this->assertEquals(2, $counter);
+    }
+
+
+    /**
+     * @test
+     */
     public function shouldSlicePaginateAnArray(): void
     {
         $dispatcher = new EventDispatcher;
