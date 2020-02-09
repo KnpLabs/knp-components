@@ -13,10 +13,10 @@ class CollectionSubscriber implements EventSubscriberInterface
     {
         if ($event->target instanceof Collection) {
             $event->count = $event->target->count();
-            $event->items = new ArrayObject($event->target->slice(
+            $event->items = $event->target->slice(
                 $event->getOffset(),
                 $event->getLimit()
-            ));
+            );
             $event->stopPropagation();
         }
     }
