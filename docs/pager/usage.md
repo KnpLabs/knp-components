@@ -15,7 +15,7 @@ Lets add some code in **index.php** and see it in action:
 ``` php
 <?php
 // file: index.php
-include 'autoloader.php';
+require 'vendor/autoload.php';
 
 // usage examples will continue here
 
@@ -73,7 +73,7 @@ Now if we override the renderer callback
 // continuing in file: index.php
 // ...
 
-$pagination->renderer = function($data) {
+$pagination->renderer = function ($data) {
     return EOL.TAB.'page range: '.implode(' ', $data['pagesInRange']).EOL;
 };
 echo $pagination; // outputs: "page range: 1 2 3"
@@ -87,10 +87,10 @@ For example users should be sorted by lastname and by firstname:
 ```php
 $query = $entityManager->createQuery('SELECT u FROM User');
 
-$pagination = $paginator->paginate($query, 1/*page number*/, 20/*limit per page*/, array(
-    'defaultSortFieldName' => array('u.lastname', 'u.firstname'),
+$pagination = $paginator->paginate($query, 1/*page number*/, 20/*limit per page*/, [
+    'defaultSortFieldName' => ['u.lastname', 'u.firstname'],
     'defaultSortDirection' => 'asc',
-));
+]);
 ```
 
 The Paginator will add an `ORDER BY` automatically for each attribute for the
@@ -104,9 +104,9 @@ For example users should be filtered by lastname or by firstname:
 ```php
 $query = $entityManager->createQuery('SELECT u FROM User');
 
-$pagination = $paginator->paginate($query, 1/*page number*/, 20/*limit per page*/, array(
-    'defaultFilterFields' => array('u.lastname', 'u.firstname'),
-));
+$pagination = $paginator->paginate($query, 1/*page number*/, 20/*limit per page*/, [
+    'defaultFilterFields' => ['u.lastname', 'u.firstname'],
+]);
 ```
 
 If the `filterValue` parameter is set, the Paginator will add an `WHERE` condition automatically 
