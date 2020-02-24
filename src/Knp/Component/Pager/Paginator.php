@@ -41,9 +41,9 @@ class Paginator implements PaginatorInterface
     ];
 
     /**
-     * @var Request
+     * @var RequestStack|null
      */
-    protected $request;
+    protected $requestStack;
 
     /**
      * Initialize paginator with event dispatcher
@@ -61,7 +61,7 @@ class Paginator implements PaginatorInterface
             $this->eventDispatcher->addSubscriber(new PaginationSubscriber);
             $this->eventDispatcher->addSubscriber(new SortableSubscriber);
         }
-        $this->request = null === $requestStack ? Request::createFromGlobals() : $requestStack->getCurrentRequest();
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -104,17 +104,19 @@ class Paginator implements PaginatorInterface
             $options[self::DEFAULT_SORT_FIELD_NAME] = implode('+', $options[self::DEFAULT_SORT_FIELD_NAME]);
         }
 
-        // default sort field and direction are set based on options (if available)
-        if (isset($options[self::DEFAULT_SORT_FIELD_NAME]) && !$this->request->query->has($options[self::SORT_FIELD_PARAMETER_NAME])) {
-           $this->request->query->set($options[self::SORT_FIELD_PARAMETER_NAME], $options[self::DEFAULT_SORT_FIELD_NAME]);
+        $request = null === $this->requestStack ? Request::createFromGlobals() : $this->requestStack->getCurrentRequest();
 
-            if (!$this->request->query->has($options[self::SORT_DIRECTION_PARAMETER_NAME])) {
-                $this->request->query->set($options[self::SORT_DIRECTION_PARAMETER_NAME], $options[self::DEFAULT_SORT_DIRECTION] ?? 'asc');
+        // default sort field and direction are set based on options (if available)
+        if (isset($options[self::DEFAULT_SORT_FIELD_NAME]) && !$request->query->has($options[self::SORT_FIELD_PARAMETER_NAME])) {
+           $request->query->set($options[self::SORT_FIELD_PARAMETER_NAME], $options[self::DEFAULT_SORT_FIELD_NAME]);
+
+            if (!$request->query->has($options[self::SORT_DIRECTION_PARAMETER_NAME])) {
+                $request->query->set($options[self::SORT_DIRECTION_PARAMETER_NAME], $options[self::DEFAULT_SORT_DIRECTION] ?? 'asc');
             }
         }
 
         // before pagination start
-        $beforeEvent = new Event\BeforeEvent($this->eventDispatcher, $this->request);
+        $beforeEvent = new Event\BeforeEvent($this->eventDispatcher, $request);
         $this->dispatch('knp_pager.before', $beforeEvent);
         // items
         $itemsEvent = new Event\ItemsEvent($offset, $limit);
