@@ -34,7 +34,7 @@ interface PaginatorInterface
      * @param array $options - less used options:
      *     boolean $distinct - default true for distinction of results
      *     string $alias - pagination alias, default none
-     *     array $whitelist - sortable whitelist for target fields being paginated
+     *     array $sortFieldWhitelist - sortable whitelist for target fields being paginated
      * @throws \LogicException
      * @return \Knp\Component\Pager\Pagination\PaginationInterface
      */
