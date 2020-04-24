@@ -48,7 +48,7 @@ class WhereWalker extends TreeWalkerAdapter
         $expressions = [];
         foreach ($columns as $column) {
             $alias = false;
-            $parts = explode('.', $column);
+            $parts = explode('.', $column, 2);
             $field = end($parts);
             if (2 <= count($parts)) {
                 $alias = trim(reset($parts));
