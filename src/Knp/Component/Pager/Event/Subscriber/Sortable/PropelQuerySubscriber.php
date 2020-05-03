@@ -30,17 +30,16 @@ class PropelQuerySubscriber implements EventSubscriberInterface
         $query = $event->target;
         if ($query instanceof \ModelCriteria) {
             $event->setCustomPaginationParameter('sorted', true);
-
-            if ($this->request->query->has($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])) {
-                $part = $this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]);
-                $directionParam = $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME];
-
-                $direction = ($this->request->query->has($directionParam) && strtolower($this->request->query->get($directionParam)) === 'asc')
+            $sortField = $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME];
+            $sortDir = $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME];
+            if (null !== $sortField && $this->request->query->has($sortField)) {
+                $part = $this->request->query->get($sortField);
+                $direction = (null !== $sortDir && $this->request->query->has($sortDir) && strtolower($this->request->query->get($sortDir)) === 'asc')
                                 ? 'asc' : 'desc';
 
                 if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-                    if (!in_array($this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]), $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-                        throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])}] this field is not in whitelist");
+                    if (!in_array($this->request->query->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
+                        throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($sortField)}] this field is not in whitelist");
                     }
                 }
 

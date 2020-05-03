@@ -53,19 +53,19 @@ class ArraySubscriber implements EventSubscriberInterface
         if (!empty($customPaginationParameters['sorted']) ) {
             return;
         }
-
-        if (!is_array($event->target) || !$this->request->query->has($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])) {
+        $sortField = $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME];
+        if (!is_array($event->target) || null === $sortField || !$this->request->query->has($sortField)) {
             return;
         }
 
         $event->setCustomPaginationParameter('sorted', true);
 
-        if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST]) && !in_array($this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]), $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-            throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])}] this field is not in whitelist");
+        if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST]) && !in_array($this->request->query->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
+            throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($sortField)}] this field is not in whitelist");
         }
 
         $sortFunction = isset($event->options['sortFunction']) ? $event->options['sortFunction'] : [$this, 'proxySortFunction'];
-        $sortField = $this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]);
+        $sortField = $this->request->query->get($sortField);
 
         // compatibility layer
         if ($sortField[0] === '.') {

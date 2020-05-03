@@ -32,10 +32,11 @@ class ElasticaQuerySubscriber implements EventSubscriberInterface
         if (is_array($event->target) && 2 === count($event->target) && reset($event->target) instanceof SearchableInterface && end($event->target) instanceof Query) {
             [$searchable, $query] = $event->target;
             $event->setCustomPaginationParameter('sorted', true);
-
-            if ($this->request->query->has($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])) {
-                $field = $this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]);
-                $dir   = $this->request->query->has($event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]) && strtolower($this->request->query->get($event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME])) === 'asc' ? 'asc' : 'desc';
+            $sortField = $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME];
+            $sortDir = $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME];
+            if (null !== $sortField && $this->request->query->has($sortField)) {
+                $field = $this->request->query->get($sortField);
+                $dir   = null !== $sortDir && $this->request->query->has($sortDir) && strtolower($this->request->query->get($sortDir)) === 'asc' ? 'asc' : 'desc';
 
                 if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST]) && !in_array($field, $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
                     throw new \UnexpectedValueException(sprintf('Cannot sort by: [%s] this field is not in whitelist',$field));

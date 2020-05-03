@@ -38,14 +38,15 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
 
             if ($client instanceof \Solarium\Client && $query instanceof \Solarium\QueryType\Select\Query\Query) {
                 $event->setCustomPaginationParameter('sorted', true);
-                if ($this->request->query->has($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])) {
+                $sortField = $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME];
+                if (null !== $sortField && $this->request->query->has($sortField)) {
                     if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-                        if (!in_array($this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]), $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-                            throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])}] this field is not in whitelist");
+                        if (!in_array($this->request->query->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
+                            throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($sortField)}] this field is not in whitelist");
                         }
                     }
 
-                    $query->addSort($this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]), $this->getSortDirection($event));
+                    $query->addSort($this->request->query->get($sortField), $this->getSortDirection($event));
                 }
             }
         }
@@ -61,7 +62,9 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
 
     private function getSortDirection($event): string
     {
-        return $this->request->query->has($event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]) &&
-            strtolower($this->request->query->get($event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME])) === 'asc' ? 'asc' : 'desc';
+        $sortDir = $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME];
+
+        return null !== $sortDir && $this->request->query->has($sortDir) &&
+            strtolower($this->request->query->get($sortDir)) === 'asc' ? 'asc' : 'desc';
     }
 }

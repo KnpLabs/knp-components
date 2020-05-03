@@ -30,10 +30,11 @@ class QuerySubscriber implements EventSubscriberInterface
 
         if ($event->target instanceof Query) {
             $event->setCustomPaginationParameter('sorted', true);
-
-            if ($this->request->query->has($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])) {
-                $field = $this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]);
-                $dir = strtolower($this->request->query->get($event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME])) == 'asc' ? 1 : -1;
+            $sortField = $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME];
+            $sortDir = $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME];
+            if (null !== $sortField && $this->request->query->has($sortField)) {
+                $field = $this->request->query->get($sortField);
+                $dir = null !== $sortDir && strtolower($this->request->query->get($sortDir)) == 'asc' ? 1 : -1;
 
                 if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
                     if (!in_array($field, $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
