@@ -206,6 +206,25 @@ ___SQL;
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
     }
 
+    /**
+     * @test
+     */
+    public function shouldNotAcceptArrayParameter(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $query = $this
+            ->getMockSqliteEntityManager()
+            ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
+        ;
+        $requestStack = $this->createRequestStack(['sort' => ['field' => 'a.name'], 'direction' => 'asc']);
+        $dispatcher = new EventDispatcher;
+        $dispatcher->addSubscriber(new PaginationSubscriber);
+        $dispatcher->addSubscriber(new Sortable($requestStack->getCurrentRequest()));
+        $p = new Paginator($dispatcher, $requestStack);
+        $view = $p->paginate($query, 1, 10);
+    }
+
+
     protected function getUsedEntityFixtures(): array
     {
         return [Article::class];

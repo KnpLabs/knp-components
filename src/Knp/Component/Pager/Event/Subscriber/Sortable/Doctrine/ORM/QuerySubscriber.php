@@ -46,6 +46,10 @@ class QuerySubscriber implements EventSubscriberInterface
                 $sortFieldParameterNames = $this->request->query->get($sortField);
                 $fields = [];
                 $aliases = [];
+                if (!is_string($sortFieldParameterNames)) {
+                    throw new \UnexpectedValueException('Cannot sort with array parameter.');
+                }
+
                 foreach (explode('+', $sortFieldParameterNames) as $sortFieldParameterName) {
                     $parts = explode('.', $sortFieldParameterName, 2);
 
