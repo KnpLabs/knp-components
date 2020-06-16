@@ -6,6 +6,7 @@ use Knp\Component\Pager\Event;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
 use Knp\Component\Pager\Pagination\PaginationInterface;
+use Symfony\Component\EventDispatcher\Event as BaseEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -55,7 +56,7 @@ class Paginator implements PaginatorInterface
      */
     public function __construct(EventDispatcherInterface $eventDispatcher = null, RequestStack $requestStack = null)
     {
-        $this->eventDispatcher = \class_exists(LegacyEventDispatcherProxy::class) ? LegacyEventDispatcherProxy::decorate($eventDispatcher) : $eventDispatcher;
+        $this->eventDispatcher = \class_exists(BaseEvent::class) ? LegacyEventDispatcherProxy::decorate($eventDispatcher) : $eventDispatcher;
         if (is_null($this->eventDispatcher)) {
             $this->eventDispatcher = new EventDispatcher();
             $this->eventDispatcher->addSubscriber(new PaginationSubscriber);
@@ -179,10 +180,10 @@ class Paginator implements PaginatorInterface
      */
     protected function dispatch(string $eventName, Event\Event $event): void
     {
-        if (\class_exists(LegacyEventDispatcherProxy::class)) {
-            $this->eventDispatcher->dispatch($event, $eventName);
-        } else {
+        if (\class_exists(BaseEvent::class)) {
             $this->eventDispatcher->dispatch($eventName, $event);
+        } else {
+            $this->eventDispatcher->dispatch($event, $eventName);
         }
     }
 }
