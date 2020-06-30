@@ -38,7 +38,8 @@ class Paginator implements PaginatorInterface
         self::SORT_DIRECTION_PARAMETER_NAME => 'direction',
         self::FILTER_FIELD_PARAMETER_NAME => 'filterParam',
         self::FILTER_VALUE_PARAMETER_NAME => 'filterValue',
-        self::DISTINCT => true
+        self::DISTINCT => true,
+        self::REPLACE_OUT_OF_RANGE_PAGINATION_PARAMETERS => false
     ];
 
     /**
@@ -89,14 +90,32 @@ class Paginator implements PaginatorInterface
      *     boolean $distinct - default true for distinction of results
      *     string $alias - pagination alias, default none
      *     array $whitelist - sortable whitelist for target fields being paginated
+     * @todo REPLACE_OUT_OF_RANGE_PAGINATION_PARAMETERS option
      * @throws \LogicException
      * @return PaginationInterface
      */
     public function paginate($target, int $page = 1, int $limit = 10, array $options = []): PaginationInterface
     {
-        if ($limit <= 0 or $page <= 0) {
-            throw new \LogicException("Invalid item per page number. Limit: $limit and Page: $page, must be positive non-zero integers");
+        if ($limit <= 0) {
+            if (isset($options[self::REPLACE_OUT_OF_RANGE_PAGINATION_PARAMETERS]) &&
+                $options[self::REPLACE_OUT_OF_RANGE_PAGINATION_PARAMETERS] === true) {
+                $limit = 10;
+            } else {
+                //todo:maybe add custom exception
+                throw new \LogicException("Invalid item per page number. Limit: $limit must be positive non-zero integer");
+            }
         }
+
+        if ($page <= 0) {
+            if (isset($options[self::REPLACE_OUT_OF_RANGE_PAGINATION_PARAMETERS]) &&
+                $options[self::REPLACE_OUT_OF_RANGE_PAGINATION_PARAMETERS] === true) {
+                $page = 1;
+            } else {
+                // todo:maybe add custom exception
+                throw new \LogicException("Invalid page number. Page: $page must be positive non-zero integer");
+            }
+        }
+
         $offset = ($page - 1) * $limit;
         $options = array_merge($this->defaultOptions, $options);
 
@@ -147,6 +166,14 @@ class Paginator implements PaginatorInterface
         // after
         $afterEvent = new Event\AfterEvent($paginationView);
         $this->dispatch('knp_pager.after', $afterEvent);
+
+        //replace page with max page, if a page number is out of range
+        if (isset($options[self::REPLACE_OUT_OF_RANGE_PAGINATION_PARAMETERS]) &&
+            $options[self::REPLACE_OUT_OF_RANGE_PAGINATION_PARAMETERS] === true &&
+            $paginationView->count() === 0 && $paginationView->getTotalItemCount() > 0) {
+                $paginationView = $this->paginate($target, ceil($paginationView->getTotalItemCount() / $limit), $limit, $options);
+        }
+
         return $paginationView;
     }
 

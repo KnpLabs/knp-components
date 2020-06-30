@@ -21,6 +21,7 @@ interface PaginatorInterface
     public const FILTER_VALUE_PARAMETER_NAME = 'filterValueParameterName';
     public const FILTER_FIELD_WHITELIST = 'filterFieldWhitelist';
     public const DISTINCT = 'distinct';
+    public const REPLACE_OUT_OF_RANGE_PAGINATION_PARAMETERS = false;
 
     /**
      * Paginates anything (depending on event listeners)
