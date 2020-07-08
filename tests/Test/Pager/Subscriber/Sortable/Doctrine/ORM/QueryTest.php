@@ -224,7 +224,6 @@ ___SQL;
         $view = $p->paginate($query, 1, 10);
     }
 
-
     protected function getUsedEntityFixtures(): array
     {
         return [Article::class];

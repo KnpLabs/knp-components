@@ -4,7 +4,6 @@ namespace Knp\Component\Pager;
 
 use Knp\Component\Pager\Pagination\PaginationInterface;
 
-
 /**
  * PaginatorInterface
  */

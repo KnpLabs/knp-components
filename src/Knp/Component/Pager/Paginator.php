@@ -58,7 +58,7 @@ class Paginator implements PaginatorInterface
      */
     public function __construct(EventDispatcherInterface $eventDispatcher = null, RequestStack $requestStack = null)
     {
-        $this->eventDispatcher = \class_exists(BaseEvent::class) ? LegacyEventDispatcherProxy::decorate($eventDispatcher) : $eventDispatcher;
+        $this->eventDispatcher = \class_exists(BaseEvent::class) && \class_exists(LegacyEventDispatcherProxy::class) ? LegacyEventDispatcherProxy::decorate($eventDispatcher) : $eventDispatcher;
         if (is_null($this->eventDispatcher)) {
             $this->eventDispatcher = new EventDispatcher();
             $this->eventDispatcher->addSubscriber(new PaginationSubscriber);

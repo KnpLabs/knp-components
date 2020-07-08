@@ -55,7 +55,6 @@ final class CollectionTest extends BaseTestCase
         $this->assertEquals(2, $counter);
     }
 
-
     /**
      * @test
      */
