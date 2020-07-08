@@ -5,6 +5,7 @@ namespace Knp\Component\Pager;
 use Knp\Component\Pager\Event;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
+use Knp\Component\Pager\Exception\PageNumberOutOfRangeException;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Component\EventDispatcher\Event as BaseEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -38,7 +39,8 @@ class Paginator implements PaginatorInterface
         self::SORT_DIRECTION_PARAMETER_NAME => 'direction',
         self::FILTER_FIELD_PARAMETER_NAME => 'filterParam',
         self::FILTER_VALUE_PARAMETER_NAME => 'filterValue',
-        self::DISTINCT => true
+        self::DISTINCT => true,
+        self::PAGE_OUT_OF_RANGE => self::PAGE_OUT_OF_RANGE_IGNORE,
     ];
 
     /**
@@ -89,7 +91,9 @@ class Paginator implements PaginatorInterface
      *     boolean $distinct - default true for distinction of results
      *     string $alias - pagination alias, default none
      *     array $whitelist - sortable whitelist for target fields being paginated
+     *     string $pageOutOfRange - see PaginatorInterface::PAGE_OUT_OF_RANGE_*
      * @throws \LogicException
+     * @throws PageNumberOutOfRangeException
      * @return PaginationInterface
      */
     public function paginate($target, int $page = 1, int $limit = 10, array $options = []): PaginationInterface
@@ -97,6 +101,7 @@ class Paginator implements PaginatorInterface
         if ($limit <= 0 or $page <= 0) {
             throw new \LogicException("Invalid item per page number. Limit: $limit and Page: $page, must be positive non-zero integers");
         }
+
         $offset = ($page - 1) * $limit;
         $options = array_merge($this->defaultOptions, $options);
 
@@ -127,6 +132,17 @@ class Paginator implements PaginatorInterface
         if (!$itemsEvent->isPropagationStopped()) {
             throw new \RuntimeException('One of listeners must count and slice given target');
         }
+        if ($page > ceil($itemsEvent->count / $limit)) {
+            $pageOutOfRangeOption = $options[self::PAGE_OUT_OF_RANGE] ?? $this->defaultOptions[self::PAGE_OUT_OF_RANGE];
+            if ($pageOutOfRangeOption === self::PAGE_OUT_OF_RANGE_FIX) {
+                // replace page number out of range with max page
+                return $this->paginate($target, ceil($itemsEvent->count / $limit), $limit, $options);
+            }
+            if ($pageOutOfRangeOption === self::PAGE_OUT_OF_RANGE_THROW_EXCEPTION) {
+                throw new PageNumberOutOfRangeException("Page number: $page is out of range.");
+            }
+        }
+
         // pagination initialization event
         $paginationEvent = new Event\PaginationEvent;
         $paginationEvent->target = &$target;
