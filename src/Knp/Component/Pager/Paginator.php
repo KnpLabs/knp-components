@@ -90,7 +90,7 @@ class Paginator implements PaginatorInterface
      * @param array $options - less used options:
      *     boolean $distinct - default true for distinction of results
      *     string $alias - pagination alias, default none
-     *     array $whitelist - sortable whitelist for target fields being paginated
+     *     array $allowList - sortable allow list for target fields being paginated
      *     string $pageOutOfRange - see PaginatorInterface::PAGE_OUT_OF_RANGE_*
      * @throws \LogicException
      * @throws PageNumberOutOfRangeException

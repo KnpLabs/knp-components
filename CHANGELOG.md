@@ -1,3 +1,12 @@
+## 2.4.0
+
+*To be released*
+
+* fixed error with older Symfony versions
+* added new option to handle out of range page numbers
+* deprecated sortFieldWhitelist and filterFieldWhitelist options
+  (use sortFieldAllowList and filterFieldAllowList instead)
+
 ## 2.3.0
 
 *Released at 2019-11-25*

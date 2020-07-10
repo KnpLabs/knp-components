@@ -34,11 +34,15 @@ class QuerySubscriber implements EventSubscriberInterface
             $sortDir = $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME];
             if (null !== $sortField && $this->request->query->has($sortField)) {
                 $field = $this->request->query->get($sortField);
-                $dir = null !== $sortDir && strtolower($this->request->query->get($sortDir)) == 'asc' ? 1 : -1;
+                $dir = null !== $sortDir && strtolower($this->request->query->get($sortDir)) === 'asc' ? 1 : -1;
 
                 if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-                    if (!in_array($field, $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-                        throw new \UnexpectedValueException("Cannot sort by: [{$field}] this field is not in whitelist");
+                    trigger_deprecation('knplabs/knp-components', '2.4.0', \sprintf('%s option is deprecated. Use %s option instead.', PaginatorInterface::SORT_FIELD_WHITELIST, PaginatorInterface::SORT_FIELD_ALLOW_LIST));
+                    $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST] = $event->options[PaginatorInterface::SORT_FIELD_WHITELIST];
+                }
+                if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+                    if (!in_array($field, $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+                        throw new \UnexpectedValueException("Cannot sort by: [{$field}] this field is not in allow list.");
                     }
                 }
                 static $reflectionProperty;
