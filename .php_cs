@@ -15,6 +15,7 @@ return PhpCsFixer\Config::create()
         'ordered_imports' => true,
         'declare_strict_types' => false,
         'php_unit_mock_short_will_return' => true,
+        'no_extra_blank_lines' => true,
     ])
     ->setFinder($finder)
 ;

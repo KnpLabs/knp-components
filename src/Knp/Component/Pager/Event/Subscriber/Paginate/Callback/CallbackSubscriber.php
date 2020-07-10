@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Knp\Component\Pager\Event\Subscriber\Paginate\Callback;
 
 use Knp\Component\Pager\Event\ItemsEvent;
