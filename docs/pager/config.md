@@ -16,11 +16,11 @@ The list of existing options are:
 | pageParameterName          | string         | page          | SortableSubscriber                              |
 | defaultSortFieldName       | string\|array* |               | SortableSubscriber                              |
 | defaultSortDirection       | string         | asc           | SortableSubscriber                              |
-| sortFieldWhitelist         | array          | []            | SortableSubscriber                              |
+| sortFieldAllowList         | array          | []            | SortableSubscriber                              |
 | sortFieldParameterName     | string         | sort          | SortableSubscriber                              |
 | sortDirectionParameterName | string         | direction     | SortableSubscriber                              |
 | defaultFilterFields        | string\|array* |               | FiltrationSubscriber                            |
-| filterFieldWhitelist       | array          |               | FiltrationSubscriber                            |
+| filterFieldAllowList       | array          |               | FiltrationSubscriber                            |
 | filterFieldParameterName   | string         | filterParam   | FiltrationSubscriber                            |
 | filterValueParameterName   | string         | filterValue   | FiltrationSubscriber                            |
 | pageOutOfRange             | string         | ignore        | PaginationSubscriber                            |
