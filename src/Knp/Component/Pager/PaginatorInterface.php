@@ -21,10 +21,12 @@ interface PaginatorInterface
     public const FILTER_FIELD_WHITELIST = 'filterFieldWhitelist';
     public const DISTINCT = 'distinct';
     public const PAGE_OUT_OF_RANGE = 'pageOutOfRange';
+    public const DEFAULT_LIMIT = 'defaultLimit';
 
     public const PAGE_OUT_OF_RANGE_IGNORE = 'ignore'; // do nothing (default)
     public const PAGE_OUT_OF_RANGE_FIX = 'fix'; // replace page number out of range with max page
     public const PAGE_OUT_OF_RANGE_THROW_EXCEPTION = 'throwException'; // throw PageNumberOutOfRangeException
+    public const DEFAULT_LIMIT_VALUE = 10;
 
     /**
      * Paginates anything (depending on event listeners)

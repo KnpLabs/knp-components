@@ -45,6 +45,10 @@ foreach ($pagination as $item) {
     //...
     echo TAB.'paginated item: '.$item.EOL;
 }
+
+// limit per page can be omitted, or passed as null. In this case default value will be used.
+// some other options can be passed as the 4th argument (see [Configuration](docs/pager/config.md))
+$pagination = $paginator->paginate($target, 3/*page number*/, null/*default limit per page will be used*/, ['pageParameterName' => 'section']/*options*/);
 ```
 
 ### Rendering pagination

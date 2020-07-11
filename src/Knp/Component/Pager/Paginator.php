@@ -41,6 +41,7 @@ class Paginator implements PaginatorInterface
         self::FILTER_VALUE_PARAMETER_NAME => 'filterValue',
         self::DISTINCT => true,
         self::PAGE_OUT_OF_RANGE => self::PAGE_OUT_OF_RANGE_IGNORE,
+        self::DEFAULT_LIMIT => self::DEFAULT_LIMIT_VALUE,
     ];
 
     /**
@@ -96,8 +97,9 @@ class Paginator implements PaginatorInterface
      * @throws PageNumberOutOfRangeException
      * @return PaginationInterface
      */
-    public function paginate($target, int $page = 1, int $limit = 10, array $options = []): PaginationInterface
+    public function paginate($target, int $page = 1, int $limit = null, array $options = []): PaginationInterface
     {
+        $limit = $limit ?? $this->defaultOptions[self::DEFAULT_LIMIT];
         if ($limit <= 0 or $page <= 0) {
             throw new \LogicException("Invalid item per page number. Limit: $limit and Page: $page, must be positive non-zero integers");
         }
