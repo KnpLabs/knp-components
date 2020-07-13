@@ -1,6 +1,6 @@
 ## 2.4.0
 
-*To be released*
+*Released at 2020-07-13*
 
 * fixed error with older Symfony versions
 * added new option to handle out of range page numbers
