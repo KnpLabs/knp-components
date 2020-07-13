@@ -7,12 +7,12 @@ use Knp\Component\Pager\PaginatorInterface;
 use Test\Fixture\Entity\Article;
 use Test\Tool\BaseTestCaseORM;
 
-final class WhitelistTest extends BaseTestCaseORM
+final class AllowListTest extends BaseTestCaseORM
 {
     /**
      * @test
      */
-    public function shouldWhitelistSortableFields(): void
+    public function shouldAllowListSortableFields(): void
     {
         $this->expectException(\UnexpectedValueException::class);
 
@@ -21,22 +21,22 @@ final class WhitelistTest extends BaseTestCaseORM
 
         $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
-        $sortFieldWhitelist = ['a.title'];
-        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
+        $sortFieldAllowList = ['a.title'];
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOW_LIST));
 
         $items = $view->getItems();
-        $this->assertCount(4, $items);
-        $this->assertEquals('autumn', $items[0]->getTitle());
+        self::assertCount(4, $items);
+        self::assertEquals('autumn', $items[0]->getTitle());
 
         $requestStack = $this->createRequestStack(['sort' => 'a.id', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
-        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
+        $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOW_LIST));
     }
 
     /**
      * @test
      */
-    public function shouldSortWithoutSpecificWhitelist(): void
+    public function shouldSortWithoutSpecificAllowList(): void
     {
         $this->populate();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');

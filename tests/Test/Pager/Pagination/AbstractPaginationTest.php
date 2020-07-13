@@ -29,7 +29,7 @@ final class AbstractPaginationTest extends BaseTestCase
         $this->assertEquals('sort', $view->getPaginatorOption(PaginatorInterface::SORT_FIELD_PARAMETER_NAME));
         $this->assertEquals('direction', $view->getPaginatorOption(PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME));
         $this->assertTrue($view->getPaginatorOption(PaginatorInterface::DISTINCT));
-        $this->assertNull($view->getPaginatorOption(PaginatorInterface::SORT_FIELD_WHITELIST));
+        $this->assertNull($view->getPaginatorOption(PaginatorInterface::SORT_FIELD_ALLOW_LIST));
 
         // now customize
         $options = [
@@ -37,16 +37,16 @@ final class AbstractPaginationTest extends BaseTestCase
             PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 's',
             PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'd',
             PaginatorInterface::DISTINCT => false,
-            PaginatorInterface::SORT_FIELD_WHITELIST => ['a.f', 'a.d']
+            PaginatorInterface::SORT_FIELD_ALLOW_LIST => ['a.f', 'a.d']
         ];
 
         $view = $p->paginate($items, 1, 10, $options);
 
-        $this->assertEquals('p', $view->getPaginatorOption(PaginatorInterface::PAGE_PARAMETER_NAME));
-        $this->assertEquals('s', $view->getPaginatorOption(PaginatorInterface::SORT_FIELD_PARAMETER_NAME));
-        $this->assertEquals('d', $view->getPaginatorOption(PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME));
-        $this->assertFalse($view->getPaginatorOption(PaginatorInterface::DISTINCT));
-        $this->assertEquals(['a.f', 'a.d'], $view->getPaginatorOption(PaginatorInterface::SORT_FIELD_WHITELIST));
+        self::assertEquals('p', $view->getPaginatorOption(PaginatorInterface::PAGE_PARAMETER_NAME));
+        self::assertEquals('s', $view->getPaginatorOption(PaginatorInterface::SORT_FIELD_PARAMETER_NAME));
+        self::assertEquals('d', $view->getPaginatorOption(PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME));
+        self::assertFalse($view->getPaginatorOption(PaginatorInterface::DISTINCT));
+        self::assertEquals(['a.f', 'a.d'], $view->getPaginatorOption(PaginatorInterface::SORT_FIELD_ALLOW_LIST));
 
         // change default paginator options
         $p->setDefaultPaginatorOptions([
@@ -56,9 +56,9 @@ final class AbstractPaginationTest extends BaseTestCase
         ]);
         $view = $p->paginate($items, 1, 10);
 
-        $this->assertEquals('pg', $view->getPaginatorOption(PaginatorInterface::PAGE_PARAMETER_NAME));
-        $this->assertEquals('srt', $view->getPaginatorOption(PaginatorInterface::SORT_FIELD_PARAMETER_NAME));
-        $this->assertEquals('dir', $view->getPaginatorOption(PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME));
-        $this->assertTrue($view->getPaginatorOption(PaginatorInterface::DISTINCT));
+        self::assertEquals('pg', $view->getPaginatorOption(PaginatorInterface::PAGE_PARAMETER_NAME));
+        self::assertEquals('srt', $view->getPaginatorOption(PaginatorInterface::SORT_FIELD_PARAMETER_NAME));
+        self::assertEquals('dir', $view->getPaginatorOption(PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME));
+        self::assertTrue($view->getPaginatorOption(PaginatorInterface::DISTINCT));
     }
 }

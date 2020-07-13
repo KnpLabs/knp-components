@@ -38,8 +38,12 @@ class PropelQuerySubscriber implements EventSubscriberInterface
                                 ? 'asc' : 'desc';
 
                 if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-                    if (!in_array($this->request->query->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-                        throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($sortField)}] this field is not in whitelist");
+                    trigger_deprecation('knplabs/knp-components', '2.4.0', \sprintf('%s option is deprecated. Use %s option instead.', PaginatorInterface::SORT_FIELD_WHITELIST, PaginatorInterface::SORT_FIELD_ALLOW_LIST));
+                    $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST] = $event->options[PaginatorInterface::SORT_FIELD_WHITELIST];
+                }
+                if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+                    if (!in_array($this->request->query->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+                        throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($sortField)}] this field is not in allow list.");
                     }
                 }
 

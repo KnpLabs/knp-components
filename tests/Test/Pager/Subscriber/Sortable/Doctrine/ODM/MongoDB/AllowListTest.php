@@ -12,12 +12,12 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Document\Article;
 use Test\Tool\BaseTestCaseMongoODM;
 
-final class WhitelistTest extends BaseTestCaseMongoODM
+final class AllowListTest extends BaseTestCaseMongoODM
 {
     /**
      * @test
      */
-    public function shouldWhitelistSortableFields(): void
+    public function shouldAllowListSortableFields(): void
     {
         $this->expectException(\UnexpectedValueException::class);
 
@@ -29,22 +29,22 @@ final class WhitelistTest extends BaseTestCaseMongoODM
 
         $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
-        $sortFieldWhitelist = ['title'];
-        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOW_LIST));
+        $sortFieldAllowList = ['title'];
 
         $items = \array_values($view->getItems());
-        $this->assertCount(4, $items);
-        $this->assertEquals('autumn', $items[0]->getTitle());
+        self::assertCount(4, $items);
+        self::assertEquals('autumn', $items[0]->getTitle());
 
         $requestStack = $this->createRequestStack(['sort' => 'id', 'direction' => 'asc']);
         $p = new Paginator(null, $requestStack);
-        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
+        $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOW_LIST));
     }
 
     /**
      * @test
      */
-    public function shouldSortWithoutSpecificWhitelist(): void
+    public function shouldSortWithoutSpecificAllowList(): void
     {
         $this->populate();
         $query = $this->dm
