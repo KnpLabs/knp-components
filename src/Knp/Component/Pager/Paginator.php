@@ -136,7 +136,7 @@ class Paginator implements PaginatorInterface
         }
         if ($page > ceil($itemsEvent->count / $limit)) {
             $pageOutOfRangeOption = $options[self::PAGE_OUT_OF_RANGE] ?? $this->defaultOptions[self::PAGE_OUT_OF_RANGE];
-            if ($pageOutOfRangeOption === self::PAGE_OUT_OF_RANGE_FIX) {
+            if ($pageOutOfRangeOption === self::PAGE_OUT_OF_RANGE_FIX && $itemsEvent->count > 0) {
                 // replace page number out of range with max page
                 return $this->paginate($target, ceil($itemsEvent->count / $limit), $limit, $options);
             }
