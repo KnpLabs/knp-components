@@ -37,10 +37,6 @@ class QuerySubscriber implements EventSubscriberInterface
             if (null !== $sortField && $this->request->query->has($sortField)) {
                 $dir = null !== $sortDir && $this->request->query->has($sortDir) && strtolower($this->request->query->get($sortDir)) === 'asc' ? 'asc' : 'desc';
 
-                if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-                    trigger_deprecation('knplabs/knp-components', '2.4.0', \sprintf('%s option is deprecated. Use %s option instead.', PaginatorInterface::SORT_FIELD_WHITELIST, PaginatorInterface::SORT_FIELD_ALLOW_LIST));
-                    $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST] = $event->options[PaginatorInterface::SORT_FIELD_WHITELIST];
-                }
                 if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
                     if (!in_array($this->request->query->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
                         throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($sortField)}] this field is not in allow list.");

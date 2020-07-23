@@ -9,12 +9,11 @@ use Doctrine\ODM\PHPCR\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\PHPCR\Query\Query;
 use Jackalope\RepositoryFactoryDoctrineDBAL;
 use Jackalope\Transport\DoctrineDBAL\RepositorySchema;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Base test case contains common mock objects
  */
-abstract class BaseTestCasePHPCRODM extends TestCase
+abstract class BaseTestCasePHPCRODM extends BaseTestCase
 {
     /**
      * @var DocumentManager

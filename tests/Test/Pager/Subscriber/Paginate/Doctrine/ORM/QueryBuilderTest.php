@@ -2,7 +2,6 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
-use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Article;
 use Test\Tool\BaseTestCaseORM;
 

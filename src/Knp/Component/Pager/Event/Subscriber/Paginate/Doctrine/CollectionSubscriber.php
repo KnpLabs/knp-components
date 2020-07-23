@@ -2,7 +2,6 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine;
 
-use ArrayObject;
 use Doctrine\Common\Collections\Collection;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

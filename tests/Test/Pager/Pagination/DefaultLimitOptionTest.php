@@ -2,7 +2,6 @@
 
 namespace Test\Pager\Pagination;
 
-use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\PaginatorInterface;
 use Test\Tool\BaseTestCase;
 
@@ -13,7 +12,7 @@ final class DefaultLimitOptionTest extends BaseTestCase
      */
     public function shouldBeAbleToHandleNullLimit(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $items = \range(1, 23);
         $view = $p->paginate($items, 2, null, []);
         $pagination = $view->getPaginationData();
@@ -26,7 +25,7 @@ final class DefaultLimitOptionTest extends BaseTestCase
      */
     public function shouldBeAbleToOverwriteDefaultLimit(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $items = \range(1, 23);
         $p->setDefaultPaginatorOptions([PaginatorInterface::DEFAULT_LIMIT => 8]);
         $view = $p->paginate($items);

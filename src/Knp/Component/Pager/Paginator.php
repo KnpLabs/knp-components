@@ -2,20 +2,8 @@
 
 namespace Knp\Component\Pager;
 
-use Knp\Component\Pager\Event;
-<<<<<<< HEAD
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
-use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
 use Knp\Component\Pager\Exception\PageNumberOutOfRangeException;
 use Knp\Component\Pager\Pagination\PaginationInterface;
-use Symfony\Component\EventDispatcher\Event as BaseEvent;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\EventDispatcher\LegacyEventDispatcherProxy;
-=======
-use Knp\Component\Pager\Pagination\PaginationInterface;
->>>>>>> [WIP]
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -68,6 +56,7 @@ final class Paginator implements PaginatorInterface
     /**
      * Override the default paginator options
      * to be reused for paginations
+     */ 
     public function setDefaultPaginatorOptions(array $options): void
     {
         $this->defaultOptions = \array_merge($this->defaultOptions, $options);
@@ -76,7 +65,7 @@ final class Paginator implements PaginatorInterface
     public function paginate($target, int $page = 1, int $limit = null, array $options = []): PaginationInterface
     {
         $limit = $limit ?? $this->defaultOptions[self::DEFAULT_LIMIT];
-        if ($limit <= 0 or $page <= 0) {
+        if ($limit <= 0 || $page <= 0) {
             throw new \LogicException("Invalid item per page number. Limit: $limit and Page: $page, must be positive non-zero integers");
         }
 
@@ -84,19 +73,18 @@ final class Paginator implements PaginatorInterface
         $options = \array_merge($this->defaultOptions, $options);
 
         // normalize default sort field
-        if (isset($options[self::DEFAULT_SORT_FIELD_NAME]) && is_array($options[self::DEFAULT_SORT_FIELD_NAME])) {
-            $options[self::DEFAULT_SORT_FIELD_NAME] = implode('+', $options[self::DEFAULT_SORT_FIELD_NAME]);
+        if (isset($options[PaginatorInterface::DEFAULT_SORT_FIELD_NAME]) && is_array($options[PaginatorInterface::DEFAULT_SORT_FIELD_NAME])) {
+            $options[PaginatorInterface::DEFAULT_SORT_FIELD_NAME] = implode('+', $options[PaginatorInterface::DEFAULT_SORT_FIELD_NAME]);
         }
 
         $request = null === $this->requestStack ? Request::createFromGlobals() : $this->requestStack->getCurrentRequest();
 
         // default sort field and direction are set based on options (if available)
-        $request = $this->getRequest();
-        if (isset($options[self::DEFAULT_SORT_FIELD_NAME]) && !$request->query->has($options[self::SORT_FIELD_PARAMETER_NAME])) {
-           $request->query->set($options[self::SORT_FIELD_PARAMETER_NAME], $options[self::DEFAULT_SORT_FIELD_NAME]);
+        if (isset($options[PaginatorInterface::DEFAULT_SORT_FIELD_NAME]) && !$request->query->has($options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])) {
+           $request->query->set($options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME], $options[PaginatorInterface::DEFAULT_SORT_FIELD_NAME]);
 
-            if (!$request->query->has($options[self::SORT_DIRECTION_PARAMETER_NAME])) {
-                $request->query->set($options[self::SORT_DIRECTION_PARAMETER_NAME], $options[self::DEFAULT_SORT_DIRECTION] ?? 'asc');
+            if (!$request->query->has($options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME])) {
+                $request->query->set($options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME], $options[PaginatorInterface::DEFAULT_SORT_DIRECTION] ?? 'asc');
             }
         }
 
@@ -112,12 +100,12 @@ final class Paginator implements PaginatorInterface
             throw new \RuntimeException('One of listeners must count and slice given target');
         }
         if ($page > ceil($itemsEvent->count / $limit)) {
-            $pageOutOfRangeOption = $options[self::PAGE_OUT_OF_RANGE] ?? $this->defaultOptions[self::PAGE_OUT_OF_RANGE];
-            if ($pageOutOfRangeOption === self::PAGE_OUT_OF_RANGE_FIX && $itemsEvent->count > 0) {
+            $pageOutOfRangeOption = $options[PaginatorInterface::PAGE_OUT_OF_RANGE] ?? $this->defaultOptions[PaginatorInterface::PAGE_OUT_OF_RANGE];
+            if ($pageOutOfRangeOption === PaginatorInterface::PAGE_OUT_OF_RANGE_FIX && $itemsEvent->count > 0) {
                 // replace page number out of range with max page
                 return $this->paginate($target, ceil($itemsEvent->count / $limit), $limit, $options);
             }
-            if ($pageOutOfRangeOption === self::PAGE_OUT_OF_RANGE_THROW_EXCEPTION) {
+            if ($pageOutOfRangeOption === PaginatorInterface::PAGE_OUT_OF_RANGE_THROW_EXCEPTION) {
                 throw new PageNumberOutOfRangeException("Page number: $page is out of range.");
             }
         }
@@ -144,10 +132,5 @@ final class Paginator implements PaginatorInterface
         $this->eventDispatcher->dispatch($afterEvent, 'knp_pager.after');
 
         return $paginationView;
-    }
-
-    private function getRequest(): Request
-    {
-        return $this->request;
     }
 }

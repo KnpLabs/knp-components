@@ -19,5 +19,6 @@ final class PaginationSubscriber implements EventSubscriberInterface
     {
         $e->setPagination(new SlidingPagination);
         $e->stopPropagation();
+        #dump($e);
     }
 }
