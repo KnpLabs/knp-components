@@ -4,7 +4,6 @@ namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
-use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Composite;
 use Test\Tool\BaseTestCaseORM;
 

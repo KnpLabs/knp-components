@@ -2,7 +2,6 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ODM\PHPCR;
 
-use Knp\Component\Pager\Paginator;
 use Test\Fixture\Document\PHPCR\Article;
 use Test\Tool\BaseTestCasePHPCRODM;
 

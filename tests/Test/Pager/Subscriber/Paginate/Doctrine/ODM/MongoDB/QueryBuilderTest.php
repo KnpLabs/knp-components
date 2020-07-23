@@ -2,7 +2,6 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ODM\MongoDB;
 
-use Knp\Component\Pager\Paginator;
 use Test\Fixture\Document\Article;
 use Test\Tool\BaseTestCaseMongoODM;
 

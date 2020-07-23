@@ -2,13 +2,7 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ODM\MongoDB;
 
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
-use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ODM\MongoDB\QuerySubscriber as Sortable;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Pagination\SlidingPagination;
-use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\PaginatorInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Document\Article;
 use Test\Tool\BaseTestCaseMongoODM;
 
@@ -30,7 +24,7 @@ final class AllowListTest extends BaseTestCaseMongoODM
         $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'asc']);
         $p = $this->getPaginatorInstance($requestStack);
         $sortFieldAllowList = ['title'];
-        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOWLIST));
 
         $items = \array_values($view->getItems());
         self::assertCount(4, $items);
@@ -38,7 +32,7 @@ final class AllowListTest extends BaseTestCaseMongoODM
 
         $requestStack = $this->createRequestStack(['sort' => 'id', 'direction' => 'asc']);
         $p = $this->getPaginatorInstance($requestStack);
-        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOWLIST));
     }
 
     /**

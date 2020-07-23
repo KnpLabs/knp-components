@@ -2,7 +2,6 @@
 
 namespace Test\Pager\Pagination;
 
-use Knp\Component\Pager\Paginator;
 use Test\Tool\BaseTestCase;
 
 final class SlidingTest extends BaseTestCase
