@@ -13,13 +13,11 @@ interface PaginatorInterface
     public const DEFAULT_SORT_DIRECTION = 'defaultSortDirection';
     public const DEFAULT_FILTER_FIELDS = 'defaultFilterFields';
     public const SORT_FIELD_PARAMETER_NAME = 'sortFieldParameterName';
-    public const SORT_FIELD_WHITELIST = 'sortFieldWhitelist';   // deprecated
     public const SORT_FIELD_ALLOW_LIST = 'sortFieldAllowList';
     public const SORT_DIRECTION_PARAMETER_NAME = 'sortDirectionParameterName';
     public const PAGE_PARAMETER_NAME = 'pageParameterName';
     public const FILTER_FIELD_PARAMETER_NAME = 'filterFieldParameterName';
     public const FILTER_VALUE_PARAMETER_NAME = 'filterValueParameterName';
-    public const FILTER_FIELD_WHITELIST = 'filterFieldWhitelist';   // deprecated
     public const FILTER_FIELD_ALLOW_LIST = 'filterFieldAllowList';
     public const DISTINCT = 'distinct';
     public const PAGE_OUT_OF_RANGE = 'pageOutOfRange';

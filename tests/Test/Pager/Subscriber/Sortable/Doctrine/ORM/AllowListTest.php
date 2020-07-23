@@ -2,7 +2,6 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ORM;
 
-use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\PaginatorInterface;
 use Test\Fixture\Entity\Article;
 use Test\Tool\BaseTestCaseORM;
@@ -22,7 +21,7 @@ final class AllowListTest extends BaseTestCaseORM
         $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
         $p = $this->getPaginatorInstance($requestStack);
         $sortFieldAllowList = ['a.title'];
-        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_WHITELIST));
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOW_LIST));
 
         $items = $view->getItems();
         self::assertCount(4, $items);

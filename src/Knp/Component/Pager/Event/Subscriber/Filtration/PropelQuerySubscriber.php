@@ -37,14 +37,10 @@ class PropelQuerySubscriber implements EventSubscriberInterface
                 $columns = explode(',', $columns);
             }
             $columns = (array) $columns;
-            if (isset($event->options[PaginatorInterface::FILTER_FIELD_WHITELIST])) {
-                trigger_deprecation('knplabs/knp-components', '2.4.0', \sprintf('%s option is deprecated. Use %s option instead.', PaginatorInterface::FILTER_FIELD_WHITELIST, PaginatorInterface::FILTER_FIELD_ALLOW_LIST));
-                $event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST] = $event->options[PaginatorInterface::FILTER_FIELD_WHITELIST];
-            }
             if (isset($event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
                 foreach ($columns as $column) {
                     if (!in_array($column, $event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
-                        throw new \UnexpectedValueException("Cannot filter by: [{$column}] this field is not in whitelist");
+                        throw new \UnexpectedValueException("Cannot filter by: [{$column}] this field is not in allow list");
                     }
                 }
             }
