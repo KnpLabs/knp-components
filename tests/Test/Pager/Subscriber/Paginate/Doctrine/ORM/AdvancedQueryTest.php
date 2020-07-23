@@ -2,13 +2,12 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
-use Test\Tool\BaseTestCaseORM;
-use Knp\Component\Pager\Paginator;
+use Doctrine\ORM\Query;
 use Test\Fixture\Entity\Shop\Product;
 use Test\Fixture\Entity\Shop\Tag;
-use Doctrine\ORM\Query;
+use Test\Tool\BaseTestCaseORM;
 
-class AdvancedQueryTest extends BaseTestCaseORM
+final class AdvancedQueryTest extends BaseTestCaseORM
 {
     /**
      * Its not possible to make distinction and predict
@@ -29,7 +28,7 @@ class AdvancedQueryTest extends BaseTestCaseORM
 SQL;
         $q = $this->em->createQuery($dql);
 
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $this->startQueryLog();
         $view = $p->paginate($q, 1, 2);
     }
@@ -50,7 +49,7 @@ SQL;
 SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($q, 1, 10, ['wrap-queries' => true]);
         $this->assertCount(3, $view);
     }
@@ -69,7 +68,7 @@ SQL;
           p.tags t
 SQL;
         $q = $this->em->createQuery($dql);
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($q, 1, 10);
         $this->assertCount(3, $view);
         $items = $view->getItems();
@@ -82,9 +81,6 @@ SQL;
      */
     public function shouldBeAbleToPaginateCaseBasedQuery(): void
     {
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.2.0-DEV', '<')) {
-            $this->markTestSkipped('Only recent orm version can test against this query.');
-        }
         $this->populate();
 
         $dql = <<<SQL
@@ -113,7 +109,7 @@ SQL;
         $q = $this->em->createQuery($dql);
         $q->setParameter('keyword', '%Star%');
         $q->setHydrationMode(\Doctrine\ORM\Query::HYDRATE_ARRAY);
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($q, 1, 10);
         $this->assertCount(1, $view);
         $items = $view->getItems();
@@ -138,7 +134,7 @@ SQL;
 SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($q, 1, 10, ['wrap-queries' => true]);
         $this->assertCount(3, $view);
     }

@@ -2,10 +2,10 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ODM\MongoDB;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Knp\Component\Pager\Event\ItemsEvent;
 use Doctrine\ODM\MongoDB\Query\Query;
+use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class QuerySubscriber implements EventSubscriberInterface
@@ -30,19 +30,20 @@ class QuerySubscriber implements EventSubscriberInterface
 
         if ($event->target instanceof Query) {
             $event->setCustomPaginationParameter('sorted', true);
+            $sortField = $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME];
+            $sortDir = $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME];
+            if (null !== $sortField && $this->request->query->has($sortField)) {
+                $field = $this->request->query->get($sortField);
+                $dir = null !== $sortDir && strtolower($this->request->query->get($sortDir)) === 'asc' ? 1 : -1;
 
-            if ($this->request->query->has($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])) {
-                $field = $this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]);
-                $dir = strtolower($this->request->query->get($event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME])) == 'asc' ? 1 : -1;
-
-                if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-                    if (!in_array($field, $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-                        throw new \UnexpectedValueException("Cannot sort by: [{$field}] this field is not in whitelist");
+                if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+                    if (!in_array($field, $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+                        throw new \UnexpectedValueException("Cannot sort by: [{$field}] this field is not in allow list.");
                     }
                 }
                 static $reflectionProperty;
                 if (is_null($reflectionProperty)) {
-                    $reflectionClass = new \ReflectionClass('Doctrine\MongoDB\Query\Query');
+                    $reflectionClass = new \ReflectionClass(Query::class);
                     $reflectionProperty = $reflectionClass->getProperty('query');
                     $reflectionProperty->setAccessible(true);
                 }
@@ -50,7 +51,7 @@ class QuerySubscriber implements EventSubscriberInterface
 
                 // handle multi sort
                 $sortFields = explode('+', $field);
-                $sortOption = array();
+                $sortOption = [];
                 foreach ($sortFields as $sortField) {
                     $sortOption[$sortField] = $dir;
                 }

@@ -2,20 +2,20 @@
 
 namespace Test\Pager\Subscriber\Filtration\Doctrine\ORM;
 
-use Knp\Component\Pager\PaginatorInterface;
-use Test\Tool\BaseTestCaseORM;
-use Knp\Component\Pager\Paginator;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber as Filtration;
+use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
+use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Entity\Article;
+use Test\Tool\BaseTestCaseORM;
 
-class WhitelistTest extends BaseTestCaseORM
+final class AllowListTest extends BaseTestCaseORM
 {
     /**
      * @test
      */
-    public function shouldWhitelistFiltrationFields(): void
+    public function shouldAllowListFiltrationFields(): void
     {
         $this->expectException(\UnexpectedValueException::class);
 
@@ -28,22 +28,22 @@ class WhitelistTest extends BaseTestCaseORM
         $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => 'summer']);
         $p = new Paginator($dispatcher, $requestStack);
 
-        $filterFieldWhitelist = ['a.invalid'];
-        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
+        $filterFieldAllowList = ['a.invalid'];
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::FILTER_FIELD_ALLOW_LIST));
 
         $items = $view->getItems();
-        $this->assertCount(1, $items);
-        $this->assertEquals('summer', $items[0]->getTitle());
+        self::assertCount(1, $items);
+        self::assertEquals('summer', $items[0]->getTitle());
 
         $requestStack = $this->createRequestStack(['filterParam' => 'a.id', 'filterValue' => 'summer']);
         $p = new Paginator($dispatcher, $requestStack);
-        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::FILTER_FIELD_WHITELIST));
+        $p->paginate($query, 1, 10, \compact(PaginatorInterface::FILTER_FIELD_ALLOW_LIST));
     }
 
     /**
      * @test
      */
-    public function shouldFilterWithoutSpecificWhitelist(): void
+    public function shouldFilterWithoutSpecificAllowList(): void
     {
         $this->populate();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
@@ -56,13 +56,13 @@ class WhitelistTest extends BaseTestCaseORM
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();
-        $this->assertEquals('autumn', $items[0]->getTitle());
+        self::assertEquals('autumn', $items[0]->getTitle());
     }
 
     /**
      * @test
      */
-    public function shouldFilterWithoutSpecificWhitelist2(): void
+    public function shouldFilterWithoutSpecificAllowList2(): void
     {
         $this->populate();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
@@ -76,7 +76,7 @@ class WhitelistTest extends BaseTestCaseORM
         $view = $p->paginate($query);
 
         $items = $view->getItems();
-        $this->assertEquals(0, count($items));
+        self::assertCount(0, $items);
     }
 
     protected function getUsedEntityFixtures(): array

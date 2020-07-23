@@ -2,12 +2,12 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Knp\Component\Pager\Event\ItemsEvent;
-use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\Query\OrderByWalker;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\Helper as QueryHelper;
 use Doctrine\ORM\Query;
+use Knp\Component\Pager\Event\ItemsEvent;
+use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\Helper as QueryHelper;
+use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\Query\OrderByWalker;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class QuerySubscriber implements EventSubscriberInterface
@@ -32,19 +32,24 @@ class QuerySubscriber implements EventSubscriberInterface
 
         if ($event->target instanceof Query) {
             $event->setCustomPaginationParameter('sorted', true);
+            $sortField = $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME];
+            $sortDir = $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME];
+            if (null !== $sortField && $this->request->query->has($sortField)) {
+                $dir = null !== $sortDir && $this->request->query->has($sortDir) && strtolower($this->request->query->get($sortDir)) === 'asc' ? 'asc' : 'desc';
 
-            if ($this->request->query->has($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])) {
-                $dir = $this->request->query->has($event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]) && strtolower($this->request->query->get($event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME])) === 'asc' ? 'asc' : 'desc';
-
-                if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-                    if (!in_array($this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]), $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-                        throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])}] this field is not in whitelist");
+                if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+                    if (!in_array($this->request->query->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+                        throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($sortField)}] this field is not in allow list.");
                     }
                 }
 
-                $sortFieldParameterNames = $this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]);
+                $sortFieldParameterNames = $this->request->query->get($sortField);
                 $fields = [];
                 $aliases = [];
+                if (!is_string($sortFieldParameterNames)) {
+                    throw new \UnexpectedValueException('Cannot sort with array parameter.');
+                }
+
                 foreach (explode('+', $sortFieldParameterNames) as $sortFieldParameterName) {
                     $parts = explode('.', $sortFieldParameterName, 2);
 

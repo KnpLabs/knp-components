@@ -4,11 +4,11 @@ namespace Test\Pager\Subscriber\Sortable;
 
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Sortable\ArraySubscriber;
-use Knp\Component\Pager\Fixtures\TestItem;
-use Test\Tool\BaseTestCase;
 use Knp\Component\Pager\PaginatorInterface;
+use Test\Fixture\TestItem;
+use Test\Tool\BaseTestCase;
 
-class ArraySubscriberTest extends BaseTestCase
+final class ArraySubscriberTest extends BaseTestCase
 {
     /**
      * @test
@@ -57,7 +57,7 @@ class ArraySubscriberTest extends BaseTestCase
             PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort',
             PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord',
             'sortFunction' => static function (&$target, $sortField, $sortDirection): void {
-                usort($target, static function($object1, $object2) use ($sortField, $sortDirection) {
+                \usort($target, static function ($object1, $object2) use ($sortField, $sortDirection) {
                     if ($object1[$sortField] === $object2[$sortField]) {
                         return 0;
                     }
@@ -80,23 +80,22 @@ class ArraySubscriberTest extends BaseTestCase
         $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals('hot', $array[0]['name']);
-
     }
 
     /**
      * @test
      */
-    public function shouldSortEvenWhenTheSortPropertyIsNotAccessible()
+    public function shouldSortEvenWhenTheSortPropertyIsNotAccessible(): void
     {
-        $array = array(
-            array('entry' => array('sortProperty' => 2)),
-            array('entry' => array()),
-            array('entry' => array('sortProperty' => 1)),
-        );
+        $array = [
+            ['entry' => ['sortProperty' => 2]],
+            ['entry' => []],
+            ['entry' => ['sortProperty' => 1]],
+        ];
 
         $itemsEvent = new ItemsEvent(0, 10);
         $itemsEvent->target = &$array;
-        $itemsEvent->options = array(PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort', PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord');
+        $itemsEvent->options = [PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort', PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord'];
 
         // test asc sort
         $requestStack = $this->createRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'asc']);

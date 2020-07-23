@@ -3,21 +3,15 @@
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ODM\MongoDB;
 
 use Knp\Component\Pager\PaginatorInterface;
-use Test\Tool\BaseTestCaseMongoODM;
-use Knp\Component\Pager\Paginator;
-use Knp\Component\Pager\Pagination\SlidingPagination;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
-use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ODM\MongoDB\QuerySubscriber as Sortable;
 use Test\Fixture\Document\Article;
+use Test\Tool\BaseTestCaseMongoODM;
 
-class WhitelistTest extends BaseTestCaseMongoODM
+final class AllowListTest extends BaseTestCaseMongoODM
 {
     /**
      * @test
      */
-    public function shouldWhitelistSortableFields(): void
+    public function shouldAllowListSortableFields(): void
     {
         $this->expectException(\UnexpectedValueException::class);
 
@@ -28,23 +22,23 @@ class WhitelistTest extends BaseTestCaseMongoODM
         ;
 
         $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'asc']);
-        $p = new Paginator(null, $requestStack);
-        $sortFieldWhitelist = ['title'];
-        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
+        $p = $this->getPaginatorInstance($requestStack);
+        $sortFieldAllowList = ['title'];
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOWLIST));
 
-        $items = array_values($view->getItems());
-        $this->assertCount(4, $items);
-        $this->assertEquals('autumn', $items[0]->getTitle());
+        $items = \array_values($view->getItems());
+        self::assertCount(4, $items);
+        self::assertEquals('autumn', $items[0]->getTitle());
 
         $requestStack = $this->createRequestStack(['sort' => 'id', 'direction' => 'asc']);
-        $p = new Paginator(null, $requestStack);
-        $view = $p->paginate($query, 1, 10, compact(PaginatorInterface::SORT_FIELD_WHITELIST));
+        $p = $this->getPaginatorInstance($requestStack);
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOWLIST));
     }
 
     /**
      * @test
      */
-    public function shouldSortWithoutSpecificWhitelist(): void
+    public function shouldSortWithoutSpecificAllowList(): void
     {
         $this->populate();
         $query = $this->dm
@@ -53,17 +47,17 @@ class WhitelistTest extends BaseTestCaseMongoODM
         ;
 
         $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'asc']);
-        $p = new Paginator(null, $requestStack);
+        $p = $this->getPaginatorInstance($requestStack);
         $view = $p->paginate($query, 1, 10);
 
-        $items = array_values($view->getItems());
+        $items = \array_values($view->getItems());
         $this->assertEquals('autumn', $items[0]->getTitle());
 
         $requestStack = $this->createRequestStack(['sort' => 'id', 'direction' => 'asc']);
-        $p = new Paginator(null, $requestStack);
+        $p = $this->getPaginatorInstance($requestStack);
         $view = $p->paginate($query, 1, 10);
 
-        $items = array_values($view->getItems());
+        $items = \array_values($view->getItems());
         $this->assertEquals('summer', $items[0]->getTitle());
     }
 

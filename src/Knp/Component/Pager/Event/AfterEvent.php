@@ -3,11 +3,12 @@
 namespace Knp\Component\Pager\Event;
 
 use Knp\Component\Pager\Pagination\PaginationInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Specific Event class for paginator
  */
-class AfterEvent extends Event
+final class AfterEvent extends Event
 {
     private $pagination;
 

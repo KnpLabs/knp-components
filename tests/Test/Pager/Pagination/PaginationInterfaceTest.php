@@ -5,7 +5,7 @@ namespace Test\Pager\Pagination;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Test\Tool\BaseTestCase;
 
-class PaginationInterfaceTest extends BaseTestCase
+final class PaginationInterfaceTest extends BaseTestCase
 {
     private $reflection;
 
@@ -17,7 +17,7 @@ class PaginationInterfaceTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldBeCountable(): void
+    public function shouldBeCountable(): void
     {
         $this->assertTrue($this->reflection->implementsInterface(\Countable::class));
     }
@@ -25,7 +25,7 @@ class PaginationInterfaceTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldBeTraversable(): void
+    public function shouldBeTraversable(): void
     {
         $this->assertTrue($this->reflection->implementsInterface(\Traversable::class));
         $this->assertFalse($this->reflection->implementsInterface(\Iterator::class));
@@ -35,7 +35,7 @@ class PaginationInterfaceTest extends BaseTestCase
     /**
      * @test
      */
-    function shouldBeArrayAccessible(): void
+    public function shouldBeArrayAccessible(): void
     {
         $this->assertTrue($this->reflection->implementsInterface(\ArrayAccess::class));
     }

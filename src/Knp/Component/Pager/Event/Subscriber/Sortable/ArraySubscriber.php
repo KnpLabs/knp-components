@@ -3,12 +3,12 @@
 namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 
 use Knp\Component\Pager\Event\ItemsEvent;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use Knp\Component\Pager\PaginatorInterface;
 
 class ArraySubscriber implements EventSubscriberInterface
 {
@@ -53,19 +53,19 @@ class ArraySubscriber implements EventSubscriberInterface
         if (!empty($customPaginationParameters['sorted']) ) {
             return;
         }
-
-        if (!is_array($event->target) || !$this->request->query->has($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])) {
+        $sortField = $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME];
+        if (!is_array($event->target) || null === $sortField || !$this->request->query->has($sortField)) {
             return;
         }
 
         $event->setCustomPaginationParameter('sorted', true);
 
-        if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST]) && !in_array($this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]), $event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-            throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])}] this field is not in whitelist");
+        if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST]) && !in_array($this->request->query->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+            throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($sortField)}] this field is not in allow list.");
         }
 
         $sortFunction = isset($event->options['sortFunction']) ? $event->options['sortFunction'] : [$this, 'proxySortFunction'];
-        $sortField = $this->request->query->get($event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME]);
+        $sortField = $this->request->query->get($sortField);
 
         // compatibility layer
         if ($sortField[0] === '.') {
@@ -92,7 +92,8 @@ class ArraySubscriber implements EventSubscriberInterface
         return 'desc';
     }
 
-    private function proxySortFunction(&$target, $sortField, $sortDirection) {
+    private function proxySortFunction(&$target, $sortField, $sortDirection): bool
+    {
         $this->currentSortingField = $sortField;
         $this->sortDirection = $sortDirection;
 
@@ -105,7 +106,7 @@ class ArraySubscriber implements EventSubscriberInterface
      *
      * @return int
      */
-    private function sortFunction($object1, $object2)
+    private function sortFunction($object1, $object2): int
     {
         if (!$this->propertyAccessor) {
             throw new \UnexpectedValueException('You need symfony/property-access component to use this sorting function');
@@ -142,12 +143,12 @@ class ArraySubscriber implements EventSubscriberInterface
         return ($fieldValue1 > $fieldValue2 ? 1 : -1) * $this->getSortCoefficient();
     }
 
-    private function getSortCoefficient()
+    private function getSortCoefficient(): int
     {
         return $this->sortDirection === 'asc' ? 1 : -1;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             'knp_pager.items' => ['items', 1]

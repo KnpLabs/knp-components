@@ -2,11 +2,10 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ODM\PHPCR;
 
-use Knp\Component\Pager\Paginator;
 use Test\Fixture\Document\PHPCR\Article;
 use Test\Tool\BaseTestCasePHPCRODM;
 
-class QueryBuilderSubscriberTest extends BaseTestCasePHPCRODM
+final class QueryBuilderSubscriberTest extends BaseTestCasePHPCRODM
 {
     /**
      * @test
@@ -18,7 +17,7 @@ class QueryBuilderSubscriberTest extends BaseTestCasePHPCRODM
         $qb = $this->dm->createQueryBuilder();
         $qb->fromDocument(Article::class, 'a');
 
-        $p = new Paginator();
+        $p = $this->getPaginatorInstance();
         $pagination = $p->paginate($qb, 1, 2);
         $this->assertEquals(1, $pagination->getCurrentPageNumber());
         $this->assertEquals(2, $pagination->getItemNumberPerPage());

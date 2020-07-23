@@ -17,9 +17,9 @@ class QuerySubscriber implements EventSubscriberInterface
      */
     private $request;
 
-    public function __construct(Request $request)
+    public function __construct(?Request $request)
     {
-        $this->request = $request;
+        $this->request = $request ?? Request::createFromGlobals();
     }
 
     public function items(ItemsEvent $event): void
@@ -45,10 +45,10 @@ class QuerySubscriber implements EventSubscriberInterface
                 $columns = explode(',', $columns);
             }
             $columns = (array) $columns;
-            if (isset($event->options[PaginatorInterface::FILTER_FIELD_WHITELIST])) {
+            if (isset($event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
                 foreach ($columns as $column) {
-                    if (!in_array($column, $event->options[PaginatorInterface::FILTER_FIELD_WHITELIST])) {
-                        throw new \UnexpectedValueException("Cannot filter by: [{$column}] this field is not in whitelist");
+                    if (!in_array($column, $event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
+                        throw new \UnexpectedValueException("Cannot filter by: [{$column}] this field is not in allow list");
                     }
                 }
             }

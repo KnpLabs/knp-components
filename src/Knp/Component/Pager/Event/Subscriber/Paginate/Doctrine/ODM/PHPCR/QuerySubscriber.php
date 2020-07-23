@@ -3,8 +3,8 @@
 namespace Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ODM\PHPCR;
 
 use Doctrine\ODM\PHPCR\Query\Query;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * @author Martin Hasoň <martin.hason@gmail.com>

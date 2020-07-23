@@ -1,14 +1,16 @@
 <?php
 
-use Test\Tool\BaseTestCase;
+namespace Test\Pager\Subscriber\Paginate\Doctrine;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\CollectionSubscriber;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\CollectionSubscriber;
-use Doctrine\Common\Collections\ArrayCollection;
+use Test\Tool\BaseTestCase;
 
-class CollectionTest extends BaseTestCase
+final class CollectionTest extends BaseTestCase
 {
     /**
      * @test
@@ -32,6 +34,30 @@ class CollectionTest extends BaseTestCase
     /**
      * @test
      */
+    public function shouldLoopOverPagination(): void
+    {
+        $dispatcher = new EventDispatcher;
+        $dispatcher->addSubscriber(new CollectionSubscriber);
+        $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
+        $p = new Paginator($dispatcher);
+
+        $items = new ArrayCollection(['first', 'second']);
+        $view = $p->paginate($items, 1, 10);
+
+        $counter = 0;
+
+        foreach ($view as $item) {
+            $this->assertEquals($items[$counter], $item);
+
+            ++$counter;
+        }
+
+        $this->assertEquals(2, $counter);
+    }
+
+    /**
+     * @test
+     */
     public function shouldSlicePaginateAnArray(): void
     {
         $dispatcher = new EventDispatcher;
@@ -39,7 +65,7 @@ class CollectionTest extends BaseTestCase
         $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
         $p = new Paginator($dispatcher);
 
-        $items = new ArrayCollection(range('a', 'u'));
+        $items = new ArrayCollection(\range('a', 'u'));
         $view = $p->paginate($items, 2, 10);
 
         $this->assertEquals(2, $view->getCurrentPageNumber());
@@ -54,7 +80,7 @@ class CollectionTest extends BaseTestCase
     public function shouldSupportPaginateStrategySubscriber(): void
     {
         $items = new ArrayCollection(['first', 'second']);
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($items, 1, 10);
         $this->assertInstanceOf(PaginationInterface::class, $view);
     }

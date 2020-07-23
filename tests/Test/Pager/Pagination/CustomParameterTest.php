@@ -1,12 +1,14 @@
 <?php
 
-use Test\Tool\BaseTestCase;
+namespace Test\Pager\Pagination;
+
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 use Test\Mock\CustomParameterSubscriber;
+use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
+use Test\Tool\BaseTestCase;
 
-class CustomParameterTest extends BaseTestCase
+final class CustomParameterTest extends BaseTestCase
 {
     /**
      * @test

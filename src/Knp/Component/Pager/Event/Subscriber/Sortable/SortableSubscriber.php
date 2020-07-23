@@ -2,8 +2,8 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\BeforeEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SortableSubscriber implements EventSubscriberInterface
 {
@@ -33,7 +33,7 @@ class SortableSubscriber implements EventSubscriberInterface
         $this->isLoaded = true;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             'knp_pager.before' => ['before', 1]

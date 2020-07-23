@@ -2,9 +2,9 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Paginate;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Knp\Component\Pager\Event\ItemsEvent;
 use ArrayObject;
+use Knp\Component\Pager\Event\ItemsEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ArraySubscriber implements EventSubscriberInterface
 {

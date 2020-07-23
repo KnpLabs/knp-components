@@ -2,11 +2,10 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
-use Test\Tool\BaseTestCaseORM;
-use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Article;
+use Test\Tool\BaseTestCaseORM;
 
-class QueryBuilderTest extends BaseTestCaseORM
+final class QueryBuilderTest extends BaseTestCaseORM
 {
     /**
      * @test
@@ -14,7 +13,7 @@ class QueryBuilderTest extends BaseTestCaseORM
     public function shouldPaginateSimpleDoctrineQuery(): void
     {
         $this->populate();
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
 
         $qb = $this->em->createQueryBuilder();
         $qb

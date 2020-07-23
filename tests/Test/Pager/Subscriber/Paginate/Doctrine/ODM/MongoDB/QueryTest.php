@@ -2,15 +2,14 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ODM\MongoDB;
 
-use Test\Tool\BaseTestCaseMongoODM;
-use Knp\Component\Pager\Paginator;
-use Knp\Component\Pager\Pagination\SlidingPagination;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ODM\MongoDB\QuerySubscriber;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
+use Knp\Component\Pager\Pagination\SlidingPagination;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Document\Article;
+use Test\Tool\BaseTestCaseMongoODM;
 
-class QueryTest extends BaseTestCaseMongoODM
+final class QueryTest extends BaseTestCaseMongoODM
 {
     /**
      * @test
@@ -22,7 +21,7 @@ class QueryTest extends BaseTestCaseMongoODM
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new QuerySubscriber);
         $dispatcher->addSubscriber(new PaginationSubscriber); // pagination view
-        $p = new Paginator($dispatcher);
+        $p = $this->getPaginatorInstance(null, $dispatcher);
 
         $qb = $this->dm->createQueryBuilder(Article::class);
         $query = $qb->getQuery();
@@ -33,7 +32,7 @@ class QueryTest extends BaseTestCaseMongoODM
         $this->assertEquals(2, $pagination->getItemNumberPerPage());
         $this->assertEquals(4, $pagination->getTotalItemCount());
 
-        $items = array_values($pagination->getItems());
+        $items = \array_values($pagination->getItems());
         $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
@@ -49,7 +48,7 @@ class QueryTest extends BaseTestCaseMongoODM
             ->createQueryBuilder(Article::class)
             ->getQuery()
         ;
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $pagination = $p->paginate($query, 1, 10);
         $this->assertInstanceOf(SlidingPagination::class, $pagination);
     }

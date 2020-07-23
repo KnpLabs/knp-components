@@ -1,11 +1,11 @@
 <?php
 
+use Knp\Component\Pager\Event\BeforeEvent;
+use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Test\Tool\BaseTestCase;
-use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
-use Knp\Component\Pager\Event\BeforeEvent;
 
-class SortableSubscriberTest extends BaseTestCase
+final class SortableSubscriberTest extends BaseTestCase
 {
     /**
      * @test

@@ -1,11 +1,13 @@
 <?php
 
+namespace Test\Pager\Subscriber\Paginate;
+
+use Knp\Component\Pager\Event\BeforeEvent;
+use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Test\Tool\BaseTestCase;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
-use Knp\Component\Pager\Event\BeforeEvent;
 
-class PaginationSubscriberTest extends BaseTestCase
+final class PaginationSubscriberTest extends BaseTestCase
 {
     /**
      * @test
@@ -13,7 +15,7 @@ class PaginationSubscriberTest extends BaseTestCase
     public function shouldRegisterExpectedSubscribersOnlyOnce(): void
     {
         $dispatcher = $this->getMockBuilder(EventDispatcherInterface::class)->getMock();
-        $dispatcher->expects($this->exactly(12))->method('addSubscriber');
+        $dispatcher->expects($this->exactly(13))->method('addSubscriber');
 
         $subscriber = new PaginationSubscriber;
 

@@ -10,7 +10,7 @@ use Test\Fixture\Document\PHPCR\Article;
 use Test\Mock\PaginationSubscriber;
 use Test\Tool\BaseTestCasePHPCRODM;
 
-class QuerySubscriberTest extends BaseTestCasePHPCRODM
+final class QuerySubscriberTest extends BaseTestCasePHPCRODM
 {
     /**
      * @test
@@ -48,7 +48,7 @@ class QuerySubscriberTest extends BaseTestCasePHPCRODM
         $this->getMockDocumentManager();
         $query = $this->dm->createQueryBuilder()->fromDocument(Article::class, 'a')->getQuery();
 
-        $p = new Paginator();
+        $p = $this->getPaginatorInstance();
         $pagination = $p->paginate($query, 1, 10);
         $this->assertInstanceOf(SlidingPagination::class, $pagination);
     }

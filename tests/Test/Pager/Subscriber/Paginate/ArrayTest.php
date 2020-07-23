@@ -1,13 +1,15 @@
 <?php
 
-use Test\Tool\BaseTestCase;
+namespace Test\Pager\Subscriber\Paginate;
+
+use Knp\Component\Pager\Event\Subscriber\Paginate\ArraySubscriber;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Event\Subscriber\Paginate\ArraySubscriber;
+use Test\Tool\BaseTestCase;
 
-class ArrayTest extends BaseTestCase
+final class ArrayTest extends BaseTestCase
 {
     /**
      * @test
@@ -39,7 +41,7 @@ class ArrayTest extends BaseTestCase
         $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
         $p = new Paginator($dispatcher);
 
-        $items = range('a', 'u');
+        $items = \range('a', 'u');
         $view = $p->paginate($items, 2, 10);
 
         $this->assertEquals(2, $view->getCurrentPageNumber());
@@ -54,7 +56,7 @@ class ArrayTest extends BaseTestCase
     public function shouldSupportPaginateStrategySubscriber(): void
     {
         $items = ['first', 'second'];
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($items, 1, 10);
         $this->assertInstanceOf(PaginationInterface::class, $view);
     }
@@ -66,7 +68,7 @@ class ArrayTest extends BaseTestCase
     {
         $items = ['first', 'second'];
         $array = new \ArrayObject($items);
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($array, 1, 10);
         $this->assertInstanceOf(PaginationInterface::class, $view);
     }

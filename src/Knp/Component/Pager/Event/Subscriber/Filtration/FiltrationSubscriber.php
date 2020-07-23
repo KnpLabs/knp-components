@@ -2,8 +2,8 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Filtration;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\BeforeEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class FiltrationSubscriber implements EventSubscriberInterface
 {

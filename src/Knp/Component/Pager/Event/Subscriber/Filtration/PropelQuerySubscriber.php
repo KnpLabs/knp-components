@@ -2,10 +2,10 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Filtration;
 
+use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Knp\Component\Pager\Event\ItemsEvent;
 
 class PropelQuerySubscriber implements EventSubscriberInterface
 {
@@ -14,9 +14,9 @@ class PropelQuerySubscriber implements EventSubscriberInterface
      */
     private $request;
 
-    public function __construct(Request $request)
+    public function __construct(?Request $request)
     {
-        $this->request = $request;
+        $this->request = $request ?? Request::createFromGlobals();
     }
 
     public function items(ItemsEvent $event): void
@@ -37,10 +37,10 @@ class PropelQuerySubscriber implements EventSubscriberInterface
                 $columns = explode(',', $columns);
             }
             $columns = (array) $columns;
-            if (isset($event->options[PaginatorInterface::FILTER_FIELD_WHITELIST])) {
+            if (isset($event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
                 foreach ($columns as $column) {
-                    if (!in_array($column, $event->options[PaginatorInterface::FILTER_FIELD_WHITELIST])) {
-                        throw new \UnexpectedValueException("Cannot filter by: [{$column}] this field is not in whitelist");
+                    if (!in_array($column, $event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
+                        throw new \UnexpectedValueException("Cannot filter by: [{$column}] this field is not in allow list");
                     }
                 }
             }
@@ -60,7 +60,7 @@ class PropelQuerySubscriber implements EventSubscriberInterface
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             'knp_pager.items' => ['items', 0],

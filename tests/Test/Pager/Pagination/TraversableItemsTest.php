@@ -1,21 +1,22 @@
 <?php
 
-use Test\Tool\BaseTestCase;
-use Knp\Component\Pager\Paginator;
+namespace Test\Pager\Pagination;
 
-class TraversableItemsTest extends BaseTestCase
+use Test\Tool\BaseTestCase;
+
+final class TraversableItemsTest extends BaseTestCase
 {
     /**
      * @test
      */
     public function shouldBeAbleToUseTraversableItems(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
 
-        $items = new \ArrayObject(range(1, 23));
+        $items = new \ArrayObject(\range(1, 23));
         $view = $p->paginate($items, 3, 10);
 
-        $view->renderer = function($data) {
+        $view->renderer = function ($data) {
             return 'custom';
         };
         $this->assertEquals('custom', (string)$view);

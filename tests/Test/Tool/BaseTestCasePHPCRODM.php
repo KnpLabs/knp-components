@@ -2,19 +2,18 @@
 
 namespace Test\Tool;
 
-use Doctrine\DBAL\DriverManager;
-use Doctrine\ODM\PHPCR\Mapping\Driver\AnnotationDriver;
-use Doctrine\ODM\PHPCR\DocumentManager;
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\ODM\PHPCR\DocumentManager;
+use Doctrine\ODM\PHPCR\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\PHPCR\Query\Query;
 use Jackalope\RepositoryFactoryDoctrineDBAL;
 use Jackalope\Transport\DoctrineDBAL\RepositorySchema;
-use PHPUnit\Framework\TestCase;
-use Doctrine\ODM\PHPCR\Query\Query;
 
 /**
  * Base test case contains common mock objects
  */
-abstract class BaseTestCasePHPCRODM extends TestCase
+abstract class BaseTestCasePHPCRODM extends BaseTestCase
 {
     /**
      * @var DocumentManager
@@ -23,7 +22,7 @@ abstract class BaseTestCasePHPCRODM extends TestCase
 
     protected function setUp(): void
     {
-        if (!class_exists(Query::class)) {
+        if (!\class_exists(Query::class)) {
             $this->markTestSkipped('Doctrine PHPCR-ODM is not available');
         }
     }

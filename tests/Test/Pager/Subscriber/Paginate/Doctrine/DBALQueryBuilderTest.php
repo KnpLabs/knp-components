@@ -2,12 +2,11 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine;
 
-use Test\Tool\BaseTestCaseORM;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Article;
+use Test\Tool\BaseTestCaseORM;
 
-class DBALQueryBuilderTest extends BaseTestCaseORM
+final class DBALQueryBuilderTest extends BaseTestCaseORM
 {
     /**
      * @test
@@ -15,7 +14,7 @@ class DBALQueryBuilderTest extends BaseTestCaseORM
     public function shouldPaginateSimpleDoctrineQuery(): void
     {
         $this->populate();
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
 
         $qb = new QueryBuilder($this->em->getConnection());
         $qb->select('*')

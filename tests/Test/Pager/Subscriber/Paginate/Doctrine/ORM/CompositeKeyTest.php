@@ -4,18 +4,17 @@ namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
-use Test\Tool\BaseTestCaseORM;
-use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Composite;
+use Test\Tool\BaseTestCaseORM;
 
-class CompositeKeyTest extends BaseTestCaseORM
+final class CompositeKeyTest extends BaseTestCaseORM
 {
     /**
      * @test
      */
     public function shouldBeHandledByQueryHintByPassingCount(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
 
@@ -68,5 +67,4 @@ class CompositeKeyTest extends BaseTestCaseORM
         $em->persist($spring);
         $em->flush();
     }
-
 }

@@ -1,11 +1,12 @@
 <?php
 
-use Test\Tool\BaseTestCase;
-use Knp\Component\Pager\Paginator;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
+namespace Test\Pager;
 
-class PaginatorTest extends BaseTestCase
+use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Test\Tool\BaseTestCase;
+
+final class PaginatorTest extends BaseTestCase
 {
     /**
      * @test
@@ -14,7 +15,7 @@ class PaginatorTest extends BaseTestCase
     {
         $this->expectException(\RuntimeException::class);
 
-        $paginator = new Paginator(new EventDispatcher());
+        $paginator = $this->getPaginatorInstance(null, new EventDispatcher());
         $paginator->paginate([]);
     }
 
@@ -28,7 +29,7 @@ class PaginatorTest extends BaseTestCase
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
 
-        $paginator = new Paginator($dispatcher);
-        $view = $paginator->paginate(null, 1, 10);
+        $paginator = $this->getPaginatorInstance(null, $dispatcher);
+        $paginator->paginate(null, 1, 10);
     }
 }

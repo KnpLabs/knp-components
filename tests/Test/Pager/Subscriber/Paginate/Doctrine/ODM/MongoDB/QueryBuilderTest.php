@@ -2,11 +2,10 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ODM\MongoDB;
 
-use Test\Tool\BaseTestCaseMongoODM;
-use Knp\Component\Pager\Paginator;
 use Test\Fixture\Document\Article;
+use Test\Tool\BaseTestCaseMongoODM;
 
-class QueryBuilderTest extends BaseTestCaseMongoODM
+final class QueryBuilderTest extends BaseTestCaseMongoODM
 {
     /**
      * @test
@@ -18,13 +17,13 @@ class QueryBuilderTest extends BaseTestCaseMongoODM
             ->getMockDocumentManager()
             ->createQueryBuilder(Article::class)
         ;
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $pagination = $p->paginate($qb, 1, 2);
         $this->assertEquals(1, $pagination->getCurrentPageNumber());
         $this->assertEquals(2, $pagination->getItemNumberPerPage());
         $this->assertEquals(4, $pagination->getTotalItemCount());
 
-        $items = array_values($pagination->getItems());
+        $items = \array_values($pagination->getItems());
         $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());

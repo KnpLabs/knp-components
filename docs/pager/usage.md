@@ -4,18 +4,18 @@ This tutorial will cover installation and usage examples.
 
 ## Installation
 
-    composer require "knplabs/knp-components:~1.2"
+    composer require "knplabs/knp-components"
 
 ## Basic usage
 
-As mentioned in [introduction](https://github.com/knplabs/knp-components/tree/master/doc/pager/intro.md)
+As mentioned in [introduction](https://github.com/knplabs/knp-components/tree/master/doc/pager/intro.md),
 paginator uses event listeners to paginate the given data. First we will start from the simplest data - array.
 Lets add some code in **index.php** and see it in action:
 
 ``` php
 <?php
 // file: index.php
-include 'autoloader.php';
+require 'vendor/autoload.php';
 
 // usage examples will continue here
 
@@ -45,6 +45,10 @@ foreach ($pagination as $item) {
     //...
     echo TAB.'paginated item: '.$item.EOL;
 }
+
+// limit per page can be omitted, or passed as null. In this case default value will be used.
+// some other options can be passed as the 4th argument (see [Configuration](docs/pager/config.md))
+$pagination = $paginator->paginate($target, 3/*page number*/, null/*default limit per page will be used*/, ['pageParameterName' => 'section']/*options*/);
 ```
 
 ### Rendering pagination
@@ -73,7 +77,7 @@ Now if we override the renderer callback
 // continuing in file: index.php
 // ...
 
-$pagination->renderer = function($data) {
+$pagination->renderer = function ($data) {
     return EOL.TAB.'page range: '.implode(' ', $data['pagesInRange']).EOL;
 };
 echo $pagination; // outputs: "page range: 1 2 3"
@@ -87,10 +91,10 @@ For example users should be sorted by lastname and by firstname:
 ```php
 $query = $entityManager->createQuery('SELECT u FROM User');
 
-$pagination = $paginator->paginate($query, 1/*page number*/, 20/*limit per page*/, array(
-    'defaultSortFieldName' => array('u.lastname', 'u.firstname'),
+$pagination = $paginator->paginate($query, 1/*page number*/, 20/*limit per page*/, [
+    'defaultSortFieldName' => ['u.lastname', 'u.firstname'],
     'defaultSortDirection' => 'asc',
-));
+]);
 ```
 
 The Paginator will add an `ORDER BY` automatically for each attribute for the
@@ -104,9 +108,9 @@ For example users should be filtered by lastname or by firstname:
 ```php
 $query = $entityManager->createQuery('SELECT u FROM User');
 
-$pagination = $paginator->paginate($query, 1/*page number*/, 20/*limit per page*/, array(
-    'defaultFilterFields' => array('u.lastname', 'u.firstname'),
-));
+$pagination = $paginator->paginate($query, 1/*page number*/, 20/*limit per page*/, [
+    'defaultFilterFields' => ['u.lastname', 'u.firstname'],
+]);
 ```
 
 If the `filterValue` parameter is set, the Paginator will add an `WHERE` condition automatically 

@@ -1,24 +1,25 @@
 <?php
 
-use Test\Tool\BaseTestCase;
-use Knp\Component\Pager\Paginator;
+namespace Test\Pager\Pagination;
 
-class SlidingTest extends BaseTestCase
+use Test\Tool\BaseTestCase;
+
+final class SlidingTest extends BaseTestCase
 {
     /**
      * @test
      */
     public function shouldBeAbleToProducePagination(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
 
-        $items = range(1, 23);
+        $items = \range(1, 23);
         $view = $p->paginate($items, 1, 10);
 
-        $view->renderer = function($data) {
+        $view->renderer = static function ($data) {
             return 'custom';
         };
-        $this->assertEquals('custom', (string)$view);
+        $this->assertEquals('custom', (string) $view);
 
         $pagination = $view->getPaginationData();
         $this->assertEquals(3, $pagination['last']);
@@ -41,9 +42,9 @@ class SlidingTest extends BaseTestCase
      */
     public function shouldBeAbleToProduceWiderPagination(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
 
-        $items = range(1, 43);
+        $items = \range(1, 43);
         $view = $p->paginate($items, 4, 5);
         $pagination = $view->getPaginationData();
 
@@ -68,9 +69,9 @@ class SlidingTest extends BaseTestCase
      */
     public function shouldHandleOddAndEvenRange(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
 
-        $items = range(1, 43);
+        $items = \range(1, 43);
         $view = $p->paginate($items, 4, 5);
         $view->setPageRange(4);
         $pagination = $view->getPaginationData();
@@ -94,9 +95,9 @@ class SlidingTest extends BaseTestCase
      */
     public function shouldNotFallbackToPageInCaseIfExceedsItemLimit(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
 
-        $view = $p->paginate(range(1, 9), 2, 10);
+        $view = $p->paginate(\range(1, 9), 2, 10);
         $items = $view->getItems();
         $this->assertEmpty($items);
     }

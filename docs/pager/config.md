@@ -16,13 +16,14 @@ The list of existing options are:
 | pageParameterName          | string         | page          | SortableSubscriber                              |
 | defaultSortFieldName       | string\|array* |               | SortableSubscriber                              |
 | defaultSortDirection       | string         | asc           | SortableSubscriber                              |
-| sortFieldWhitelist         | array          | []            | SortableSubscriber                              |
+| sortFieldAllowList         | array          | []            | SortableSubscriber                              |
 | sortFieldParameterName     | string         | sort          | SortableSubscriber                              |
 | sortDirectionParameterName | string         | direction     | SortableSubscriber                              |
 | defaultFilterFields        | string\|array* |               | FiltrationSubscriber                            |
-| filterFieldWhitelist       | array          |               | FiltrationSubscriber                            |
+| filterFieldAllowList       | array          |               | FiltrationSubscriber                            |
 | filterFieldParameterName   | string         | filterParam   | FiltrationSubscriber                            |
 | filterValueParameterName   | string         | filterValue   | FiltrationSubscriber                            |
+| pageOutOfRange             | string         | ignore        | PaginationSubscriber                            |
 
 
 ## Noticeable behaviors of some options
@@ -52,3 +53,11 @@ Used as default field name for the sorting. It can take an array for sorting by 
 ### `defaultFilterFields`
 
 Used as default field names for the filtration. It can take an array for filtering by multiple fields.
+
+
+### `pageOutOfRange`
+
+Defines behavior if page number is out of range (i.g. exceeds the last page number):
+ * 'ignore' - do nothing;
+ * 'fix' - replace page number with max page;
+ * 'throwException' - throw PageNumberOutOfRangeException (if you want to handle this case in the app).
