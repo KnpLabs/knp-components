@@ -2,6 +2,9 @@ language: php
 
 sudo: false
 
+services:
+    - mongodb
+
 cache:
     directories:
         - $HOME/.composer/cache
