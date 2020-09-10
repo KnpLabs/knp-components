@@ -201,7 +201,7 @@ class Paginator implements PaginatorInterface
      */
     protected function dispatch(string $eventName, Event\Event $event): void
     {
-        if (!\class_exists(LegacyEventDispatcherProxy::class)) {
+        if (\class_exists(BaseEvent::class)) {
             $this->eventDispatcher->dispatch($eventName, $event);
         } else {
             $this->eventDispatcher->dispatch($event, $eventName);
