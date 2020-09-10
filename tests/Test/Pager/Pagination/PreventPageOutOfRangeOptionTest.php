@@ -83,4 +83,19 @@ final class PreventPageOutOfRangeOptionTest extends BaseTestCase
         $this->expectException(PageNumberOutOfRangeException::class);
         $p->paginate($items, 10, 10);
     }
+
+    /**
+     * @test
+     */
+    public function shouldBeAbleToGetMaxPageWhenExceptionIsThrown(): void
+    {
+        $p = new Paginator;
+        $items = \range(1, 23);
+
+        try {
+            $p->paginate($items, 10, 10, [PaginatorInterface::PAGE_OUT_OF_RANGE => PaginatorInterface::PAGE_OUT_OF_RANGE_THROW_EXCEPTION]);
+        } catch (PageNumberOutOfRangeException $exception) {
+            $this->assertEquals(3, $exception->getMaxPageNumber());
+        }
+    }
 }
