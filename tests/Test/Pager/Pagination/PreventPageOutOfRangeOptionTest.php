@@ -83,4 +83,47 @@ final class PreventPageOutOfRangeOptionTest extends BaseTestCase
         $this->expectException(PageNumberOutOfRangeException::class);
         $p->paginate($items, 10, 10);
     }
+
+    /**
+     * @test
+     */
+    public function shouldBeAbleToGetMaxPageWhenExceptionIsThrown(): void
+    {
+        $p = new Paginator;
+        $items = \range(1, 23);
+
+        try {
+            $p->paginate($items, 10, 10, [PaginatorInterface::PAGE_OUT_OF_RANGE => PaginatorInterface::PAGE_OUT_OF_RANGE_THROW_EXCEPTION]);
+        } catch (PageNumberOutOfRangeException $exception) {
+            $this->assertEquals(3, $exception->getMaxPageNumber());
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function shouldBeAbleToTreatFirstPageAsValidWithEmptyList(): void
+    {
+        $p = new Paginator;
+        $items = []; //empty array on fix argument perform again paginate with page = 0.
+        // "fix" option
+        $view = $p->paginate($items, 1, 10, [PaginatorInterface::PAGE_OUT_OF_RANGE => PaginatorInterface::PAGE_OUT_OF_RANGE_FIX]);
+        $pagination = $view->getPaginationData();
+
+        $this->assertEquals(0, $pagination['last']);
+        $this->assertEquals(1, $pagination['current']);
+        $this->assertFalse(isset($pagination['previous']));
+        $this->assertEquals(0, $pagination['currentItemCount']);
+        $this->assertEquals(1, $pagination['firstItemNumber']);
+        $this->assertEquals(0, $pagination['lastItemNumber']);
+
+        // "throwException" option
+        $p->paginate($items, 1, 10, [PaginatorInterface::PAGE_OUT_OF_RANGE => PaginatorInterface::PAGE_OUT_OF_RANGE_THROW_EXCEPTION]);
+        $this->assertEquals(0, $pagination['last']);
+        $this->assertEquals(1, $pagination['current']);
+        $this->assertFalse(isset($pagination['previous']));
+        $this->assertEquals(0, $pagination['currentItemCount']);
+        $this->assertEquals(1, $pagination['firstItemNumber']);
+        $this->assertEquals(0, $pagination['lastItemNumber']);
+    }
 }

@@ -140,8 +140,11 @@ class Paginator implements PaginatorInterface
                 // replace page number out of range with max page
                 return $this->paginate($target, ceil($itemsEvent->count / $limit), $limit, $options);
             }
-            if ($pageOutOfRangeOption === self::PAGE_OUT_OF_RANGE_THROW_EXCEPTION) {
-                throw new PageNumberOutOfRangeException("Page number: $page is out of range.");
+            if ($pageOutOfRangeOption === self::PAGE_OUT_OF_RANGE_THROW_EXCEPTION && $page > 1) {
+                throw new PageNumberOutOfRangeException(
+                    sprintf('Page number: %d is out of range.', $page),
+                    ceil($itemsEvent->count / $limit)
+                );
             }
         }
 
