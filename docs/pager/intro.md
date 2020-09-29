@@ -79,7 +79,7 @@ $count = function () use ($repository) {
 $items = function ($offset, $limit) use ($repository) {
     // your $repository invocation here
 };
-$target = CallbackPagination($count, $items);
+$target = new CallbackPagination($count, $items);
 $pagination = $paginator->paginate($target, 2/*page*/, 10/*limit*/);
 
 // ...
