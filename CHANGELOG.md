@@ -12,7 +12,6 @@
 *To be released*
 
 * deprecated not passing EventDispathcer to Paginator constructor
->>>>>>> f19ae17... deprecate not passing EventDispatcher to Paginator
 
 ## 2.4.0
 
