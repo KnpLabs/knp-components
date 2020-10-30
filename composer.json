@@ -31,7 +31,7 @@
         "doctrine/orm": "^2.7",
         "doctrine/phpcr-odm": "^1.2",
         "jackalope/jackalope-doctrine-dbal": "^1.2",
-        "phpunit/phpunit": "^8.5 || ^9.3",
+        "phpunit/phpunit": "^8.5 || ^9.4",
         "ruflin/elastica": "^1.0",
         "symfony/http-kernel": "^4.4 || ^5.1",
         "symfony/property-access": "^4.4 || ^5.1"
@@ -48,7 +48,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.5.0-dev"
+            "dev-master": "3.x-dev"
         }
     },
     "autoload": {
@@ -62,6 +62,6 @@
         }
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "vendor/bin/phpunit"
     }
 }
