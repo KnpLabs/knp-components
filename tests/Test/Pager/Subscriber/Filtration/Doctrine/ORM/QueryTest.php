@@ -2,23 +2,25 @@
 
 namespace Test\Pager\Subscriber\Filtration\Doctrine\ORM;
 
-use Test\Tool\BaseTestCaseORM;
-use Knp\Component\Pager\Paginator;
-use Knp\Component\Pager\Pagination\SlidingPagination;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber as Filtration;
+use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
+use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
+use Knp\Component\Pager\Pagination\SlidingPagination;
+use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Entity\Article;
-use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber\UsesPaginator;
+use Test\Tool\BaseTestCaseORM;
 
-class QueryTest extends BaseTestCaseORM
+final class QueryTest extends BaseTestCaseORM
 {
     /**
      * @test
      */
-    public function shouldHandleApcQueryCache()
+    public function shouldHandleApcQueryCache(): void
     {
-        if (!extension_loaded('apc') || !ini_get('apc.enable_cli')) {
+        if (!\extension_loaded('apc') || !\ini_get('apc.enable_cli')) {
             $this->markTestSkipped('APC extension is not loaded.');
         }
         $config = new \Doctrine\ORM\Configuration();
@@ -29,26 +31,26 @@ class QueryTest extends BaseTestCaseORM
         $config->getAutoGenerateProxyClasses(false);
         $config->setMetadataDriverImpl($this->getMetadataDriverImplementation());
 
-        $conn = array(
+        $conn = [
             'driver' => 'pdo_sqlite',
             'memory' => true,
-        );
+        ];
 
         $em = \Doctrine\ORM\EntityManager::create($conn, $config);
-        $schema = array_map(function ($class) use ($em) {
+        $schema = \array_map(static function ($class) use ($em) {
             return $em->getClassMetadata($class);
-        }, (array) $this->getUsedEntityFixtures());
+        }, $this->getUsedEntityFixtures());
 
         $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($em);
-        $schemaTool->dropSchema(array());
+        $schemaTool->dropSchema([]);
         $schemaTool->createSchema($schema);
         $this->populate($em);
 
-        $_GET['filterField'] = 'a.title';
-        $_GET['filterValue'] = 'summer';
         $query = $em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
 
-        $p = new Paginator();
+        $requestStack = $this->createRequestStack(['filterField' => 'a.title', 'filterValue' => 'summer']);
+
+        $p = new Paginator(null, $requestStack);
         $view = $p->paginate($query, 1, 10);
 
         $query = $em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
@@ -58,7 +60,7 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    public function shouldFilterSimpleDoctrineQuery()
+    public function shouldFilterSimpleDoctrineQuery(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -66,140 +68,201 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
 
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = '*er';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
-
-        $_GET['filterValue'] = 'summer';
-        $view = $p->paginate($query, 1, 10);
-        $items = $view->getItems();
-        $this->assertEquals(1, count($items));
-        $this->assertEquals('summer', $items[0]->getTitle());
-
-        $this->assertEquals(4, $this->queryAnalyzer->getNumExecutedQueries());
-        $executed = $this->queryAnalyzer->getExecutedQueries();
-
-        // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' LIMIT 10 OFFSET 0', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title LIKE \'summer\' LIMIT 10 OFFSET 0', $executed[3]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' LIMIT 10 OFFSET 0', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'summer\' LIMIT 10 OFFSET 0', $executed[3]);
-        }
-    }
-
-    /**
-     * @test
-     */
-    public function shouldFilterBooleanFilterValues()
-    {
-        $em = $this->getMockSqliteEntityManager();
-        $this->populate($em);
-
-        $dispatcher = new EventDispatcher();
-        $dispatcher->addSubscriber(new PaginationSubscriber());
-        $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
-        $this->startQueryLog();
-
-        $_GET['filterParam'] = 'a.enabled';
-        $_GET['filterValue'] = '1';
-        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
-        $view = $p->paginate($query, 1, 10);
-        $items = $view->getItems();
-        $this->assertEquals(2, count($items));
-        $this->assertEquals('summer', $items[0]->getTitle());
-        $this->assertEquals('winter', $items[1]->getTitle());
-
-        $_GET['filterValue'] = 'true';
-        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
-        $view = $p->paginate($query, 1, 10);
-        $items = $view->getItems();
-        $this->assertEquals(2, count($items));
-        $this->assertEquals('summer', $items[0]->getTitle());
-        $this->assertEquals('winter', $items[1]->getTitle());
-
-        $_GET['filterValue'] = '0';
-        $view = $p->paginate($query, 1, 10);
-        $items = $view->getItems();
-        $this->assertEquals(2, count($items));
-        $this->assertEquals('autumn', $items[0]->getTitle());
-        $this->assertEquals('spring', $items[1]->getTitle());
-
-        $_GET['filterValue'] = 'false';
-        $view = $p->paginate($query, 1, 10);
-        $items = $view->getItems();
-        $this->assertEquals(2, count($items));
-        $this->assertEquals('autumn', $items[0]->getTitle());
-        $this->assertEquals('spring', $items[1]->getTitle());
-
-        $this->assertEquals(8, $this->queryAnalyzer->getNumExecutedQueries());
-        $executed = $this->queryAnalyzer->getExecutedQueries();
-
-        // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.enabled = 1 LIMIT 10 OFFSET 0', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.enabled = 1 LIMIT 10 OFFSET 0', $executed[3]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.enabled = 0 LIMIT 10 OFFSET 0', $executed[5]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.enabled = 0 LIMIT 10 OFFSET 0', $executed[7]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 1 LIMIT 10 OFFSET 0', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 1 LIMIT 10 OFFSET 0', $executed[3]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 0 LIMIT 10 OFFSET 0', $executed[5]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 0 LIMIT 10 OFFSET 0', $executed[7]);
-        }
-    }
-
-    /**
-     * @test
-     */
-    public function shouldNotFilterInvalidBooleanFilterValues()
-    {
-        $em = $this->getMockSqliteEntityManager();
-        $this->populate($em);
-
-        $dispatcher = new EventDispatcher();
-        $dispatcher->addSubscriber(new PaginationSubscriber());
-        $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
-        $this->startQueryLog();
-
-        $_GET['filterParam'] = 'a.enabled';
-        $_GET['filterValue'] = 'invalid_boolean';
-        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
-        $view = $p->paginate($query, 1, 10);
-        $items = $view->getItems();
-        $this->assertEquals(4, count($items));
 
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ LIMIT 10 OFFSET 0', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10 OFFSET 0', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' LIMIT 10', $executed[1]);
     }
 
     /**
      * @test
      */
-    public function shouldFilterNumericFilterValues()
+    public function shouldFilterSimpleDoctrineQueryWithoutWildcard(): void
+    {
+        $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
+
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new PaginationSubscriber());
+        $dispatcher->addSubscriber(new Filtration());
+
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
+
+        $this->startQueryLog();
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+        $view = $p->paginate($query);
+        $items = $view->getItems();
+
+        $this->assertCount(1, $items);
+        $this->assertEquals('summer', $items[0]->getTitle());
+
+        $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'summer\' LIMIT 10', $executed[1]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldFilterBooleanFilterValuesWithInteger(): void
+    {
+        $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
+
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new PaginationSubscriber());
+        $dispatcher->addSubscriber(new Filtration());
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.enabled', 'filterValue' => '1']);
+        $p = new Paginator($dispatcher, $requestStack);
+        $this->startQueryLog();
+
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+        $view = $p->paginate($query, 1, 10);
+        $items = $view->getItems();
+        $this->assertCount(2, $items);
+        $this->assertEquals('summer', $items[0]->getTitle());
+        $this->assertEquals('winter', $items[1]->getTitle());
+
+        $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 1 LIMIT 10', $executed[1]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldFilterBooleanFilterValues(): void
+    {
+        $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
+
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new PaginationSubscriber());
+        $dispatcher->addSubscriber(new Filtration());
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.enabled', 'filterValue' => 'true']);
+        $p = new Paginator($dispatcher, $requestStack);
+        $this->startQueryLog();
+
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+        $view = $p->paginate($query);
+        $items = $view->getItems();
+        $this->assertCount(2, $items);
+        $this->assertEquals('summer', $items[0]->getTitle());
+        $this->assertEquals('winter', $items[1]->getTitle());
+
+        $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 1 LIMIT 10', $executed[1]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldFilterBooleanFilterValuesWithZero(): void
+    {
+        $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
+
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new PaginationSubscriber());
+        $dispatcher->addSubscriber(new Filtration());
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.enabled', 'filterValue' => '0']);
+        $p = new Paginator($dispatcher, $requestStack);
+        $this->startQueryLog();
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+        $view = $p->paginate($query);
+        $items = $view->getItems();
+        $this->assertCount(2, $items);
+        $this->assertEquals('autumn', $items[0]->getTitle());
+        $this->assertEquals('spring', $items[1]->getTitle());
+
+        $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 0 LIMIT 10', $executed[1]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldFilterBooleanFilterValuesFalse(): void
+    {
+        $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
+
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new PaginationSubscriber());
+        $dispatcher->addSubscriber(new Filtration());
+        $this->startQueryLog();
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.enabled', 'filterValue' => 'false']);
+        $p = new Paginator($dispatcher, $requestStack);
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+        $view = $p->paginate($query);
+        $items = $view->getItems();
+        $this->assertCount(2, $items);
+        $this->assertEquals('autumn', $items[0]->getTitle());
+        $this->assertEquals('spring', $items[1]->getTitle());
+
+        $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 0 LIMIT 10', $executed[1]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotFilterInvalidBooleanFilterValues(): void
+    {
+        $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
+
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new PaginationSubscriber());
+        $dispatcher->addSubscriber(new Filtration());
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.enabled', 'filterValue' => 'invalid_boolean']);
+        $p = new Paginator($dispatcher, $requestStack);
+        $this->startQueryLog();
+
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+        $view = $p->paginate($query, 1, 10);
+        $items = $view->getItems();
+        $this->assertCount(4, $items);
+
+        $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[1]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldFilterNumericFilterValues(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populateNumeric($em);
@@ -207,43 +270,55 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => '0']);
+        $p = new Paginator($dispatcher, $requestStack);
         $this->startQueryLog();
 
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = '0';
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('0', $items[0]->getTitle());
 
-        $_GET['filterValue'] = '1';
-        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
-        $view = $p->paginate($query, 1, 10);
-        $items = $view->getItems();
-        $this->assertEquals(1, count($items));
-        $this->assertEquals('1', $items[0]->getTitle());
-
-        $this->assertEquals(4, $this->queryAnalyzer->getNumExecutedQueries());
+        $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title LIKE \'0\' LIMIT 10 OFFSET 0', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title LIKE \'1\' LIMIT 10 OFFSET 0', $executed[3]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'0\' LIMIT 10 OFFSET 0', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'1\' LIMIT 10 OFFSET 0', $executed[3]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title = 0 LIMIT 10', $executed[1]);
     }
 
     /**
      * @test
      */
-    public function shouldFilterComplexDoctrineQuery()
+    public function shouldFilterNumericFilterValuesOne(): void
+    {
+        $em = $this->getMockSqliteEntityManager();
+        $this->populateNumeric($em);
+
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new PaginationSubscriber());
+        $dispatcher->addSubscriber(new Filtration());
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => '1']);
+        $p = new Paginator($dispatcher, $requestStack);
+        $this->startQueryLog();
+
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+        $view = $p->paginate($query);
+        $items = $view->getItems();
+        $this->assertCount(1, $items);
+        $this->assertEquals('1', $items[0]->getTitle());
+
+        $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'1\' LIMIT 10', $executed[1]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldFilterComplexDoctrineQuery(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -251,67 +326,71 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
 
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = '*er';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a WHERE a.title <> \'\' AND (a.title LIKE \'summer\' OR a.title LIKE \'spring\')');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
-        $_GET['filterParam'] = 'a.id,a.title';
+
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10', $executed[1]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldFilterComplexDoctrineQuery2(): void
+    {
+        $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
+
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new PaginationSubscriber());
+        $dispatcher->addSubscriber(new Filtration());
+
+        $this->startQueryLog();
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a WHERE a.title <> \'\' AND (a.title LIKE \'summer\' OR a.title LIKE \'spring\')');
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.id,a.title', 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a WHERE a.title <> \'\' OR (a.title LIKE \'summer\' OR a.title LIKE \'spring\')');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a WHERE a.title <> \'\'');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
-        $this->assertEquals('summer', $items[0]->getTitle());
-        $this->assertEquals('winter', $items[1]->getTitle());
-        $executed = $this->queryAnalyzer->getExecutedQueries();
-        $_GET['filterParam'] = 'a.title';
-        $view = $p->paginate($query, 1, 10);
-        $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10 OFFSET 0', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10 OFFSET 0', $executed[3]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND (a0_.title <> \'\' OR (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\')) LIMIT 10 OFFSET 0', $executed[5]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' LIMIT 10 OFFSET 0', $executed[7]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' AND a0_.title <> \'\' LIMIT 10 OFFSET 0', $executed[9]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10 OFFSET 0', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10 OFFSET 0', $executed[3]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND (a0_.title <> \'\' OR (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\')) LIMIT 10 OFFSET 0', $executed[5]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' LIMIT 10 OFFSET 0', $executed[7]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' AND a0_.title <> \'\' LIMIT 10 OFFSET 0', $executed[9]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10', $executed[1]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND (a0_.title <> \'\' OR (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\')) LIMIT 10', $executed[3]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' LIMIT 10', $executed[5]);
     }
 
     /**
      * @test
      */
-    public function shouldFilterSimpleDoctrineQueryWithMultipleProperties()
+    public function shouldFilterComplexDoctrineQuery3(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -319,41 +398,63 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
 
-        $_GET['filterParam'] = 'a.id,a.title';
-        $_GET['filterValue'] = '*er';
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a WHERE a.title <> \'\'');
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
+        $this->startQueryLog();
+        $view = $p->paginate($query);
+        $items = $view->getItems();
+        $this->assertCount(2, $items);
+        $this->assertEquals('summer', $items[0]->getTitle());
+        $this->assertEquals('winter', $items[1]->getTitle());
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' AND a0_.title <> \'\' LIMIT 10', $executed[1]);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldFilterSimpleDoctrineQueryWithMultipleProperties(): void
+    {
+        $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
+
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new PaginationSubscriber());
+        $dispatcher->addSubscriber(new Filtration());
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.id,a.title', 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
+
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
 
-        $_GET['filterParam'] = array('a.id', 'a.title');
+        $requestStack = $this->createRequestStack(['filterParam' => ['a.id', 'a.title'], 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\' LIMIT 10 OFFSET 0', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\' LIMIT 10 OFFSET 0', $executed[3]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\' LIMIT 10 OFFSET 0', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\' LIMIT 10 OFFSET 0', $executed[3]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\' LIMIT 10', $executed[1]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\' LIMIT 10', $executed[3]);
     }
 
     /**
      * @test
      */
-    public function shouldFilterComplexDoctrineQueryWithMultipleProperties()
+    public function shouldFilterComplexDoctrineQueryWithMultipleProperties(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -361,36 +462,29 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.id,a.title', 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
 
-        $_GET['filterParam'] = 'a.id,a.title';
-        $_GET['filterValue'] = '*er';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a WHERE a.title <> \'\' AND (a.title LIKE \'summer\' OR a.title LIKE \'spring\')');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
 
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10 OFFSET 0', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10 OFFSET 0', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10', $executed[1]);
     }
 
     /**
      * @test
-     * @expectedException UnexpectedValueException
      */
-    public function shouldValidateFiltrationParameter()
+    public function shouldValidateFiltrationParameter(): void
     {
-        $_GET['filterParam'] = '"a.title\'';
-        $_GET['filterValue'] = 'summer';
+        $this->expectException(\UnexpectedValueException::class);
+
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
@@ -399,19 +493,19 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->createRequestStack(['filterParam' => '"a.title\'', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
     }
 
     /**
      * @test
-     * @expectedException UnexpectedValueException
      */
-    public function shouldValidateFiltrationParameterWithoutAlias()
+    public function shouldValidateFiltrationParameterWithoutAlias(): void
     {
-        $_GET['filterParam'] = 'title';
-        $_GET['filterValue'] = 'summer';
+        $this->expectException(\UnexpectedValueException::class);
+
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
@@ -420,19 +514,19 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->createRequestStack(['filterParam' => 'title', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
     }
 
     /**
      * @test
-     * @expectedException UnexpectedValueException
      */
-    public function shouldValidateFiltrationParameterExistance()
+    public function shouldValidateFiltrationParameterExistance(): void
     {
-        $_GET['filterParam'] = 'a.nonExistantField';
-        $_GET['filterValue'] = 'summer';
+        $this->expectException(\UnexpectedValueException::class);
+
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
@@ -441,7 +535,9 @@ class QueryTest extends BaseTestCaseORM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.nonExistantField', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
+
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
     }
@@ -449,89 +545,76 @@ class QueryTest extends BaseTestCaseORM
     /**
      * @test
      */
-    public function shouldFilterByAnyAvailableAlias()
+    public function shouldFilterByAnyAvailableAlias(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
 
-        $_GET['filterParam'] = 'test_alias';
-        $_GET['filterValue'] = '*er';
-        $dql = <<<___SQL
+        $dql = <<<SQL
         SELECT a, a.title AS test_alias
         FROM Test\Fixture\Entity\Article a
-___SQL;
+SQL;
         $query = $this->em->createQuery($dql);
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->createRequestStack(['filterParam' => 'test_alias', 'filterValue' => '*er']);
+        $p = new Paginator($dispatcher, $requestStack);
         $this->startQueryLog();
-        $view = $p->paginate($query, 1, 10, array('distinct' => false));
+        $view = $p->paginate($query, 1, 10, [PaginatorInterface::DISTINCT => false]);
         $items = $view->getItems();
-        $this->assertEquals(2, count($items));
+        $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0][0]->getTitle());
         $this->assertEquals('winter', $items[1][0]->getTitle());
 
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2, a0_.title AS title3 FROM Article a0_ WHERE a0_.title LIKE \'%er\' LIMIT 10 OFFSET 0', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2, a0_.title AS title_3 FROM Article a0_ WHERE a0_.title LIKE \'%er\' LIMIT 10 OFFSET 0', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2, a0_.title AS title_3 FROM Article a0_ WHERE a0_.title LIKE \'%er\' LIMIT 10', $executed[1]);
     }
 
     /**
      * @test
      */
-    public function shouldNotWorkWithInitialPaginatorEventDispatcher()
+    public function shouldNotWorkWithInitialPaginatorEventDispatcher(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = 'summer';
         $query = $this
             ->em
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
         ;
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 
-        $p = new Paginator();
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => 'summer']);
+        $p = new Paginator(null, $requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
-        $this->assertTrue($view instanceof SlidingPagination);
+        $this->assertInstanceOf(SlidingPagination::class, $view);
 
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ LIMIT 10 OFFSET 0', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10 OFFSET 0', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[1]);
     }
 
     /**
      * @test
      */
-    public function shouldNotExecuteExtraQueriesWhenCountIsZero()
+    public function shouldNotExecuteExtraQueriesWhenCountIsZero(): void
     {
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = 'asc';
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
         ;
 
-        $p = new Paginator();
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => 'asc']);
+        $p = new Paginator(null, $requestStack);
         $this->startQueryLog();
         $view = $p->paginate($query, 1, 10);
-        $this->assertTrue($view instanceof SlidingPagination);
+        $this->assertInstanceOf(SlidingPagination::class, $view);
 
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
     }
@@ -539,7 +622,7 @@ ___SQL;
     /**
      * @test
      */
-    public function shouldFilterWithEmptyParametersAndDefaults()
+    public function shouldFilterWithEmptyParametersAndDefaults(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -547,46 +630,38 @@ ___SQL;
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->createRequestStack(['filterParam' => '', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
 
-        $_GET['filterParam'] = '';
-        $_GET['filterValue'] = 'summer';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $defaultFilterFields = 'a.title';
-        $view = $p->paginate($query, 1, 10, compact('defaultFilterFields'));
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::DEFAULT_FILTER_FIELDS));
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $defaultFilterFields = 'a.id,a.title';
-        $view = $p->paginate($query, 1, 10, compact('defaultFilterFields'));
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::DEFAULT_FILTER_FIELDS));
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
-        $defaultFilterFields = array('a.id', 'a.title');
-        $view = $p->paginate($query, 1, 10, compact('defaultFilterFields'));
+        $defaultFilterFields = ['a.id', 'a.title'];
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::DEFAULT_FILTER_FIELDS));
         $items = $view->getItems();
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.title LIKE \'summer\' LIMIT 10 OFFSET 0', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.id LIKE \'summer\' OR a0_.title LIKE \'summer\' LIMIT 10 OFFSET 0', $executed[3]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE a0_.id LIKE \'summer\' OR a0_.title LIKE \'summer\' LIMIT 10 OFFSET 0', $executed[5]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'summer\' LIMIT 10 OFFSET 0', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'summer\' OR a0_.title LIKE \'summer\' LIMIT 10 OFFSET 0', $executed[3]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'summer\' OR a0_.title LIKE \'summer\' LIMIT 10 OFFSET 0', $executed[5]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'summer\' LIMIT 10', $executed[1]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'summer\' OR a0_.title LIKE \'summer\' LIMIT 10', $executed[3]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'summer\' OR a0_.title LIKE \'summer\' LIMIT 10', $executed[5]);
     }
 
     /**
      * @test
      */
-    public function shouldNotFilterWithEmptyParametersAndDefaults()
+    public function shouldNotFilterWithEmptyParametersAndDefaults(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -594,46 +669,40 @@ ___SQL;
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-        $p = new Paginator($dispatcher);
+        $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => '']);
+        $p = new Paginator($dispatcher, $requestStack);
 
-        $_GET['filterParam'] = 'a.title';
-        $_GET['filterValue'] = '';
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(4, count($items));
-        $_GET['filterParam'] = '';
-        $_GET['filterValue'] = 'summer';
+        $this->assertCount(4, $items);
+
+        $requestStack = $this->createRequestStack(['filterParam' => '', 'filterValue' => 'summer']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(4, count($items));
-        $_GET['filterParam'] = '';
-        $_GET['filterValue'] = '';
+        $this->assertCount(4, $items);
+
+        $requestStack = $this->createRequestStack(['filterParam' => '', 'filterValue' => '']);
+        $p = new Paginator($dispatcher, $requestStack);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
-        $this->assertEquals(4, count($items));
+        $this->assertCount(4, $items);
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ LIMIT 10 OFFSET 0', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ LIMIT 10 OFFSET 0', $executed[3]);
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ LIMIT 10 OFFSET 0', $executed[5]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10 OFFSET 0', $executed[1]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10 OFFSET 0', $executed[3]);
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10 OFFSET 0', $executed[5]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[1]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[3]);
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[5]);
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
-        return array('Test\Fixture\Entity\Article');
+        return [Article::class];
     }
 
-    private function populate($em)
+    private function populate(EntityManagerInterface $em): void
     {
         $summer = new Article();
         $summer->setTitle('summer');
@@ -658,7 +727,7 @@ ___SQL;
         $em->flush();
     }
 
-    private function populateNumeric($em)
+    private function populateNumeric(EntityManagerInterface $em): void
     {
         $zero = new Article();
         $zero->setTitle('0');
@@ -681,25 +750,5 @@ ___SQL;
         $em->persist($lower);
         $em->persist($upper);
         $em->flush();
-    }
-
-    private function getApcEntityManager()
-    {
-        $config = new \Doctrine\ORM\Configuration();
-        $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcCache());
-        $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcCache());
-        $config->setProxyDir(__DIR__);
-        $config->setProxyNamespace('Gedmo\Mapping\Proxy');
-        $config->setAutoGenerateProxyClasses(false);
-        $config->setMetadataDriverImpl($this->getMetadataDriverImplementation());
-
-        $conn = array(
-            'driver' => 'pdo_sqlite',
-            'memory' => true,
-        );
-
-        $em = \Doctrine\ORM\EntityManager::create($conn, $config);
-
-        return $em;
     }
 }

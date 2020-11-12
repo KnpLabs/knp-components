@@ -2,8 +2,8 @@
 
 namespace Test\Fixture\Entity\Shop;
 
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
@@ -52,7 +52,7 @@ class Product
         return $this->id;
     }
 
-    public function setTitle($title)
+    public function setTitle($title): void
     {
         $this->title = $title;
     }
@@ -62,7 +62,7 @@ class Product
         return $this->title;
     }
 
-    public function setDescription($description)
+    public function setDescription($description): void
     {
         $this->description = $description;
     }
@@ -72,7 +72,7 @@ class Product
         return $this->description;
     }
 
-    public function setPrice($price)
+    public function setPrice($price): void
     {
         $this->price = $price;
     }
@@ -82,7 +82,7 @@ class Product
         return $this->price;
     }
 
-    public function addTag(Tag $tag)
+    public function addTag(Tag $tag): void
     {
         $this->numTags++;
         $this->tags[] = $tag;

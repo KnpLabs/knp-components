@@ -3,7 +3,9 @@
 namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 
 use Knp\Component\Pager\Event\ItemsEvent;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Solarium query sorting
@@ -12,37 +14,61 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class SolariumQuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    /**
+     * @var Request
+     */
+    private $request;
+
+    public function __construct(Request $request)
     {
-        if (is_array($event->target) && 2 == count($event->target)) {
+        $this->request = $request;
+    }
+
+    public function items(ItemsEvent $event): void
+    {
+        // Check if the result has already been sorted by an other sort subscriber
+        $customPaginationParameters = $event->getCustomPaginationParameters();
+        if (!empty($customPaginationParameters['sorted']) ) {
+            return;
+        }
+
+        if (is_array($event->target) && 2 === count($event->target)) {
             $values = array_values($event->target);
-            list($client, $query) = $values;
+            [$client, $query] = $values;
 
             if ($client instanceof \Solarium\Client && $query instanceof \Solarium\QueryType\Select\Query\Query) {
-                if (isset($_GET[$event->options['sortFieldParameterName']])) {
-                    if (isset($event->options['sortFieldWhitelist'])) {
-                        if (!in_array($_GET[$event->options['sortFieldParameterName']], $event->options['sortFieldWhitelist'])) {
-                            throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options['sortFieldParameterName']]}] this field is not in whitelist");
+                $event->setCustomPaginationParameter('sorted', true);
+                $sortField = $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME];
+                if (null !== $sortField && $this->request->query->has($sortField)) {
+                    if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
+                        trigger_deprecation('knplabs/knp-components', '2.4.0', \sprintf('%s option is deprecated. Use %s option instead.', PaginatorInterface::SORT_FIELD_WHITELIST, PaginatorInterface::SORT_FIELD_ALLOW_LIST));
+                        $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST] = $event->options[PaginatorInterface::SORT_FIELD_WHITELIST];
+                    }
+                    if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+                        if (!in_array($this->request->query->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+                            throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($sortField)}] this field is not in allow list.");
                         }
                     }
 
-                    $query->addSort($_GET[$event->options['sortFieldParameterName']], $this->getSortDirection($event));
+                    $query->addSort($this->request->query->get($sortField), $this->getSortDirection($event));
                 }
             }
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
+        return [
             // trigger before the pagination subscriber
-            'knp_pager.items' => array('items', 1),
-        );
+            'knp_pager.items' => ['items', 1],
+        ];
     }
 
-    private function getSortDirection($event)
+    private function getSortDirection($event): string
     {
-        return isset($_GET[$event->options['sortDirectionParameterName']]) &&
-            strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc';
+        $sortDir = $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME];
+
+        return null !== $sortDir && $this->request->query->has($sortDir) &&
+            strtolower($this->request->query->get($sortDir)) === 'asc' ? 'asc' : 'desc';
     }
 }

@@ -6,24 +6,38 @@ use Doctrine\ORM\Query;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM\Query\WhereWalker;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\Helper as QueryHelper;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    /**
+     * @var Request
+     */
+    private $request;
+
+    public function __construct(?Request $request)
+    {
+        $this->request = $request ?? Request::createFromGlobals();
+    }
+
+    public function items(ItemsEvent $event): void
     {
         if ($event->target instanceof Query) {
-            if (!isset($_GET[$event->options['filterValueParameterName']]) || (empty($_GET[$event->options['filterValueParameterName']]) && $_GET[$event->options['filterValueParameterName']] !== "0")) {
+            $filterValue = $this->getQueryParameter($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
+            if (null === $filterValue || (empty($filterValue) && $filterValue !== '0')) {
                 return;
             }
-            if (!empty($_GET[$event->options['filterFieldParameterName']])) {
-                $columns = $_GET[$event->options['filterFieldParameterName']];
-            } elseif (!empty($event->options['defaultFilterFields'])) {
-                $columns = $event->options['defaultFilterFields'];
+            $filterName = $this->getQueryParameter($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]);
+            if (!empty($filterName)) {
+                $columns = $filterName;
+            } elseif (!empty($event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS])) {
+                $columns = $event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS];
             } else {
                 return;
             }
-            $value = $_GET[$event->options['filterValueParameterName']];
+            $value = $this->getQueryParameter($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
             if (false !== strpos($value, '*')) {
                 $value = str_replace('*', '%', $value);
             }
@@ -31,9 +45,13 @@ class QuerySubscriber implements EventSubscriberInterface
                 $columns = explode(',', $columns);
             }
             $columns = (array) $columns;
-            if (isset($event->options['filterFieldWhitelist'])) {
+            if (isset($event->options[PaginatorInterface::FILTER_FIELD_WHITELIST])) {
+                trigger_deprecation('knplabs/knp-components', '2.4.0', \sprintf('%s option is deprecated. Use %s option instead.', PaginatorInterface::FILTER_FIELD_WHITELIST, PaginatorInterface::FILTER_FIELD_ALLOW_LIST));
+                $event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST] = $event->options[PaginatorInterface::FILTER_FIELD_WHITELIST];
+            }
+            if (isset($event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
                 foreach ($columns as $column) {
-                    if (!in_array($column, $event->options['filterFieldWhitelist'])) {
+                    if (!in_array($column, $event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
                         throw new \UnexpectedValueException("Cannot filter by: [{$column}] this field is not in whitelist");
                     }
                 }
@@ -41,14 +59,19 @@ class QuerySubscriber implements EventSubscriberInterface
             $event->target
                     ->setHint(WhereWalker::HINT_PAGINATOR_FILTER_VALUE, $value)
                     ->setHint(WhereWalker::HINT_PAGINATOR_FILTER_COLUMNS, $columns);
-            QueryHelper::addCustomTreeWalker($event->target, 'Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM\Query\WhereWalker');
+            QueryHelper::addCustomTreeWalker($event->target, WhereWalker::class);
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-                'knp_pager.items' => array('items', 0),
-        );
+        return [
+            'knp_pager.items' => ['items', 0],
+        ];
+    }
+
+    private function getQueryParameter(string $name): ?string
+    {
+        return $this->request->query->get($name);
     }
 }

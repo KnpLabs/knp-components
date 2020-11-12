@@ -2,11 +2,11 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\Query;
 
-use Doctrine\ORM\Query\TreeWalkerAdapter,
-    Doctrine\ORM\Query\AST\SelectStatement,
-    Doctrine\ORM\Query\AST\PathExpression,
+use Doctrine\ORM\Query\AST\OrderByClause,
     Doctrine\ORM\Query\AST\OrderByItem,
-    Doctrine\ORM\Query\AST\OrderByClause;
+    Doctrine\ORM\Query\AST\PathExpression,
+    Doctrine\ORM\Query\AST\SelectStatement,
+    Doctrine\ORM\Query\TreeWalkerAdapter;
 
 /**
  * OrderBy Query TreeWalker for Sortable functionality
@@ -36,7 +36,7 @@ class OrderByWalker extends TreeWalkerAdapter
      * @param SelectStatement $AST
      * @return void
      */
-    public function walkSelectStatement(SelectStatement $AST)
+    public function walkSelectStatement(SelectStatement $AST): void
     {
         $query = $this->_getQuery();
         $fields = (array)$query->getHint(self::HINT_PAGINATOR_SORT_FIELD);
@@ -89,7 +89,7 @@ class OrderByWalker extends TreeWalkerAdapter
                     array_unshift($AST->orderByClause->orderByItems, $orderByItem);
                 }
             } else {
-                $AST->orderByClause = new OrderByClause(array($orderByItem));
+                $AST->orderByClause = new OrderByClause([$orderByItem]);
             }
         }
     }

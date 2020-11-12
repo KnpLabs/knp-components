@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /**
  * @ODM\Document
  */
-class Image
+final class Image
 {
     /**
      * @ODM\Id
@@ -51,7 +51,7 @@ class Image
         return $this->id;
     }
 
-    public function setTitle($title)
+    public function setTitle($title): void
     {
         $this->title = $title;
     }

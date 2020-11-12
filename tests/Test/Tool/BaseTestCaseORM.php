@@ -2,12 +2,18 @@
 
 namespace Test\Tool;
 
-use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Platforms\MySqlPlatform;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-use Doctrine\ORM\EntityManager;
-use Doctrine\Common\EventManager;
 use Doctrine\ORM\Tools\SchemaTool;
 
 /**
@@ -21,7 +27,7 @@ use Doctrine\ORM\Tools\SchemaTool;
  * @link http://www.gediminasm.org
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
+abstract class BaseTestCaseORM extends BaseTestCase
 {
     /**
      * @var EntityManager
@@ -36,9 +42,8 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-
     }
 
     /**
@@ -51,20 +56,20 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
      */
     protected function getMockSqliteEntityManager(EventManager $evm = null)
     {
-        $conn = array(
+        $conn = [
             'driver' => 'pdo_sqlite',
             'memory' => true,
-        );
+        ];
 
         $config = $this->getMockAnnotatedConfig();
         $em = EntityManager::create($conn, $config, $evm ?: $this->getEventManager());
 
-        $schema = array_map(function($class) use ($em) {
+        $schema = \array_map(function ($class) use ($em) {
             return $em->getClassMetadata($class);
         }, (array)$this->getUsedEntityFixtures());
 
         $schemaTool = new SchemaTool($em);
-        $schemaTool->dropSchema(array());
+        $schemaTool->dropSchema([]);
         $schemaTool->createSchema($schema);
         return $this->em = $em;
     }
@@ -83,12 +88,12 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
         $config = $this->getMockAnnotatedConfig();
         $em = EntityManager::create($conn, $config, $evm ?: $this->getEventManager());
 
-        $schema = array_map(function($class) use ($em) {
+        $schema = \array_map(function ($class) use ($em) {
             return $em->getClassMetadata($class);
         }, (array)$this->getUsedEntityFixtures());
 
         $schemaTool = new SchemaTool($em);
-        $schemaTool->dropSchema(array());
+        $schemaTool->dropSchema([]);
         $schemaTool->createSchema($schema);
         return $this->em = $em;
     }
@@ -102,18 +107,22 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
      */
     protected function getMockMappedEntityManager(EventManager $evm = null)
     {
-        $driver = $this->getMock('Doctrine\DBAL\Driver');
+        $driver = $this->createMock(Driver::class);
         $driver->expects($this->once())
             ->method('getDatabasePlatform')
-            ->will($this->returnValue($this->getMock('Doctrine\DBAL\Platforms\MySqlPlatform')));
+            ->willReturn($this->createMock(MySqlPlatform::class));
 
-        $conn = $this->getMock('Doctrine\DBAL\Connection', array(), array(array(), $driver));
-        $conn->expects($this->once())
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setConstructorArgs([[], $driver])
+            ->getMock();
+
+        $connection->expects($this->once())
             ->method('getEventManager')
-            ->will($this->returnValue($evm ?: $this->getEventManager()));
+            ->willReturn($evm ?: $this->getEventManager());
 
         $config = $this->getMockAnnotatedConfig();
-        $this->em = EntityManager::create($conn, $config);
+        $this->em = EntityManager::create($connection, $config);
+
         return $this->em;
     }
 
@@ -122,7 +131,7 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
      *
      * @throws \RuntimeException
      */
-    protected function startQueryLog()
+    protected function startQueryLog(): void
     {
         if (!$this->em || !$this->em->getConnection()->getDatabasePlatform()) {
             throw new \RuntimeException('EntityManager and database platform must be initialized');
@@ -132,7 +141,7 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
             ->getConfiguration()
             ->expects($this->any())
             ->method('getSQLLogger')
-            ->will($this->returnValue($this->queryAnalyzer));
+            ->willReturn($this->queryAnalyzer);
     }
 
     /**
@@ -143,28 +152,34 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
      * @param boolean $writeToLog
      * @throws \RuntimeException
      */
-    protected function stopQueryLog($dumpOnlySql = false, $writeToLog = false)
+    protected function stopQueryLog($dumpOnlySql = false, $writeToLog = false): void
     {
         if ($this->queryAnalyzer) {
-            $output = $this->queryAnalyzer->getOutput($dumpOnlySql);
-            if ($writeToLog) {
-                $fileName = __DIR__.'/../../temp/query_debug_'.time().'.log';
-                if (($file = fopen($fileName, 'w+')) !== false) {
-                    fwrite($file, $output);
-                    fclose($file);
-                } else {
-                    throw new \RuntimeException('Unable to write to the log file');
-                }
-            } else {
+            \ob_start();
+            $this->queryAnalyzer->getOutput($dumpOnlySql);
+            $output = \ob_get_contents();
+            \ob_end_clean();
+
+            if (!$writeToLog) {
                 echo $output;
+
+                return;
             }
+
+            $fileName = __DIR__.'/../../temp/query_debug_'.\time().'.log';
+            if (($file = \fopen($fileName, 'wb+')) !== false) {
+                throw new \RuntimeException('Unable to write to the log file');
+            }
+
+            \fwrite($file, $output);
+            \fclose($file);
         }
     }
 
     /**
      * Creates default mapping driver
      *
-     * @return \Doctrine\ORM\Mapping\Driver\Driver
+     * @return MappingDriver
      */
     protected function getMetadataDriverImplementation()
     {
@@ -185,40 +200,39 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
      */
     private function getEventManager()
     {
-        $evm = new EventManager;
-        return $evm;
+        return new EventManager();
     }
 
     /**
      * Get annotation mapping configuration
      *
-     * @return Doctrine\ORM\Configuration
+     * @return \Doctrine\ORM\Configuration
      */
     private function getMockAnnotatedConfig()
     {
-        $config = $this->getMock('Doctrine\ORM\Configuration');
+        $config = $this->createMock(Configuration::class);
         $config
             ->expects($this->once())
             ->method('getProxyDir')
-            ->will($this->returnValue(__DIR__.'/../../temp'))
+            ->willReturn(__DIR__.'/../../temp')
         ;
 
         $config
             ->expects($this->once())
             ->method('getProxyNamespace')
-            ->will($this->returnValue('Proxy'))
+            ->willReturn('Proxy')
         ;
 
         $config
             ->expects($this->once())
             ->method('getAutoGenerateProxyClasses')
-            ->will($this->returnValue(true))
+            ->willReturn(true)
         ;
 
         $config
             ->expects($this->once())
             ->method('getClassMetadataFactoryName')
-            ->will($this->returnValue('Doctrine\\ORM\\Mapping\\ClassMetadataFactory'))
+            ->willReturn(ClassMetadataFactory::class)
         ;
 
         $mappingDriver = $this->getMetadataDriverImplementation();
@@ -226,37 +240,37 @@ abstract class BaseTestCaseORM extends \PHPUnit_Framework_TestCase
         $config
             ->expects($this->any())
             ->method('getMetadataDriverImpl')
-            ->will($this->returnValue($mappingDriver))
+            ->willReturn($mappingDriver)
         ;
 
         $config
             ->expects($this->any())
             ->method('getDefaultRepositoryClassName')
-            ->will($this->returnValue('Doctrine\\ORM\\EntityRepository'))
+            ->willReturn(EntityRepository::class)
         ;
 
         $config
             ->expects($this->any())
             ->method('getQuoteStrategy')
-            ->will($this->returnValue(new DefaultQuoteStrategy()))
+            ->willReturn(new DefaultQuoteStrategy())
         ;
 
         $config
             ->expects($this->any())
             ->method('getNamingStrategy')
-            ->will($this->returnValue(new DefaultNamingStrategy()))
+            ->willReturn(new DefaultNamingStrategy())
         ;
 
         $config
             ->expects($this->any())
             ->method('getCustomHydrationMode')
-            ->will($this->returnValue('Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\AsIsHydrator'))
+            ->willReturn('Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\AsIsHydrator')
         ;
 
         $config
             ->expects($this->any())
             ->method('getDefaultQueryHints')
-            ->will($this->returnValue(array()))
+            ->willReturn([])
         ;
 
         return $config;

@@ -2,14 +2,15 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Paginate;
 
-use ModelCriteria;
-
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
+
+use Knp\Component\Pager\PaginatorInterface;
+use ModelCriteria;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PropelQuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
         if ($event->target instanceof ModelCriteria) {
             // process count
@@ -18,7 +19,7 @@ class PropelQuerySubscriber implements EventSubscriberInterface
                 ->limit(0)
                 ->offset(0)
             ;
-            if ($event->options['distinct']) {
+            if ($event->options[PaginatorInterface::DISTINCT]) {
                 $countQuery->distinct();
             }
             $event->count = intval($countQuery->count());
@@ -26,7 +27,7 @@ class PropelQuerySubscriber implements EventSubscriberInterface
             $result = null;
             if ($event->count) {
                 $resultQuery = clone $event->target;
-                if ($event->options['distinct']) {
+                if ($event->options[PaginatorInterface::DISTINCT]) {
                     $resultQuery->distinct();
                 }
                 $resultQuery
@@ -35,17 +36,17 @@ class PropelQuerySubscriber implements EventSubscriberInterface
                 ;
                 $result = $resultQuery->find();
             } else {
-                $result = array(); // count is 0
+                $result = []; // count is 0
             }
             $event->items = $result;
             $event->stopPropagation();
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 0)
-        );
+        return [
+            'knp_pager.items' => ['items', 0]
+        ];
     }
 }

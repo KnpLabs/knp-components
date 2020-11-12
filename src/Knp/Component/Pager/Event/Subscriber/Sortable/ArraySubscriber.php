@@ -3,7 +3,10 @@
 namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 
 use Knp\Component\Pager\Event\ItemsEvent;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -24,61 +27,110 @@ class ArraySubscriber implements EventSubscriberInterface
      */
     private $propertyAccessor;
 
-    public function __construct(PropertyAccessorInterface $accessor = null)
+    /**
+     * @var Request
+     */
+    private $request;
+
+    public function __construct(Request $request = null, PropertyAccessorInterface $accessor = null)
     {
         if (!$accessor && class_exists('Symfony\Component\PropertyAccess\PropertyAccess')) {
             $accessor = PropertyAccess::createPropertyAccessorBuilder()->enableMagicCall()->getPropertyAccessor();
         }
 
         $this->propertyAccessor = $accessor;
+        // check needed because $request must be nullable, being the second parameter (with the first one nullable)
+        if (null === $request) {
+            throw new \InvalidArgumentException('Request must be initialized.');
+        }
+        $this->request = $request;
     }
 
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
-        if (!is_array($event->target) || empty($_GET[$event->options['sortFieldParameterName']])) {
+        // Check if the result has already been sorted by an other sort subscriber
+        $customPaginationParameters = $event->getCustomPaginationParameters();
+        if (!empty($customPaginationParameters['sorted']) ) {
+            return;
+        }
+        $sortField = $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME];
+        if (!is_array($event->target) || null === $sortField || !$this->request->query->has($sortField)) {
             return;
         }
 
-        if (isset($event->options['sortFieldWhitelist']) && !in_array($_GET[$event->options['sortFieldParameterName']], $event->options['sortFieldWhitelist'])) {
-            throw new \UnexpectedValueException("Cannot sort by: [{$_GET[$event->options['sortFieldParameterName']]}] this field is not in whitelist");
+        $event->setCustomPaginationParameter('sorted', true);
+
+        if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
+            trigger_deprecation('knplabs/knp-components', '2.4.0', \sprintf('%s option is deprecated. Use %s option instead.', PaginatorInterface::SORT_FIELD_WHITELIST, PaginatorInterface::SORT_FIELD_ALLOW_LIST));
+            $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST] = $event->options[PaginatorInterface::SORT_FIELD_WHITELIST];
+        }
+        if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST]) && !in_array($this->request->query->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+            throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($sortField)}] this field is not in allow list.");
         }
 
-        $sortFunction = isset($event->options['sortFunction']) ? $event->options['sortFunction'] : array($this, 'proxySortFunction');
-        $sortField = $_GET[$event->options['sortFieldParameterName']];
+        $sortFunction = isset($event->options['sortFunction']) ? $event->options['sortFunction'] : [$this, 'proxySortFunction'];
+        $sortField = $this->request->query->get($sortField);
 
         // compatibility layer
         if ($sortField[0] === '.') {
             $sortField = substr($sortField, 1);
         }
 
-        call_user_func_array($sortFunction, array(
+        call_user_func_array($sortFunction, [
             &$event->target,
             $sortField,
-            isset($_GET[$event->options['sortDirectionParameterName']]) && strtolower($_GET[$event->options['sortDirectionParameterName']]) === 'asc' ? 'asc' : 'desc'
-        ));
+            $this->getSortDirection($event->options)
+        ]);
     }
 
-    private function proxySortFunction(&$target, $sortField, $sortDirection) {
+    private function getSortDirection(array $options): string
+    {
+        if (!$this->request->query->has($options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME])) {
+            return 'desc';
+        }
+        $direction = $this->request->query->get($options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]);
+        if (strtolower($direction) === 'asc') {
+            return 'asc';
+        }
+
+        return 'desc';
+    }
+
+    private function proxySortFunction(&$target, $sortField, $sortDirection): bool
+    {
         $this->currentSortingField = $sortField;
         $this->sortDirection = $sortDirection;
 
-        return usort($target, array($this, 'sortFunction'));
+        return usort($target, [$this, 'sortFunction']);
     }
 
     /**
      * @param mixed $object1 first object to compare
      * @param mixed $object2 second object to compare
      *
-     * @return boolean
+     * @return int
      */
-    private function sortFunction($object1, $object2)
+    private function sortFunction($object1, $object2): int
     {
         if (!$this->propertyAccessor) {
             throw new \UnexpectedValueException('You need symfony/property-access component to use this sorting function');
         }
 
-        $fieldValue1 = $this->propertyAccessor->getValue($object1, $this->currentSortingField);
-        $fieldValue2 = $this->propertyAccessor->getValue($object2, $this->currentSortingField);
+        if (!$this->propertyAccessor->isReadable($object1, $this->currentSortingField) || !$this->propertyAccessor->isReadable($object2, $this->currentSortingField)) {
+            return 0;
+        }
+
+        try {
+            $fieldValue1 = $this->propertyAccessor->getValue($object1, $this->currentSortingField);
+        } catch (UnexpectedTypeException $e) {
+            return -1 * $this->getSortCoefficient();
+        }
+
+        try {
+            $fieldValue2 = $this->propertyAccessor->getValue($object2, $this->currentSortingField);
+        } catch (UnexpectedTypeException $e) {
+            return 1 * $this->getSortCoefficient();
+        }
 
         if (is_string($fieldValue1)) {
             $fieldValue1 = mb_strtolower($fieldValue1);
@@ -92,13 +144,18 @@ class ArraySubscriber implements EventSubscriberInterface
             return 0;
         }
 
-        return ($fieldValue1 > $fieldValue2 ? 1 : -1) * ($this->sortDirection === 'asc' ? 1 : -1);
+        return ($fieldValue1 > $fieldValue2 ? 1 : -1) * $this->getSortCoefficient();
     }
 
-    public static function getSubscribedEvents()
+    private function getSortCoefficient(): int
     {
-        return array(
-            'knp_pager.items' => array('items', 1)
-        );
+        return $this->sortDirection === 'asc' ? 1 : -1;
+    }
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'knp_pager.items' => ['items', 1]
+        ];
     }
 }

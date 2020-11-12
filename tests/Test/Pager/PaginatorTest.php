@@ -1,33 +1,36 @@
 <?php
 
-use Test\Tool\BaseTestCase;
+namespace Test\Pager;
+
+use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
+use Test\Tool\BaseTestCase;
 
-class PaginatorTest extends BaseTestCase
+final class PaginatorTest extends BaseTestCase
 {
     /**
      * @test
-     * @expectedException RuntimeException
      */
-    function shouldNotBeAbleToPaginateWithoutListeners()
+    public function shouldNotBeAbleToPaginateWithoutListeners(): void
     {
-        $p = new Paginator(new EventDispatcher);
-        $p->paginate(array());
+        $this->expectException(\RuntimeException::class);
+
+        $paginator = new Paginator(new EventDispatcher());
+        $paginator->paginate([]);
     }
 
     /**
      * @test
-     * @expectedException RuntimeException
      */
-    function shouldFailToPaginateUnsupportedValue()
+    public function shouldFailToPaginateUnsupportedValue(): void
     {
-        $dispatcher = new EventDispatcher;
-        $dispatcher->addSubscriber(new PaginationSubscriber);
+        $this->expectException(\RuntimeException::class);
 
-        $p = new Paginator($dispatcher);
-        $view = $p->paginate(null, 1, 10);
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new PaginationSubscriber());
+
+        $paginator = new Paginator($dispatcher);
+        $view = $paginator->paginate(null, 1, 10);
     }
 }

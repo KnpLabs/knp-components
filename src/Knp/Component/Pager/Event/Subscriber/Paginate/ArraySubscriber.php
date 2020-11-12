@@ -2,13 +2,13 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Paginate;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Knp\Component\Pager\Event\ItemsEvent;
 use ArrayObject;
+use Knp\Component\Pager\Event\ItemsEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ArraySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    public function items(ItemsEvent $event): void
     {
         if (is_array($event->target)) {
             $event->count = count($event->target);
@@ -29,10 +29,10 @@ class ArraySubscriber implements EventSubscriberInterface
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', -1/* other data arrays should be analized first*/)
-        );
+        return [
+            'knp_pager.items' => ['items', -1/* other data arrays should be analized first*/]
+        ];
     }
 }

@@ -2,22 +2,34 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Filtration;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class PropelQuerySubscriber implements EventSubscriberInterface
 {
-    public function items(ItemsEvent $event)
+    /**
+     * @var Request
+     */
+    private $request;
+
+    public function __construct(?Request $request)
+    {
+        $this->request = $request ?? Request::createFromGlobals();
+    }
+
+    public function items(ItemsEvent $event): void
     {
         $query = $event->target;
         if ($query instanceof \ModelCriteria) {
-            if (empty($_GET[$event->options['filterValueParameterName']])) {
+            if (!$this->request->query->has($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME])) {
                 return;
             }
-            if (!empty($_GET[$event->options['filterFieldParameterName']])) {
-                $columns = $_GET[$event->options['filterFieldParameterName']];
-            } elseif (!empty($event->options['defaultFilterFields'])) {
-                $columns = $event->options['defaultFilterFields'];
+            if ($this->request->query->has($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME])) {
+                $columns = $this->request->query->get($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]);
+            } elseif (!empty($event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS])) {
+                $columns = $event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS];
             } else {
                 return;
             }
@@ -25,14 +37,18 @@ class PropelQuerySubscriber implements EventSubscriberInterface
                 $columns = explode(',', $columns);
             }
             $columns = (array) $columns;
-            if (isset($event->options['filterFieldWhitelist'])) {
+            if (isset($event->options[PaginatorInterface::FILTER_FIELD_WHITELIST])) {
+                trigger_deprecation('knplabs/knp-components', '2.4.0', \sprintf('%s option is deprecated. Use %s option instead.', PaginatorInterface::FILTER_FIELD_WHITELIST, PaginatorInterface::FILTER_FIELD_ALLOW_LIST));
+                $event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST] = $event->options[PaginatorInterface::FILTER_FIELD_WHITELIST];
+            }
+            if (isset($event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
                 foreach ($columns as $column) {
-                    if (!in_array($column, $event->options['filterFieldWhitelist'])) {
+                    if (!in_array($column, $event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
                         throw new \UnexpectedValueException("Cannot filter by: [{$column}] this field is not in whitelist");
                     }
                 }
             }
-            $value = $_GET[$event->options['filterValueParameterName']];
+            $value = $this->request->query->get($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
             $criteria = \Criteria::EQUAL;
             if (false !== strpos($value, '*')) {
                 $value = str_replace('*', '%', $value);
@@ -48,10 +64,10 @@ class PropelQuerySubscriber implements EventSubscriberInterface
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
-        return array(
-            'knp_pager.items' => array('items', 0),
-        );
+        return [
+            'knp_pager.items' => ['items', 0],
+        ];
     }
 }

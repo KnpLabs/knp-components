@@ -1,6 +1,6 @@
 # Intro to Knp Pager Component
 
-This is a PHP 5.3 paginator with a totally different core concept.
+This is a PHP 7 paginator with a totally different core concept.
 
 **Note:** it is still experimental, any ideas on structural design are very welcome
 
@@ -55,7 +55,32 @@ $pagination->renderer = function($data) use ($template) {
 
 echo $pagination;
 
-// or paginate Doctrine ORM query
+```
 
-$pagination = $paginator->paginate($em->createQuery('SELECT a FROM Entity\Article a'), 1, 10);
+### Doctrine query pagination
+
+Easy paginate over Doctrine ORM query:
+
+```php
+$pagination = $paginator->paginate($em->createQuery('SELECT a FROM Entity\Article a'), 1/*page*/, 10/*limit*/);
+```
+
+### Custom data repository pagination
+
+For applications having custom data repositories (like DDD repositories, CQRS read models) you can provide custom
+data rerieval inside callbacks.
+
+```php
+$repository = ...;
+
+$count = function () use ($repository) {
+    // your $repository invocation here
+};
+$items = function ($offset, $limit) use ($repository) {
+    // your $repository invocation here
+};
+$target = new CallbackPagination($count, $items);
+$pagination = $paginator->paginate($target, 2/*page*/, 10/*limit*/);
+
+// ...
 ```

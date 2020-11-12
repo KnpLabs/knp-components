@@ -2,34 +2,33 @@
 
 namespace Test\Tool;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\DBAL\DriverManager;
-use Doctrine\ODM\PHPCR\Mapping\Driver\AnnotationDriver;
-use Doctrine\ODM\PHPCR\DocumentManager;
 use Doctrine\Common\EventManager;
-use Doctrine\MongoDB\Connection;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\ODM\PHPCR\DocumentManager;
+use Doctrine\ODM\PHPCR\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\PHPCR\Query\Query;
 use Jackalope\RepositoryFactoryDoctrineDBAL;
-use Jackalope\Session;
 use Jackalope\Transport\DoctrineDBAL\RepositorySchema;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Base test case contains common mock objects
  */
-abstract class BaseTestCasePHPCRODM extends \PHPUnit_Framework_TestCase
+abstract class BaseTestCasePHPCRODM extends TestCase
 {
     /**
      * @var DocumentManager
      */
     protected $dm;
 
-    protected function setUp()
+    protected function setUp(): void
     {
-        if (!class_exists('Doctrine\ODM\PHPCR\Query\Query')) {
+        if (!\class_exists(Query::class)) {
             $this->markTestSkipped('Doctrine PHPCR-ODM is not available');
         }
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         if ($this->dm) {
             $this->dm = null;
@@ -53,16 +52,16 @@ abstract class BaseTestCasePHPCRODM extends \PHPUnit_Framework_TestCase
 
     private function getSession()
     {
-        $connection = DriverManager::getConnection(array(
+        $connection = DriverManager::getConnection([
             'driver' => 'pdo_sqlite',
             'path'   => ':memory:',
-        ));
+        ]);
         $factory = new RepositoryFactoryDoctrineDBAL();
-        $repository = $factory->getRepository(array(
+        $repository = $factory->getRepository([
             'jackalope.doctrine_dbal_connection' => $connection,
-        ));
+        ]);
 
-        $schema = new RepositorySchema(array('disable_fks' => true), $connection);
+        $schema = new RepositorySchema(['disable_fks' => true], $connection);
         $schema->reset();
 
         $session = $repository->login(new \PHPCR\SimpleCredentials('', ''));
@@ -82,7 +81,6 @@ CND;
 
     private function getEventManager()
     {
-        $evm = new EventManager();
-        return $evm;
+        return new EventManager();
     }
 }
