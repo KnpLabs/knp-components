@@ -8,7 +8,7 @@ This tutorial will cover installation and usage examples.
 
 ## Basic usage
 
-As mentioned in [introduction](https://github.com/knplabs/knp-components/tree/master/doc/pager/intro.md),
+As mentioned in [introduction](https://github.com/knplabs/knp-components/tree/master/docs/pager/intro.md),
 paginator uses event listeners to paginate the given data. First we will start from the simplest data - array.
 Lets add some code in **index.php** and see it in action:
 

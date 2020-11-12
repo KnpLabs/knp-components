@@ -56,7 +56,7 @@ final class Paginator implements PaginatorInterface
     /**
      * Override the default paginator options
      * to be reused for paginations
-     */ 
+     */
     public function setDefaultPaginatorOptions(array $options): void
     {
         $this->defaultOptions = \array_merge($this->defaultOptions, $options);
