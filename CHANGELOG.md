@@ -7,6 +7,13 @@
 * fixed deprecation in Symfony 5
 * removed deprecated features
 
+## 2.5.0
+
+*To be released*
+
+* deprecated not passing EventDispathcer to Paginator constructor
+>>>>>>> f19ae17... deprecate not passing EventDispatcher to Paginator
+
 ## 2.4.0
 
 *Released at 2020-07-13*
