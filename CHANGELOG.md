@@ -3,6 +3,7 @@
 *Unreleased*
 
 * dropped support for Symfony 3
+* dropped support for PHP 7.2
 * fixed deprecation in Symfony 5
 * removed deprecated features
 
