@@ -1,6 +1,6 @@
 ## 2.5.0
 
-*To be released*
+*Released at 2020-11-22*
 
 * deprecated not passing EventDispathcer to Paginator constructor
 
