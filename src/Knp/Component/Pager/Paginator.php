@@ -61,7 +61,7 @@ class Paginator implements PaginatorInterface
     {
         $this->eventDispatcher = \class_exists(BaseEvent::class) && \class_exists(LegacyEventDispatcherProxy::class) ? LegacyEventDispatcherProxy::decorate($eventDispatcher) : $eventDispatcher;
         if (is_null($this->eventDispatcher)) {
-            trigger_deprecation('knplabs/knp-components', '2.5.0', 'Not passing EventDispacher is deprecated and will no longer be supported in v3.');
+            trigger_deprecation('knplabs/knp-components', '2.5.0', 'Not passing EventDispatcher is deprecated and will no longer be supported in v3.');
             $this->eventDispatcher = new EventDispatcher();
             $this->eventDispatcher->addSubscriber(new PaginationSubscriber);
             $this->eventDispatcher->addSubscriber(new SortableSubscriber);
