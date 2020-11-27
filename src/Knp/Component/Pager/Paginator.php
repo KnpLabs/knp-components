@@ -80,8 +80,8 @@ final class Paginator implements PaginatorInterface
         $request = null === $this->requestStack ? Request::createFromGlobals() : $this->requestStack->getCurrentRequest();
 
         // default sort field and direction are set based on options (if available)
-        if (isset($options[self::DEFAULT_SORT_FIELD_NAME]) && !$request->query->has($options[self::SORT_FIELD_PARAMETER_NAME])) {
-           $request->query->set($options[self::SORT_FIELD_PARAMETER_NAME], $options[self::DEFAULT_SORT_FIELD_NAME]);
+        if (isset($options[PaginatorInterface::DEFAULT_SORT_FIELD_NAME]) && !$request->query->has($options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME])) {
+           $request->query->set($options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME], $options[PaginatorInterface::DEFAULT_SORT_FIELD_NAME]);
 
             if (!$request->query->has($options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME])) {
                 $request->query->set($options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME], $options[PaginatorInterface::DEFAULT_SORT_DIRECTION] ?? 'asc');
