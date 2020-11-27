@@ -2,7 +2,7 @@
 
 *Released at 2020-11-22*
 
-* deprecated not passing EventDispathcer to Paginator constructor
+* deprecated not passing EventDispatcher to Paginator constructor
 
 ## 2.4.0
 
