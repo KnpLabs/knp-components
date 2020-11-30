@@ -1,3 +1,13 @@
+## 3.0.0
+
+*Released at 2020-11-30*
+
+* dropped support for Symfony 3
+* dropped support for PHP 7.2
+* fixed deprecation in Symfony 5
+* removed deprecated features
+
+
 ## 2.5.0
 
 *Released at 2020-11-22*
