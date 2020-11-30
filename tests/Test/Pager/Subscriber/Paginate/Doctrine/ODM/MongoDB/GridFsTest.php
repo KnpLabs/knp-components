@@ -2,7 +2,6 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ODM\MongoDB;
 
-use Knp\Component\Pager\Paginator;
 use Test\Fixture\Document\Image;
 use Test\Tool\BaseTestCaseMongoODM;
 
@@ -20,7 +19,7 @@ final class GridFsTest extends BaseTestCaseMongoODM
             ->getQuery()
         ;
 
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($query, 1, 10);
 
         $cursor = $query->execute();

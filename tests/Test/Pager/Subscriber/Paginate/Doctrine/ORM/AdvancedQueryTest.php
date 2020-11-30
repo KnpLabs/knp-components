@@ -3,7 +3,6 @@
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
 use Doctrine\ORM\Query;
-use Knp\Component\Pager\Paginator;
 use Test\Fixture\Entity\Shop\Product;
 use Test\Fixture\Entity\Shop\Tag;
 use Test\Tool\BaseTestCaseORM;
@@ -29,7 +28,7 @@ final class AdvancedQueryTest extends BaseTestCaseORM
 SQL;
         $q = $this->em->createQuery($dql);
 
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $this->startQueryLog();
         $view = $p->paginate($q, 1, 2);
     }
@@ -50,7 +49,7 @@ SQL;
 SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($q, 1, 10, ['wrap-queries' => true]);
         $this->assertCount(3, $view);
     }
@@ -69,7 +68,7 @@ SQL;
           p.tags t
 SQL;
         $q = $this->em->createQuery($dql);
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($q, 1, 10);
         $this->assertCount(3, $view);
         $items = $view->getItems();
@@ -110,7 +109,7 @@ SQL;
         $q = $this->em->createQuery($dql);
         $q->setParameter('keyword', '%Star%');
         $q->setHydrationMode(\Doctrine\ORM\Query::HYDRATE_ARRAY);
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($q, 1, 10);
         $this->assertCount(1, $view);
         $items = $view->getItems();
@@ -135,7 +134,7 @@ SQL;
 SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $view = $p->paginate($q, 1, 10, ['wrap-queries' => true]);
         $this->assertCount(3, $view);
     }

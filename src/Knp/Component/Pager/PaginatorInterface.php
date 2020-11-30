@@ -13,13 +13,11 @@ interface PaginatorInterface
     public const DEFAULT_SORT_DIRECTION = 'defaultSortDirection';
     public const DEFAULT_FILTER_FIELDS = 'defaultFilterFields';
     public const SORT_FIELD_PARAMETER_NAME = 'sortFieldParameterName';
-    public const SORT_FIELD_WHITELIST = 'sortFieldWhitelist';   // deprecated
     public const SORT_FIELD_ALLOW_LIST = 'sortFieldAllowList';
     public const SORT_DIRECTION_PARAMETER_NAME = 'sortDirectionParameterName';
     public const PAGE_PARAMETER_NAME = 'pageParameterName';
     public const FILTER_FIELD_PARAMETER_NAME = 'filterFieldParameterName';
     public const FILTER_VALUE_PARAMETER_NAME = 'filterValueParameterName';
-    public const FILTER_FIELD_WHITELIST = 'filterFieldWhitelist';   // deprecated
     public const FILTER_FIELD_ALLOW_LIST = 'filterFieldAllowList';
     public const DISTINCT = 'distinct';
     public const PAGE_OUT_OF_RANGE = 'pageOutOfRange';
@@ -36,15 +34,14 @@ interface PaginatorInterface
      * pagination object (might be aggregated helper object)
      * responsible for the pagination result representation
      *
-     * @param mixed $target - anything what needs to be paginated
-     * @param int $page - page number, starting from 1
-     * @param int $limit - number of items per page
-     * @param array $options - less used options:
-     *     boolean $distinct - default true for distinction of results
-     *     string $alias - pagination alias, default none
-     *     array $sortFieldWhitelist - sortable whitelist for target fields being paginated
+     * @param mixed $target  anything what needs to be paginated
+     * @param int   $page    page number, starting from 1
+     * @param int   $limit   number of items per page
+     * @param array $options less used options:
+     *                          bool   $distinct           default true for distinction of results
+     *                          string $alias              pagination alias, default none
+     *                          array  $sortFieldAllowList sortable allow list for target fields being paginated
      * @throws \LogicException
-     * @return \Knp\Component\Pager\Pagination\PaginationInterface
      */
     public function paginate($target, int $page = 1, int $limit = 10, array $options = []): PaginationInterface;
 }

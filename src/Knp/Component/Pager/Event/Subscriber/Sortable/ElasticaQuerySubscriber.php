@@ -38,10 +38,6 @@ class ElasticaQuerySubscriber implements EventSubscriberInterface
                 $field = $this->request->query->get($sortField);
                 $dir   = null !== $sortDir && $this->request->query->has($sortDir) && strtolower($this->request->query->get($sortDir)) === 'asc' ? 'asc' : 'desc';
 
-                if (isset($event->options[PaginatorInterface::SORT_FIELD_WHITELIST])) {
-                    trigger_deprecation('knplabs/knp-components', '2.4.0', \sprintf('%s option is deprecated. Use %s option instead.', PaginatorInterface::SORT_FIELD_WHITELIST, PaginatorInterface::SORT_FIELD_ALLOW_LIST));
-                    $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST] = $event->options[PaginatorInterface::SORT_FIELD_WHITELIST];
-                }
                 if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST]) && !in_array($field, $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
                     throw new \UnexpectedValueException(sprintf('Cannot sort by: [%s] this field is not in allow list.', $field));
                 }

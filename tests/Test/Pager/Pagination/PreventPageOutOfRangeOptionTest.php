@@ -3,7 +3,6 @@
 namespace Test\Pager\Pagination;
 
 use Knp\Component\Pager\Exception\PageNumberOutOfRangeException;
-use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\PaginatorInterface;
 use Test\Tool\BaseTestCase;
 
@@ -14,7 +13,7 @@ final class PreventPageOutOfRangeOptionTest extends BaseTestCase
      */
     public function shouldBeAbleToHandleOutOfRangePageNumberAsArgument(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $items = \range(1, 23);
         // "fix" option
         $view = $p->paginate($items, 10, 10, [PaginatorInterface::PAGE_OUT_OF_RANGE => PaginatorInterface::PAGE_OUT_OF_RANGE_FIX]);
@@ -37,7 +36,7 @@ final class PreventPageOutOfRangeOptionTest extends BaseTestCase
      */
     public function shouldBeAbleToHandleOutOfRangePageNumberAsArgumentWithEmptyList(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $items = []; //empty array on fix argument perform again paginate with page = 0.
         // "fix" option
         $view = $p->paginate($items, 10, 10, [PaginatorInterface::PAGE_OUT_OF_RANGE => PaginatorInterface::PAGE_OUT_OF_RANGE_FIX]);
@@ -60,7 +59,7 @@ final class PreventPageOutOfRangeOptionTest extends BaseTestCase
      */
     public function shouldBeAbleToHandleOutOfRangePageNumberAsDefaultOption(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $items = \range(1, 23);
         // "fix" option
         $p->setDefaultPaginatorOptions([
@@ -89,7 +88,7 @@ final class PreventPageOutOfRangeOptionTest extends BaseTestCase
      */
     public function shouldBeAbleToGetMaxPageWhenExceptionIsThrown(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $items = \range(1, 23);
 
         try {
@@ -104,7 +103,7 @@ final class PreventPageOutOfRangeOptionTest extends BaseTestCase
      */
     public function shouldBeAbleToTreatFirstPageAsValidWithEmptyList(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $items = []; //empty array on fix argument perform again paginate with page = 0.
         // "fix" option
         $view = $p->paginate($items, 1, 10, [PaginatorInterface::PAGE_OUT_OF_RANGE => PaginatorInterface::PAGE_OUT_OF_RANGE_FIX]);
