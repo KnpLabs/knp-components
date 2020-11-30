@@ -3,6 +3,7 @@
 namespace Test\Tool;
 
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ODM\PHPCR\DocumentManager;
 use Doctrine\ODM\PHPCR\Mapping\Driver\AnnotationDriver;
@@ -34,7 +35,7 @@ abstract class BaseTestCasePHPCRODM extends BaseTestCase
         }
     }
 
-    protected function getMockDocumentManager(EventManager $evm = null)
+    protected function getMockDocumentManager(EventManager $evm = null): DocumentManager
     {
         $config = new \Doctrine\ODM\PHPCR\Configuration();
         $config->setMetadataDriverImpl($this->getMetadataDriverImplementation());
@@ -44,28 +45,29 @@ abstract class BaseTestCasePHPCRODM extends BaseTestCase
         return $this->dm;
     }
 
-    protected function getMetadataDriverImplementation()
+    protected function getMetadataDriverImplementation(): AnnotationDriver
     {
         return new AnnotationDriver($_ENV['annotation_reader']);
     }
 
     private function getSession()
     {
-        $connection = DriverManager::getConnection([
-            'driver' => 'pdo_sqlite',
-            'path'   => ':memory:',
-        ]);
-        $factory = new RepositoryFactoryDoctrineDBAL();
-        $repository = $factory->getRepository([
-            'jackalope.doctrine_dbal_connection' => $connection,
-        ]);
+        try {
+            $connection = DriverManager::getConnection([
+                'driver' => 'pdo_sqlite',
+                'path' => ':memory:',
+            ]);
+            $factory = new RepositoryFactoryDoctrineDBAL();
+            $repository = $factory->getRepository([
+                'jackalope.doctrine_dbal_connection' => $connection,
+            ]);
 
-        $schema = new RepositorySchema(['disable_fks' => true], $connection);
-        $schema->reset();
+            $schema = new RepositorySchema(['disable_fks' => true], $connection);
+            $schema->reset();
 
-        $session = $repository->login(new \PHPCR\SimpleCredentials('', ''));
+            $session = $repository->login(new \PHPCR\SimpleCredentials('', ''));
 
-        $cnd = <<<CND
+            $cnd = <<<CND
 <phpcr='http://www.doctrine-project.org/projects/phpcr_odm'>
 [phpcr:managed]
 mixin
@@ -73,12 +75,15 @@ mixin
 - phpcr:classparents (STRING) multiple
 CND;
 
-        $session->getWorkspace()->getNodeTypeManager()->registerNodeTypesCnd($cnd, true);
+            $session->getWorkspace()->getNodeTypeManager()->registerNodeTypesCnd($cnd, true);
 
-        return $session;
+            return $session;
+        } catch (DBALException $exception) {
+            self::markTestIncomplete($exception->getMessage());
+        }
     }
 
-    private function getEventManager()
+    private function getEventManager(): EventManager
     {
         return new EventManager();
     }
