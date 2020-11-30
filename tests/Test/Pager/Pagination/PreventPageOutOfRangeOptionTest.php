@@ -88,7 +88,7 @@ final class PreventPageOutOfRangeOptionTest extends BaseTestCase
      */
     public function shouldBeAbleToGetMaxPageWhenExceptionIsThrown(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $items = \range(1, 23);
 
         try {
@@ -103,7 +103,7 @@ final class PreventPageOutOfRangeOptionTest extends BaseTestCase
      */
     public function shouldBeAbleToTreatFirstPageAsValidWithEmptyList(): void
     {
-        $p = new Paginator;
+        $p = $this->getPaginatorInstance();
         $items = []; //empty array on fix argument perform again paginate with page = 0.
         // "fix" option
         $view = $p->paginate($items, 1, 10, [PaginatorInterface::PAGE_OUT_OF_RANGE => PaginatorInterface::PAGE_OUT_OF_RANGE_FIX]);
