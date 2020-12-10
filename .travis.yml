@@ -9,11 +9,7 @@ cache:
 php:
     - 7.3
     - 7.4
-    - nightly
-
-matrix:
-    allow_failures:
-        - php: nightly
+    - 8.0
 
 before_script:
     - pecl install -f mongodb-stable;
