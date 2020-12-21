@@ -42,11 +42,6 @@ final class Paginator implements PaginatorInterface
      */
     private $requestStack;
 
-    /**
-     * @var Request
-     */
-    private $request;
-
     public function __construct(EventDispatcherInterface $eventDispatcher, RequestStack $requestStack = null)
     {
         $this->eventDispatcher = $eventDispatcher;
