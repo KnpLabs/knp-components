@@ -1,6 +1,6 @@
 # Knp Component library
 
-[![Build Status](https://secure.travis-ci.org/KnpLabs/knp-components.png)](http://travis-ci.org/KnpLabs/knp-components)
+[![Build Status](https://github.com/KnpLabs/knp-components/workflows/build/badge.svg)](https://github.com/KnpLabs/knp-components/actions)
 
 ## Components in this library:
 
@@ -9,7 +9,7 @@ fancy paginator component
 
 ## Running unit tests
 
-PHPUnit 8 or newer is required.
+PHPUnit 9 or newer is required.
 To setup and run tests follow these steps:
 
 - go to the root directory of components
