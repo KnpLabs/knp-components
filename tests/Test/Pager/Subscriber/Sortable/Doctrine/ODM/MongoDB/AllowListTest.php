@@ -24,7 +24,7 @@ final class AllowListTest extends BaseTestCaseMongoODM
         $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'asc']);
         $p = $this->getPaginatorInstance($requestStack);
         $sortFieldAllowList = ['title'];
-        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOWLIST));
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOW_LIST));
 
         $items = \array_values($view->getItems());
         self::assertCount(4, $items);
@@ -32,7 +32,7 @@ final class AllowListTest extends BaseTestCaseMongoODM
 
         $requestStack = $this->createRequestStack(['sort' => 'id', 'direction' => 'asc']);
         $p = $this->getPaginatorInstance($requestStack);
-        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOWLIST));
+        $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOW_LIST));
     }
 
     /**
