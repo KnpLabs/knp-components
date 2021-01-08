@@ -43,5 +43,5 @@ interface PaginatorInterface
      *                          array  $sortFieldAllowList sortable allow list for target fields being paginated
      * @throws \LogicException
      */
-    public function paginate($target, int $page = 1, int $limit = 10, array $options = []): PaginationInterface;
+    public function paginate($target, int $page = 1, int $limit = null, array $options = []): PaginationInterface;
 }
