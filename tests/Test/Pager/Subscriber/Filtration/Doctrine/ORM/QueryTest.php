@@ -7,10 +7,8 @@ use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber as Filt
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM\Query\WhereWalker;
-use Test\Tool\BaseTestCaseORM;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\Pagination\SlidingPagination;
-use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Entity\Article;
@@ -713,7 +711,7 @@ SQL;
 
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(UsesPaginator::HINT_FETCH_JOIN_COLLECTION, false);
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $query->setHint(WhereWalker::HINT_PAGINATOR_FILTER_CASE_INSENSITIVE, true);
 
         $_GET['filterParam'] = '';
@@ -728,9 +726,9 @@ SQL;
 
         // Different aliases separators according to Doctrine version
         if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE LOWER(a0_.title) LIKE \'summer\' LIMIT 10 OFFSET 0', $executed[1]);
+            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE LOWER(a0_.title) LIKE \'summer\' LIMIT 10', $executed[1]);
         } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE LOWER(a0_.title) LIKE \'summer\' LIMIT 10 OFFSET 0', $executed[1]);
+            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE LOWER(a0_.title) LIKE \'summer\' LIMIT 10', $executed[1]);
         }
     }
 
