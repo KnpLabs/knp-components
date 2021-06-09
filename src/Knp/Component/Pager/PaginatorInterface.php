@@ -22,6 +22,7 @@ interface PaginatorInterface
     public const DISTINCT = 'distinct';
     public const PAGE_OUT_OF_RANGE = 'pageOutOfRange';
     public const DEFAULT_LIMIT = 'defaultLimit';
+    public const ODM_QUERY_OPTIONS = 'odmQueryOptions';
 
     public const PAGE_OUT_OF_RANGE_IGNORE = 'ignore'; // do nothing (default)
     public const PAGE_OUT_OF_RANGE_FIX = 'fix'; // replace page number out of range with max page

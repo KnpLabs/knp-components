@@ -12,7 +12,7 @@ class QueryBuilderSubscriber implements EventSubscriberInterface
     {
         if ($event->target instanceof Builder) {
             // change target into query
-            $event->target = $event->target->getQuery();
+            $event->target = $event->target->getQuery($event->options[PaginatorInterface::ODM_QUERY_OPTIONS] ?? []);
         }
     }
 

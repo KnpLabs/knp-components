@@ -24,7 +24,7 @@ The list of existing options are:
 | filterFieldParameterName   | string         | filterParam   | FiltrationSubscriber                            |
 | filterValueParameterName   | string         | filterValue   | FiltrationSubscriber                            |
 | pageOutOfRange             | string         | ignore        | PaginationSubscriber                            |
-
+| odmQueryOptions            | array          | []            | odm QueryBuilderSubscriber                      |
 
 ## Noticeable behaviors of some options
 
