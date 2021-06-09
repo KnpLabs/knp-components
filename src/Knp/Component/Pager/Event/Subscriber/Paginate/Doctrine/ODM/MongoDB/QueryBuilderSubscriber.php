@@ -4,6 +4,7 @@ namespace Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Knp\Component\Pager\Event\ItemsEvent;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class QueryBuilderSubscriber implements EventSubscriberInterface
