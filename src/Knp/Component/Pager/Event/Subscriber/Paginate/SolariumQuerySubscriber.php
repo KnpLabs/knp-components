@@ -33,7 +33,7 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'knp_pager.items' => ['items', 0] /* triggers before a standard array subscriber*/
+            'knp_pager.items' => ['items', 0], /* triggers before a standard array subscriber*/
         ];
     }
 }

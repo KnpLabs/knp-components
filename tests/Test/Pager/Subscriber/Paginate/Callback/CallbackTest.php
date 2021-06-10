@@ -10,8 +10,8 @@ use Test\Tool\BaseTestCase;
 
 final class CallbackTest extends BaseTestCase
 {
-    const ITEMS_PER_PAGE = 10;
-    const TOTAL_NUMBER_OF_ITEMS = 35;
+    public const ITEMS_PER_PAGE = 10;
+    public const TOTAL_NUMBER_OF_ITEMS = 35;
 
     /**
      * @test

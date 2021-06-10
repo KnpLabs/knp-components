@@ -25,21 +25,21 @@ class WhereWalker extends TreeWalkerAdapter
     /**
      * Filter key columns hint name
      */
-    const HINT_PAGINATOR_FILTER_COLUMNS = 'knp_paginator.filter.columns';
+    public const HINT_PAGINATOR_FILTER_COLUMNS = 'knp_paginator.filter.columns';
 
     /**
      * Filter value hint name
      */
-    const HINT_PAGINATOR_FILTER_VALUE = 'knp_paginator.filter.value';
+    public const HINT_PAGINATOR_FILTER_VALUE = 'knp_paginator.filter.value';
 
     /**
      * Walks down a SelectStatement AST node, modifying it to
      * filter the query like requested by url
      *
      * @param  SelectStatement $AST
-     * @return void
+     * @return void|string
      */
-    public function walkSelectStatement(SelectStatement $AST): void
+    public function walkSelectStatement(SelectStatement $AST)
     {
         $query = $this->_getQuery();
         $queriedValue = $query->getHint(self::HINT_PAGINATOR_FILTER_VALUE);
@@ -83,13 +83,13 @@ class WhereWalker extends TreeWalkerAdapter
                     !isset($meta)
                     || in_array(
                         $meta['metadata']->getTypeOfField($field),
-                        array(
+                        [
                             Type::SMALLINT,
                             Type::INTEGER,
                             Type::BIGINT,
                             Type::FLOAT,
                             Type::DECIMAL,
-                        )
+                        ]
                     )
                 )
             ) {
@@ -227,7 +227,7 @@ class WhereWalker extends TreeWalkerAdapter
     }
 
     /**
-     * @param  Node               $node
+     * @param  ConditionalPrimary|ConditionalExpression $node
      * @return ConditionalPrimary
      */
     private function createPrimaryFromNode($node): ConditionalPrimary

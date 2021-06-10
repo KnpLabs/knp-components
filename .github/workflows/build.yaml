@@ -3,6 +3,19 @@ name: build
 on: [push, pull_request]
 
 jobs:
+    phpstan:
+        runs-on: ubuntu-20.04
+        name: PHPStan
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+            - name: PHPStan
+              uses: docker://oskarstark/phpstan-ga
+              env:
+                  REQUIRE_DEV: true
+                  CHECK_PLATFORM_REQUIREMENTS: false
+              with:
+                  args: analyse
     cs-fixer:
         runs-on: ubuntu-20.04
         name: PHP-CS-Fixer

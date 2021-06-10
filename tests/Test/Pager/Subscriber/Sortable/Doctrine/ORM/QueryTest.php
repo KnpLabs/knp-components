@@ -145,9 +145,9 @@ final class QueryTest extends BaseTestCaseORM
         $this->populate($em);
 
         $dql = <<<___SQL
-        SELECT a, COUNT(a) AS counter
-        FROM Test\Fixture\Entity\Article a
-___SQL;
+                    SELECT a, COUNT(a) AS counter
+                    FROM Test\Fixture\Entity\Article a
+            ___SQL;
         $query = $this->em->createQuery($dql);
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 

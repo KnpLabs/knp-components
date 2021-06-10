@@ -25,14 +25,14 @@ final class QueryAnalyzer implements SQLLogger
     /**
      * Start time of currently executed query
      *
-     * @var integer
+     * @var int|float|null
      */
     private $queryStartTime = null;
 
     /**
      * Total execution time of all queries
      *
-     * @var integer
+     * @var int|float
      */
     private $totalExecutionTime = 0;
 
@@ -63,18 +63,12 @@ final class QueryAnalyzer implements SQLLogger
         $this->platform = $platform;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function startQuery($sql, array $params = null, array $types = null): void
     {
         $this->queryStartTime = \microtime(true);
         $this->queries[] = $this->generateSql($sql, $params, $types);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function stopQuery(): void
     {
         $ms = \round(\microtime(true) - $this->queryStartTime, 4) * 1000;
@@ -84,8 +78,6 @@ final class QueryAnalyzer implements SQLLogger
 
     /**
      * Clean all collected data
-     *
-     * @return QueryAnalyzer
      */
     public function cleanUp(): QueryAnalyzer
     {
@@ -100,8 +92,6 @@ final class QueryAnalyzer implements SQLLogger
      * Dump the statistics of executed queries
      *
      * @param boolean $dumpOnlySql
-     *
-     * @return string|null
      */
     public function getOutput($dumpOnlySql = false): ?string
     {
@@ -123,8 +113,6 @@ final class QueryAnalyzer implements SQLLogger
 
     /**
      * Index of the slowest query executed
-     *
-     * @return int
      */
     public function getSlowestQueryIndex(): int
     {
@@ -141,8 +129,6 @@ final class QueryAnalyzer implements SQLLogger
 
     /**
      * Get total execution time of queries
-     *
-     * @return int
      */
     public function getTotalExecutionTime(): int
     {
@@ -161,8 +147,6 @@ final class QueryAnalyzer implements SQLLogger
 
     /**
      * Get number of executed queries
-     *
-     * @return int
      */
     public function getNumExecutedQueries(): int
     {
@@ -182,13 +166,10 @@ final class QueryAnalyzer implements SQLLogger
     /**
      * Create the SQL with mapped parameters
      *
-     * @param string $sql
      * @param array $params
      * @param array $types
-     *
-     * @return string
      */
-    private function generateSql($sql, $params, $types): string
+    private function generateSql(string $sql, array $params, array $types): string
     {
         if (!\count($params)) {
             return $sql;
@@ -196,7 +177,7 @@ final class QueryAnalyzer implements SQLLogger
         $converted = $this->getConvertedParams($params, $types);
         if (\is_int(\key($params))) {
             $index = \key($converted);
-            $sql = \preg_replace_callback('@\?@sm', function ($match) use (&$index, $converted) {
+            $sql = \preg_replace_callback('@\?@sm', static function ($match) use (&$index, $converted) {
                 return \implode(' ', $converted[$index++]);
             }, $sql);
         } else {

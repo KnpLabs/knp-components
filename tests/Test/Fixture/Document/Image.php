@@ -27,7 +27,7 @@ final class Image
     /**
      * Set file.
      *
-     * @param integer $file
+     * @param int|string $file
      * @return Image
      */
     public function setFile($file)

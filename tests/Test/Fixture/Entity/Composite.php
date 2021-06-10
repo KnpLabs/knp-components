@@ -49,7 +49,7 @@ class Composite
     /**
      * Sets Id.
      *
-     * @param $id
+     * @param integer $id
      */
     public function setId($id): void
     {

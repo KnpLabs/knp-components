@@ -15,9 +15,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 abstract class BaseTestCase extends TestCase
 {
-    /**
-     * {@inheritdoc}
-     */
     protected function setUp(): void
     {
     }

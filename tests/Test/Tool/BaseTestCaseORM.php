@@ -3,7 +3,6 @@
 namespace Test\Tool;
 
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
@@ -30,18 +29,15 @@ use Doctrine\ORM\Tools\SchemaTool;
 abstract class BaseTestCaseORM extends BaseTestCase
 {
     /**
-     * @var EntityManager
+     * @var EntityManager|null
      */
     protected $em;
 
     /**
-     * @var QueryAnalyzer
+     * @var QueryAnalyzer|null
      */
     protected $queryAnalyzer;
 
-    /**
-     * {@inheritdoc}
-     */
     protected function setUp(): void
     {
     }
@@ -50,11 +46,8 @@ abstract class BaseTestCaseORM extends BaseTestCase
      * EntityManager mock object together with
      * annotation mapping driver and pdo_sqlite
      * database in memory
-     *
-     * @param EventManager $evm
-     * @return EntityManager
      */
-    protected function getMockSqliteEntityManager(EventManager $evm = null)
+    protected function getMockSqliteEntityManager(EventManager $evm = null): EntityManager
     {
         $conn = [
             'driver' => 'pdo_sqlite',
@@ -64,7 +57,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
         $config = $this->getMockAnnotatedConfig();
         $em = EntityManager::create($conn, $config, $evm ?: $this->getEventManager());
 
-        $schema = \array_map(function ($class) use ($em) {
+        $schema = \array_map(static function ($class) use ($em) {
             return $em->getClassMetadata($class);
         }, (array)$this->getUsedEntityFixtures());
 
@@ -80,15 +73,13 @@ abstract class BaseTestCaseORM extends BaseTestCase
      * connection
      *
      * @param array $conn
-     * @param EventManager $evm
-     * @return EntityManager
      */
-    protected function getMockCustomEntityManager(array $conn, EventManager $evm = null)
+    protected function getMockCustomEntityManager(array $conn, EventManager $evm = null): EntityManager
     {
         $config = $this->getMockAnnotatedConfig();
         $em = EntityManager::create($conn, $config, $evm ?: $this->getEventManager());
 
-        $schema = \array_map(function ($class) use ($em) {
+        $schema = \array_map(static function ($class) use ($em) {
             return $em->getClassMetadata($class);
         }, (array)$this->getUsedEntityFixtures());
 
@@ -101,11 +92,8 @@ abstract class BaseTestCaseORM extends BaseTestCase
     /**
      * EntityManager mock object with
      * annotation mapping driver
-     *
-     * @param EventManager $evm
-     * @return EntityManager
      */
-    protected function getMockMappedEntityManager(EventManager $evm = null)
+    protected function getMockMappedEntityManager(EventManager $evm = null): EntityManager
     {
         $driver = $this->createMock(Driver::class);
         $driver->expects($this->once())
@@ -133,13 +121,12 @@ abstract class BaseTestCaseORM extends BaseTestCase
      */
     protected function startQueryLog(): void
     {
-        if (!$this->em || !$this->em->getConnection()->getDatabasePlatform()) {
+        if (null === $this->em) {
             throw new \RuntimeException('EntityManager and database platform must be initialized');
         }
         $this->queryAnalyzer = new QueryAnalyzer($this->em->getConnection()->getDatabasePlatform());
         $this->em
             ->getConfiguration()
-            ->expects($this->any())
             ->method('getSQLLogger')
             ->willReturn($this->queryAnalyzer);
     }
@@ -148,17 +135,14 @@ abstract class BaseTestCaseORM extends BaseTestCase
      * Stops query statistic log and outputs
      * the data to screen or file
      *
-     * @param boolean $dumpOnlySql
-     * @param boolean $writeToLog
      * @throws \RuntimeException
      */
-    protected function stopQueryLog($dumpOnlySql = false, $writeToLog = false): void
+    protected function stopQueryLog(bool $dumpOnlySql = false, bool $writeToLog = false): void
     {
-        if ($this->queryAnalyzer) {
+        if (null !== $this->queryAnalyzer) {
             \ob_start();
             $this->queryAnalyzer->getOutput($dumpOnlySql);
-            $output = \ob_get_contents();
-            \ob_end_clean();
+            $output = \ob_get_clean();
 
             if (!$writeToLog) {
                 echo $output;
@@ -167,7 +151,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
             }
 
             $fileName = __DIR__.'/../../temp/query_debug_'.\time().'.log';
-            if (($file = \fopen($fileName, 'wb+')) !== false) {
+            if (($file = \fopen($fileName, 'wb+')) === false) {
                 throw new \RuntimeException('Unable to write to the log file');
             }
 
@@ -178,27 +162,21 @@ abstract class BaseTestCaseORM extends BaseTestCase
 
     /**
      * Creates default mapping driver
-     *
-     * @return MappingDriver
      */
-    protected function getMetadataDriverImplementation()
+    protected function getMetadataDriverImplementation(): AnnotationDriver
     {
         return new AnnotationDriver($_ENV['annotation_reader']);
     }
 
     /**
      * Get a list of used fixture classes
-     *
-     * @return array
      */
-    abstract protected function getUsedEntityFixtures();
+    abstract protected function getUsedEntityFixtures(): array;
 
     /**
      * Build event manager
-     *
-     * @return EventManager
      */
-    private function getEventManager()
+    private function getEventManager(): EventManager
     {
         return new EventManager();
     }
@@ -206,7 +184,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
     /**
      * Get annotation mapping configuration
      *
-     * @return \Doctrine\ORM\Configuration
+     * @return Configuration|\PHPUnit\Framework\MockObject\MockObject
      */
     private function getMockAnnotatedConfig()
     {

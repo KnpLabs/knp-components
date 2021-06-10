@@ -37,7 +37,7 @@ final class AbstractPaginationTest extends BaseTestCase
             PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 's',
             PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'd',
             PaginatorInterface::DISTINCT => false,
-            PaginatorInterface::SORT_FIELD_ALLOW_LIST => ['a.f', 'a.d']
+            PaginatorInterface::SORT_FIELD_ALLOW_LIST => ['a.f', 'a.d'],
         ];
 
         $view = $p->paginate($items, 1, 10, $options);
@@ -52,7 +52,7 @@ final class AbstractPaginationTest extends BaseTestCase
         $p->setDefaultPaginatorOptions([
             PaginatorInterface::PAGE_PARAMETER_NAME => 'pg',
             PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'srt',
-            PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'dir'
+            PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'dir',
         ]);
         $view = $p->paginate($items, 1, 10);
 
