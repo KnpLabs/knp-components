@@ -699,7 +699,7 @@ SQL;
     /**
      * @test
      */
-    public function shouldFilterCaseInsensitiveWhenAsked()
+    public function shouldFilterCaseInsensitiveWhenAsked(): void
     {
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
@@ -724,15 +724,13 @@ SQL;
 
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
-        // Different aliases separators according to Doctrine version
-        if (version_compare(\Doctrine\ORM\Version::VERSION, '2.5', '<')) {
-            $this->assertEquals('SELECT a0_.id AS id0, a0_.title AS title1, a0_.enabled AS enabled2 FROM Article a0_ WHERE LOWER(a0_.title) LIKE \'summer\' LIMIT 10', $executed[1]);
-        } else {
-            $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE LOWER(a0_.title) LIKE \'summer\' LIMIT 10', $executed[1]);
-        }
+        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE LOWER(a0_.title) LIKE \'summer\' LIMIT 10', $executed[1]);
     }
 
-    protected function getUsedEntityFixtures()
+    /**
+     * @return Article[]
+     */
+    protected function getUsedEntityFixtures(): array
     {
         return [Article::class];
     }
