@@ -22,14 +22,14 @@ final class SolariumQuerySubscriberTest extends BaseTestCase
             'results' => [
                 0 => [
                     'city'   => 'Lyon',
-                    'market' => 'E'
+                    'market' => 'E',
                 ],
                 1 => [
                     'city'   => 'Paris',
-                    'market' => 'G'
+                    'market' => 'G',
                 ],
             ],
-            'nbTotalResults' => 2
+            'nbTotalResults' => 2,
         ];
 
         $requestStack = $this->createRequestStack([]);

@@ -20,15 +20,16 @@ class SortableSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $disp = $event->getEventDispatcher();
+        /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher */
+        $dispatcher = $event->getEventDispatcher();
         // hook all standard sortable subscribers
         $request = $event->getRequest();
-        $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber($request));
-        $disp->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber($request));
-        $disp->addSubscriber(new ElasticaQuerySubscriber($request));
-        $disp->addSubscriber(new PropelQuerySubscriber($request));
-        $disp->addSubscriber(new SolariumQuerySubscriber($request));
-        $disp->addSubscriber(new ArraySubscriber($request));
+        $dispatcher->addSubscriber(new Doctrine\ORM\QuerySubscriber($request));
+        $dispatcher->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber($request));
+        $dispatcher->addSubscriber(new ElasticaQuerySubscriber($request));
+        $dispatcher->addSubscriber(new PropelQuerySubscriber($request));
+        $dispatcher->addSubscriber(new SolariumQuerySubscriber($request));
+        $dispatcher->addSubscriber(new ArraySubscriber($request));
 
         $this->isLoaded = true;
     }
@@ -36,7 +37,7 @@ class SortableSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'knp_pager.before' => ['before', 1]
+            'knp_pager.before' => ['before', 1],
         ];
     }
 }

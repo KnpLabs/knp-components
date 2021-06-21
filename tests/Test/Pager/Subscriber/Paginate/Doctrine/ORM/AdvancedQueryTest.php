@@ -22,10 +22,10 @@ final class AdvancedQueryTest extends BaseTestCaseORM
         $this->populate();
 
         $dql = <<<SQL
-    SELECT p FROM
-      Test\Fixture\Entity\Shop\Product p,
-      Test\Fixture\Entity\Shop\Tag t
-SQL;
+                SELECT p FROM
+                  Test\Fixture\Entity\Shop\Product p,
+                  Test\Fixture\Entity\Shop\Tag t
+            SQL;
         $q = $this->em->createQuery($dql);
 
         $p = $this->getPaginatorInstance();
@@ -41,12 +41,12 @@ SQL;
         $this->populate();
 
         $dql = <<<SQL
-        SELECT p, t
-        FROM Test\Fixture\Entity\Shop\Product p
-        INNER JOIN p.tags t
-        GROUP BY p.id
-        HAVING p.numTags = COUNT(t)
-SQL;
+                    SELECT p, t
+                    FROM Test\Fixture\Entity\Shop\Product p
+                    INNER JOIN p.tags t
+                    GROUP BY p.id
+                    HAVING p.numTags = COUNT(t)
+            SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $p = $this->getPaginatorInstance();
@@ -62,11 +62,11 @@ SQL;
         $this->populate();
 
         $dql = <<<SQL
-        SELECT p, t, p.title FROM
-          Test\Fixture\Entity\Shop\Product p
-        LEFT JOIN
-          p.tags t
-SQL;
+                    SELECT p, t, p.title FROM
+                      Test\Fixture\Entity\Shop\Product p
+                    LEFT JOIN
+                      p.tags t
+            SQL;
         $q = $this->em->createQuery($dql);
         $p = $this->getPaginatorInstance();
         $view = $p->paginate($q, 1, 10);
@@ -84,28 +84,28 @@ SQL;
         $this->populate();
 
         $dql = <<<SQL
-            SELECT p,
-              CASE
-                WHEN p.title LIKE :keyword
-                  AND p.description LIKE :keyword
-                THEN 0
+                        SELECT p,
+                          CASE
+                            WHEN p.title LIKE :keyword
+                              AND p.description LIKE :keyword
+                            THEN 0
 
-                WHEN p.title LIKE :keyword
-                THEN 1
+                            WHEN p.title LIKE :keyword
+                            THEN 1
 
-                WHEN p.description LIKE :keyword
-                THEN 2
+                            WHEN p.description LIKE :keyword
+                            THEN 2
 
-                ELSE 3
-              END AS relevance
-            FROM Test\Fixture\Entity\Shop\Product p
-            WHERE (
-              p.title LIKE :keyword
-              OR p.description LIKE :keyword
-            )
-            GROUP BY p.id
-            ORDER BY relevance ASC, p.id DESC
-SQL;
+                            ELSE 3
+                          END AS relevance
+                        FROM Test\Fixture\Entity\Shop\Product p
+                        WHERE (
+                          p.title LIKE :keyword
+                          OR p.description LIKE :keyword
+                        )
+                        GROUP BY p.id
+                        ORDER BY relevance ASC, p.id DESC
+            SQL;
         $q = $this->em->createQuery($dql);
         $q->setParameter('keyword', '%Star%');
         $q->setHydrationMode(\Doctrine\ORM\Query::HYDRATE_ARRAY);
@@ -126,12 +126,12 @@ SQL;
         $this->populate();
 
         $dql = <<<SQL
-        SELECT p, t
-        FROM Test\Fixture\Entity\Shop\Product p
-        INNER JOIN p.tags t
-        GROUP BY p.id
-        HAVING p.numTags = COUNT(t)
-SQL;
+                    SELECT p, t
+                    FROM Test\Fixture\Entity\Shop\Product p
+                    INNER JOIN p.tags t
+                    GROUP BY p.id
+                    HAVING p.numTags = COUNT(t)
+            SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $p = $this->getPaginatorInstance();
@@ -143,7 +143,7 @@ SQL;
     {
         return [
             Product::class,
-            Tag::class
+            Tag::class,
         ];
     }
 

@@ -32,7 +32,7 @@ final class DBALQueryBuilderTest extends BaseTestCaseORM
         $this->assertEquals('winter', $items[1]['title']);
     }
 
-    protected function getUsedEntityFixtures()
+    protected function getUsedEntityFixtures(): array
     {
         return [Article::class];
     }

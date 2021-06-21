@@ -20,7 +20,7 @@ final class QueryTest extends BaseTestCaseMongoODM
 
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new PaginationSubscriber);
-        $dispatcher->addSubscriber(new Sortable);
+        $dispatcher->addSubscriber(new Sortable($this->createRequestStack([])->getCurrentRequest()));
         $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'asc']);
         $p = new Paginator($dispatcher, $requestStack);
 

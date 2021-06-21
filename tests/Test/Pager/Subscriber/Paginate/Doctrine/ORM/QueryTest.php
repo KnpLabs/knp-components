@@ -18,12 +18,12 @@ final class QueryTest extends BaseTestCaseORM
         $this->populate();
 
         $dql = <<<SQL
-        SELECT p, t
-        FROM Test\Fixture\Entity\Shop\Product p
-        INNER JOIN p.tags t
-        GROUP BY p.id
-        HAVING p.numTags = COUNT(t)
-SQL;
+                    SELECT p, t
+                    FROM Test\Fixture\Entity\Shop\Product p
+                    INNER JOIN p.tags t
+                    GROUP BY p.id
+                    HAVING p.numTags = COUNT(t)
+            SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $q->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, true);
@@ -42,10 +42,10 @@ SQL;
         $this->populate();
 
         $dql = <<<SQL
-        SELECT p
-        FROM Test\Fixture\Entity\Shop\Product p
-        GROUP BY p.id
-SQL;
+                    SELECT p
+                    FROM Test\Fixture\Entity\Shop\Product p
+                    GROUP BY p.id
+            SQL;
         $q = $this->em->createQuery($dql);
         $q->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
@@ -64,12 +64,12 @@ SQL;
         $this->populate();
 
         $dql = <<<SQL
-        SELECT p, t
-        FROM Test\Fixture\Entity\Shop\Product p
-        INNER JOIN p.tags t
-        GROUP BY p.id
-        HAVING p.numTags = COUNT(t)
-SQL;
+                    SELECT p, t
+                    FROM Test\Fixture\Entity\Shop\Product p
+                    INNER JOIN p.tags t
+                    GROUP BY p.id
+                    HAVING p.numTags = COUNT(t)
+            SQL;
         $q = $this->em->createQuery($dql);
         $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $q->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, true);
@@ -84,7 +84,7 @@ SQL;
     {
         return [
             Product::class,
-            Tag::class
+            Tag::class,
         ];
     }
 

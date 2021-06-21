@@ -29,7 +29,7 @@ final class QueryTest extends BaseTestCaseORM
         $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcCache());
         $config->setProxyDir(__DIR__);
         $config->setProxyNamespace('Gedmo\Mapping\Proxy');
-        $config->getAutoGenerateProxyClasses(false);
+        $config->getAutoGenerateProxyClasses();
         $config->setMetadataDriverImpl($this->getMetadataDriverImplementation());
 
         $conn = [
@@ -52,10 +52,10 @@ final class QueryTest extends BaseTestCaseORM
         $requestStack = $this->createRequestStack(['filterField' => 'a.title', 'filterValue' => 'summer']);
 
         $p = $this->getPaginatorInstance($requestStack);
-        $view = $p->paginate($query, 1, 10);
+        $p->paginate($query, 1, 10);
 
         $query = $em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $view = $p->paginate($query, 1, 10);
+        $p->paginate($query, 1, 10);
     }
 
     /**
@@ -553,9 +553,9 @@ final class QueryTest extends BaseTestCaseORM
         $this->populate($em);
 
         $dql = <<<SQL
-        SELECT a, a.title AS test_alias
-        FROM Test\Fixture\Entity\Article a
-SQL;
+                    SELECT a, a.title AS test_alias
+                    FROM Test\Fixture\Entity\Article a
+            SQL;
         $query = $this->em->createQuery($dql);
         $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
 

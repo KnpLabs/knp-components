@@ -28,21 +28,22 @@ class PaginationSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $disp = $event->getEventDispatcher();
+        /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher */
+        $dispatcher = $event->getEventDispatcher();
         // hook all standard subscribers
-        $disp->addSubscriber(new ArraySubscriber);
-        $disp->addSubscriber(new Callback\CallbackSubscriber);
-        $disp->addSubscriber(new Doctrine\ORM\QueryBuilderSubscriber);
-        $disp->addSubscriber(new Doctrine\ORM\QuerySubscriber);
-        $disp->addSubscriber(new Doctrine\ODM\MongoDB\QueryBuilderSubscriber);
-        $disp->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber);
-        $disp->addSubscriber(new Doctrine\ODM\PHPCR\QueryBuilderSubscriber);
-        $disp->addSubscriber(new Doctrine\ODM\PHPCR\QuerySubscriber);
-        $disp->addSubscriber(new Doctrine\CollectionSubscriber);
-        $disp->addSubscriber(new Doctrine\DBALQueryBuilderSubscriber);
-        $disp->addSubscriber(new PropelQuerySubscriber);
-        $disp->addSubscriber(new SolariumQuerySubscriber());
-        $disp->addSubscriber(new ElasticaQuerySubscriber());
+        $dispatcher->addSubscriber(new ArraySubscriber);
+        $dispatcher->addSubscriber(new Callback\CallbackSubscriber);
+        $dispatcher->addSubscriber(new Doctrine\ORM\QueryBuilderSubscriber);
+        $dispatcher->addSubscriber(new Doctrine\ORM\QuerySubscriber);
+        $dispatcher->addSubscriber(new Doctrine\ODM\MongoDB\QueryBuilderSubscriber);
+        $dispatcher->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber);
+        $dispatcher->addSubscriber(new Doctrine\ODM\PHPCR\QueryBuilderSubscriber);
+        $dispatcher->addSubscriber(new Doctrine\ODM\PHPCR\QuerySubscriber);
+        $dispatcher->addSubscriber(new Doctrine\CollectionSubscriber);
+        $dispatcher->addSubscriber(new Doctrine\DBALQueryBuilderSubscriber);
+        $dispatcher->addSubscriber(new PropelQuerySubscriber);
+        $dispatcher->addSubscriber(new SolariumQuerySubscriber());
+        $dispatcher->addSubscriber(new ElasticaQuerySubscriber());
 
         $this->isLoaded = true;
     }
@@ -51,7 +52,7 @@ class PaginationSubscriber implements EventSubscriberInterface
     {
         return [
             'knp_pager.before' => ['before', 0],
-            'knp_pager.pagination' => ['pagination', 0]
+            'knp_pager.pagination' => ['pagination', 0],
         ];
     }
 }

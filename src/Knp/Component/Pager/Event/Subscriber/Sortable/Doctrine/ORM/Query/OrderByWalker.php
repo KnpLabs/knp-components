@@ -17,26 +17,26 @@ class OrderByWalker extends TreeWalkerAdapter
     /**
      * Sort key alias hint name
      */
-    const HINT_PAGINATOR_SORT_ALIAS = 'knp_paginator.sort.alias';
+    public const HINT_PAGINATOR_SORT_ALIAS = 'knp_paginator.sort.alias';
 
     /**
      * Sort key field hint name
      */
-    const HINT_PAGINATOR_SORT_FIELD = 'knp_paginator.sort.field';
+    public const HINT_PAGINATOR_SORT_FIELD = 'knp_paginator.sort.field';
 
     /**
      * Sort direction hint name
      */
-    const HINT_PAGINATOR_SORT_DIRECTION = 'knp_paginator.sort.direction';
+    public const HINT_PAGINATOR_SORT_DIRECTION = 'knp_paginator.sort.direction';
 
     /**
      * Walks down a SelectStatement AST node, modifying it to
      * sort the query like requested by url
      *
      * @param SelectStatement $AST
-     * @return void
+     * @return void|string
      */
-    public function walkSelectStatement(SelectStatement $AST): void
+    public function walkSelectStatement(SelectStatement $AST)
     {
         $query = $this->_getQuery();
         $fields = (array)$query->getHint(self::HINT_PAGINATOR_SORT_FIELD);

@@ -10,7 +10,7 @@ final class CustomParameterSubscriber extends ArraySubscriber
     public static function getSubscribedEvents(): array
     {
         return [
-            'knp_pager.items' => ['items', 10]
+            'knp_pager.items' => ['items', 10],
         ];
     }
 

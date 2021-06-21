@@ -17,7 +17,7 @@ use Jackalope\Transport\DoctrineDBAL\RepositorySchema;
 abstract class BaseTestCasePHPCRODM extends BaseTestCase
 {
     /**
-     * @var DocumentManager
+     * @var DocumentManager|null
      */
     protected $dm;
 
@@ -68,12 +68,12 @@ abstract class BaseTestCasePHPCRODM extends BaseTestCase
             $session = $repository->login(new \PHPCR\SimpleCredentials('', ''));
 
             $cnd = <<<CND
-<phpcr='http://www.doctrine-project.org/projects/phpcr_odm'>
-[phpcr:managed]
-mixin
-- phpcr:class (STRING)
-- phpcr:classparents (STRING) multiple
-CND;
+                <phpcr='http://www.doctrine-project.org/projects/phpcr_odm'>
+                [phpcr:managed]
+                mixin
+                - phpcr:class (STRING)
+                - phpcr:classparents (STRING) multiple
+                CND;
 
             $session->getWorkspace()->getNodeTypeManager()->registerNodeTypesCnd($cnd, true);
 

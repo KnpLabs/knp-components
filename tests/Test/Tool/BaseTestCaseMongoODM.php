@@ -3,7 +3,6 @@
 namespace Test\Tool;
 
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -20,9 +19,6 @@ abstract class BaseTestCaseMongoODM extends BaseTestCase
      */
     protected $dm;
 
-    /**
-     * {@inheritdoc}
-     */
     protected function setUp(): void
     {
         if (!\class_exists('MongoClient')) {
@@ -30,9 +26,6 @@ abstract class BaseTestCaseMongoODM extends BaseTestCase
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function tearDown(): void
     {
         if ($this->dm) {
@@ -49,13 +42,10 @@ abstract class BaseTestCaseMongoODM extends BaseTestCase
     /**
      * DocumentManager mock object together with
      * annotation mapping driver and database
-     *
-     * @param EventManager $evm
-     * @return DocumentManager
      */
     protected function getMockDocumentManager(EventManager $evm = null): DocumentManager
     {
-        $conn = new Connection;
+        $conn = new Connection();
         $config = $this->getMockAnnotatedConfig();
 
         try {
@@ -70,9 +60,6 @@ abstract class BaseTestCaseMongoODM extends BaseTestCase
     /**
      * DocumentManager mock object with
      * annotation mapping driver
-     *
-     * @param EventManager $evm
-     * @return DocumentManager
      */
     protected function getMockMappedDocumentManager(EventManager $evm = null): DocumentManager
     {
@@ -85,18 +72,14 @@ abstract class BaseTestCaseMongoODM extends BaseTestCase
 
     /**
      * Creates default mapping driver
-     *
-     * @return MappingDriver
      */
-    protected function getMetadataDriverImplementation(): MappingDriver
+    protected function getMetadataDriverImplementation(): AnnotationDriver
     {
         return new AnnotationDriver($_ENV['annotation_reader']);
     }
 
     /**
      * Build event manager
-     *
-     * @return EventManager
      */
     private function getEventManager(): EventManager
     {
@@ -106,9 +89,9 @@ abstract class BaseTestCaseMongoODM extends BaseTestCase
     /**
      * Get annotation mapping configuration
      *
-     * @return Configuration
+     * @return Configuration|\PHPUnit\Framework\MockObject\MockObject
      */
-    private function getMockAnnotatedConfig(): Configuration
+    private function getMockAnnotatedConfig()
     {
         $config = $this->createMock(Configuration::class);
         $config->expects($this->once())

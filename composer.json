@@ -33,7 +33,9 @@
         "doctrine/phpcr-odm": "^1.2",
         "jackalope/jackalope-doctrine-dbal": "^1.2",
         "phpunit/phpunit": "^9.5",
+        "propel/propel1": "^1.7",
         "ruflin/elastica": "^7.0",
+        "solarium/solarium": "^6.0",
         "symfony/http-kernel": "^4.4 || ^5.1",
         "symfony/property-access": "^4.4 || ^5.1"
     },

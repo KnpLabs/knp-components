@@ -46,7 +46,7 @@ class PropelQuerySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'knp_pager.items' => ['items', 0]
+            'knp_pager.items' => ['items', 0],
         ];
     }
 }

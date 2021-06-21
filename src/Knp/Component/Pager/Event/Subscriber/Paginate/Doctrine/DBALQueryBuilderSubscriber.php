@@ -16,7 +16,7 @@ class DBALQueryBuilderSubscriber implements EventSubscriberInterface
     public function items(ItemsEvent $event): void
     {
         if ($event->target instanceof QueryBuilder) {
-            /** @var $target QueryBuilder */
+            /** @var QueryBuilder $target */
             $target = $event->target;
         
             // count results
@@ -63,7 +63,7 @@ class DBALQueryBuilderSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'knp_pager.items' => ['items', 10 /*make sure to transform before any further modifications*/]
+            'knp_pager.items' => ['items', 10 /*make sure to transform before any further modifications*/],
         ];
     }
 }
