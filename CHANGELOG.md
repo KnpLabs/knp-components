@@ -1,3 +1,12 @@
+## 3.1.0
+
+*Released at 2021-06-23*
+
+* fixed ORM where with numeric values on string fields
+* added option to allow ODM subscriber
+* added static analysis with phpstan
+* dropped support for old Symfony versions
+
 ## 3.0.0
 
 *Released at 2020-11-30*
