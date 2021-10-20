@@ -36,10 +36,8 @@ class DBALQueryBuilderSubscriber implements EventSubscriberInterface
                 ->from('(' . $sql . ')', 'dbal_count_tbl')
             ;
 
-            $event->count = $qb
-                ->execute()
-                ->fetchColumn(0)
-            ;
+            $compat = $qb->execute();
+            $event->count = method_exists($compat, 'fetchColumn') ? $compat->fetchColumn(0) : $compat->fetchOne();
 
             // if there is results
             $event->items = [];
