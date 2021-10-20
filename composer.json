@@ -49,6 +49,9 @@
         "solarium/solarium": "to allow usage pagination with Solarium Client",
         "symfony/property-access": "To allow sorting arrays"
     },
+    "conflict": {
+        "doctrine/dbal": "<2.10"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "3.x-dev"
