@@ -32,6 +32,7 @@ jobs:
                     - '7.3'
                     - '7.4'
                     - '8.0'
+                    - '8.1'
                 include:
                     - description: 'Lowest'
                       composer_option: '--prefer-lowest'
@@ -41,6 +42,9 @@ jobs:
                       php: '8.0'
                       # needed because doctrine/mongodb-odm doesn't support php8 yet 
                       composer_option: '--ignore-platform-reqs'
+                    - description: '8.1'
+                      php: '8.1'
+                      composer_option: ''
         name: PHP ${{ matrix.php }} tests (${{ matrix.description }})
         steps:
             - name: Checkout
@@ -55,6 +59,9 @@ jobs:
               with:
                   php-version: ${{ matrix.php }}
                   extensions: mongodb-stable, pdo_sqlite
+            - name: Configure for PHP 8.1
+              run: composer require --dev --no-update laminas/laminas-code 4.5.x-dev
+              if: matrix.php == '8.1'
             - run: composer update --no-interaction --no-progress --ansi ${{ matrix.composer_option }}
             - run: vendor/bin/phpunit
 

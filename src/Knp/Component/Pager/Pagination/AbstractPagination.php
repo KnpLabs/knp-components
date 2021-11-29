@@ -21,6 +21,7 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
     /**
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return current($this->items);
@@ -29,6 +30,7 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
     /**
      * @return bool|float|int|string|null
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->items);
@@ -131,6 +133,7 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
      * @param string|int|float|bool|null $offset
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->items[$offset];
