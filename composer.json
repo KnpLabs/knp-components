@@ -23,7 +23,7 @@
     ],
     "require": {
         "php": "^7.3 || ^8.0",
-        "symfony/event-dispatcher-contracts": "^1.1 || ^2.0",
+        "symfony/event-dispatcher-contracts": "^2.0 || ^3.0",
         "symfony/http-foundation": "^4.4 || ^5.4 || ^6.0"
     },
     "require-dev": {
