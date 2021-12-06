@@ -7,7 +7,7 @@ use Test\Tool\BaseTestCase;
 
 final class PaginationInterfaceTest extends BaseTestCase
 {
-    private $reflection;
+    private ?\ReflectionClass $reflection = null;
 
     protected function setUp(): void
     {

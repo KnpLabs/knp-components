@@ -13,9 +13,6 @@ class Helper
     /**
      * Clones the given $query and copies all used
      * parameters and hints
-     *
-     * @param Query $query
-     * @return Query
      */
     public static function cloneQuery(Query $query): Query
     {
@@ -33,10 +30,6 @@ class Helper
      * Add a custom TreeWalker $walker class name to
      * be included in the CustomTreeWalker hint list
      * of the given $query
-     *
-     * @param Query $query
-     * @param string $walker
-     * @return void
      */
     public static function addCustomTreeWalker(Query $query, string $walker): void
     {

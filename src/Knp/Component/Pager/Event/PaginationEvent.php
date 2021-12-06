@@ -19,12 +19,10 @@ final class PaginationEvent extends Event
 
     /**
      * List of options
-     *
-     * @var array
      */
-    public $options;
+    public array $options;
 
-    private $pagination;
+    private PaginationInterface $pagination;
 
     public function setPagination(PaginationInterface $pagination): void
     {

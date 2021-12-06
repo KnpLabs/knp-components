@@ -18,60 +18,52 @@ class Composite
     /**
      * @ORM\Column(length=64)
      */
-    private $title;
+    private ?string $title = null;
 
     /**
      * @ORM\Id
      * @ORM\Column(type="string")
      */
-    private $uid;
+    private ?string $uid = null;
 
     /**
      * Sets uid.
-     *
-     * @param mixed $uid
      */
-    public function setUid($uid): void
+    public function setUid(?string $uid): void
     {
         $this->uid = $uid;
     }
 
     /**
      * Returns uid.
-     *
-     * @return mixed
      */
-    public function getUid()
+    public function getUid(): ?string
     {
         return $this->uid;
     }
 
     /**
      * Sets Id.
-     *
-     * @param integer $id
      */
-    public function setId($id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
 
     /**
      * Returns Id.
-     *
-     * @return integer
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setTitle($title): void
+    public function setTitle(?string $title): void
     {
         $this->title = $title;
     }
 
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }

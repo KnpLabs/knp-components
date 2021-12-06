@@ -16,17 +16,14 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  */
 final class Paginator implements PaginatorInterface
 {
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
     /**
      * Default options of paginator
      *
-     * @var array
+     * @var array<string, scalar>
      */
-    private $defaultOptions = [
+    private array $defaultOptions = [
         self::PAGE_PARAMETER_NAME => 'page',
         self::SORT_FIELD_PARAMETER_NAME => 'sort',
         self::SORT_DIRECTION_PARAMETER_NAME => 'direction',
@@ -37,10 +34,7 @@ final class Paginator implements PaginatorInterface
         self::DEFAULT_LIMIT => self::DEFAULT_LIMIT_VALUE,
     ];
 
-    /**
-     * @var RequestStack|null
-     */
-    private $requestStack;
+    private ?RequestStack $requestStack;
 
     public function __construct(EventDispatcherInterface $eventDispatcher, RequestStack $requestStack = null)
     {

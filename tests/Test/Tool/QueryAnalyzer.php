@@ -17,10 +17,8 @@ final class QueryAnalyzer implements SQLLogger
 {
     /**
      * Used database platform
-     *
-     * @var AbstractPlatform
      */
-    protected $platform;
+    protected AbstractPlatform $platform;
 
     /**
      * Start time of currently executed query
@@ -38,18 +36,14 @@ final class QueryAnalyzer implements SQLLogger
 
     /**
      * List of queries executed
-     *
-     * @var array
      */
-    private $queries = [];
+    private array $queries = [];
 
     /**
      * Query execution times indexed
      * in same order as queries
-     *
-     * @var array
      */
-    private $queryExecutionTimes = [];
+    private array $queryExecutionTimes = [];
 
     /**
      * Initialize log listener with database

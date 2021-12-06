@@ -11,10 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ElasticaQuerySubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var Request
-     */
-    private $request;
+    private Request $request;
 
     public function __construct(Request $request)
     {

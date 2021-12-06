@@ -19,34 +19,34 @@ class Article
     /**
      * @ORM\Column(length=64)
      */
-    private $title;
+    private ?string $title = null;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $enabled = true;
+    private bool $enabled = true;
 
     public function getId()
     {
         return $this->id;
     }
 
-    public function setTitle($title): void
+    public function setTitle(?string $title): void
     {
         $this->title = $title;
     }
 
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    public function setEnabled($enabled): void
+    public function setEnabled(bool $enabled): void
     {
         $this->enabled = $enabled;
     }
 
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return $this->enabled;
     }

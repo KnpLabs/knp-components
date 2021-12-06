@@ -3,6 +3,7 @@
 namespace Test\Fixture\Entity\Shop;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -20,27 +21,27 @@ class Product
     /**
      * @ORM\Column(length=64)
      */
-    private $title;
+    private ?string $title = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    private $description;
+    private ?string $description = null;
 
     /**
      * @ORM\Column(type="float", nullable=false)
      */
-    private $price;
+    private ?float $price = null;
 
     /**
      * @ORM\ManyToMany(targetEntity="Tag")
      */
-    private $tags;
+    private Collection $tags;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $numTags = 0;
+    private int $numTags = 0;
 
     public function __construct()
     {
@@ -52,32 +53,32 @@ class Product
         return $this->id;
     }
 
-    public function setTitle($title): void
+    public function setTitle(?string $title): void
     {
         $this->title = $title;
     }
 
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    public function setDescription($description): void
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
     }
 
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    public function setPrice($price): void
+    public function setPrice(?float $price): void
     {
         $this->price = $price;
     }
 
-    public function getPrice()
+    public function getPrice(): ?float
     {
         return $this->price;
     }
@@ -88,7 +89,7 @@ class Product
         $this->tags[] = $tag;
     }
 
-    public function getTags()
+    public function getTags(): Collection
     {
         return $this->tags;
     }
