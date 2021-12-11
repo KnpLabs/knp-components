@@ -28,15 +28,9 @@ use Doctrine\ORM\Tools\SchemaTool;
  */
 abstract class BaseTestCaseORM extends BaseTestCase
 {
-    /**
-     * @var EntityManager|null
-     */
-    protected $em;
+    protected ?EntityManager $em = null;
 
-    /**
-     * @var QueryAnalyzer|null
-     */
-    protected $queryAnalyzer;
+    protected ?QueryAnalyzer $queryAnalyzer = null;
 
     protected function setUp(): void
     {

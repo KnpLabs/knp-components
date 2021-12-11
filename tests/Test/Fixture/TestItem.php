@@ -4,10 +4,7 @@ namespace Test\Fixture;
 
 class TestItem
 {
-    /**
-     * @var int
-     */
-    private $sortProperty;
+    private int $sortProperty;
 
     public function __construct(int $sortProperty)
     {

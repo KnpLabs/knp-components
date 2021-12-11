@@ -14,10 +14,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
  */
 abstract class BaseTestCaseMongoODM extends BaseTestCase
 {
-    /**
-     * @var DocumentManager
-     */
-    protected $dm;
+    protected ?DocumentManager $dm = null;
 
     protected function setUp(): void
     {

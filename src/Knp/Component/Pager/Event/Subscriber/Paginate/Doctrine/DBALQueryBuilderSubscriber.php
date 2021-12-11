@@ -16,7 +16,6 @@ class DBALQueryBuilderSubscriber implements EventSubscriberInterface
     public function items(ItemsEvent $event): void
     {
         if ($event->target instanceof QueryBuilder) {
-            /** @var QueryBuilder $target */
             $target = $event->target;
         
             // count results

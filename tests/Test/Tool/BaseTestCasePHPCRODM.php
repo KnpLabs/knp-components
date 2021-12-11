@@ -16,10 +16,7 @@ use Jackalope\Transport\DoctrineDBAL\RepositorySchema;
  */
 abstract class BaseTestCasePHPCRODM extends BaseTestCase
 {
-    /**
-     * @var DocumentManager|null
-     */
-    protected $dm;
+    protected ?DocumentManager $dm = null;
 
     protected function setUp(): void
     {

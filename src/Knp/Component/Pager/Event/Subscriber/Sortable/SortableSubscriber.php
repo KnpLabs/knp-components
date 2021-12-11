@@ -9,9 +9,8 @@ class SortableSubscriber implements EventSubscriberInterface
 {
     /**
      * Lazy-load state tracker
-     * @var bool
      */
-    private $isLoaded = false;
+    private bool $isLoaded = false;
 
     public function before(BeforeEvent $event): void
     {

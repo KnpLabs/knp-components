@@ -10,7 +10,7 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 final class AfterEvent extends Event
 {
-    private $pagination;
+    private PaginationInterface $pagination;
 
     public function __construct(PaginationInterface $paginationView)
     {

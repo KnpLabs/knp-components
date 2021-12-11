@@ -19,19 +19,19 @@ class Tag
     /**
      * @ORM\Column(length=64)
      */
-    private $name;
+    private ?string $name = null;
 
     public function getId()
     {
         return $this->id;
     }
 
-    public function setName($name): void
+    public function setName(?string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }

@@ -17,52 +17,49 @@ final class Article
     /**
      * @ODM\Field(type="string")
      */
-    private $title;
+    private ?string $title = null;
 
     /**
      * @ODM\Field(type="bool", name="status")
      */
-    private $status;
+    private bool $status = false;
 
     /**
      * @ODM\Field(type="date", name="created_at")
      */
-    private $createdAt;
+    private ?\DateTime $createdAt = null;
 
     public function getId()
     {
         return $this->id;
     }
 
-    public function setTitle($title): void
+    public function setTitle(?string $title): void
     {
         $this->title = $title;
     }
 
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    public function getStatus()
+    public function getStatus(): bool
     {
         return $this->status;
     }
 
-    public function setStatus($status): void
+    public function setStatus(bool $status): void
     {
         $this->status = $status;
     }
 
-    /**
-     * @param \DateTime $createdAt
-     */
     public function setCreatedAt(\DateTime $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    public function getCreatedAt()
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }

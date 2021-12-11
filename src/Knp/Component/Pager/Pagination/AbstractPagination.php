@@ -6,12 +6,12 @@ use Iterator;
 
 abstract class AbstractPagination implements Iterator, PaginationInterface
 {
-    protected $currentPageNumber;
-    protected $numItemsPerPage;
-    protected $items = [];
-    protected $totalCount;
-    protected $paginatorOptions;
-    protected $customParameters;
+    protected ?int $currentPageNumber = null;
+    protected ?int $numItemsPerPage = null;
+    protected iterable $items = [];
+    protected ?int $totalCount = null;
+    protected ?array $paginatorOptions = null;
+    protected ?array $customParameters = null;
 
     public function rewind(): void
     {

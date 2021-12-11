@@ -7,8 +7,7 @@ use Throwable;
 
 class PageNumberOutOfRangeException extends OutOfRangeException
 {
-    /** @var int */
-    private $maxPageNumber;
+    private int $maxPageNumber;
 
     public function __construct(?string $message, int $maxPageNumber, ?Throwable $previousException = null)
     {

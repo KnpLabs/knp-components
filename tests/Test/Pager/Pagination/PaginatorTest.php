@@ -11,13 +11,13 @@ final class PaginatorTest extends BaseTestCase
      */
     public function shouldThrowExceptionOnInvalidPageAndLimitArgs(): void
     {
-        $exceptionTrown = false;
+        $exceptionThrown = false;
         try {
             $paginator = $this->getPaginatorInstance();
             $paginator->paginate(['a', 'b'], -1, 0);
         } catch (\LogicException $e) {
-            $exceptionTrown = true;
+            $exceptionThrown = true;
         }
-        $this->assertTrue($exceptionTrown);
+        $this->assertTrue($exceptionThrown);
     }
 }

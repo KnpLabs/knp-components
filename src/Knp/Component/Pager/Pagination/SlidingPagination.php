@@ -13,17 +13,13 @@ final class SlidingPagination extends AbstractPagination
 {
     /**
      * Pagination page range
-     *
-     * @var int
      */
-    private $range = 5;
+    private int $range = 5;
 
     /**
      * Closure which is executed to render pagination
-     *
-     * @var Closure
      */
-    public $renderer;
+    public ?Closure $renderer = null;
 
     public function setPageRange(int $range): void
     {

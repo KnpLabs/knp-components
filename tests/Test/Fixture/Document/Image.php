@@ -17,10 +17,11 @@ final class Image
     /**
      * @ODM\Field
      */
-    private $title;
+    private ?string $title = null;
 
     /**
      * @ODM\File
+     * @var int|string
      */
     private $file;
 
@@ -28,18 +29,18 @@ final class Image
      * Set file.
      *
      * @param int|string $file
-     * @return Image
      */
-    public function setFile($file)
+    public function setFile($file): self
     {
         $this->file = $file;
+
         return $this;
     }
 
     /**
      * Get file.
      *
-     * @return integer
+     * @return int|string
      */
     public function getFile()
     {
@@ -51,12 +52,12 @@ final class Image
         return $this->id;
     }
 
-    public function setTitle($title): void
+    public function setTitle(?string $title): void
     {
         $this->title = $title;
     }
 
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }

@@ -12,10 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var Request
-     */
-    private $request;
+    private Request $request;
 
     public function __construct(?Request $request)
     {

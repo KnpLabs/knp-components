@@ -15,22 +15,16 @@ class ArraySubscriber implements EventSubscriberInterface
     /**
      * @var string the field used to sort current object array list
      */
-    private $currentSortingField;
+    private string $currentSortingField;
 
     /**
      * @var string the sorting direction
      */
-    private $sortDirection;
+    private string $sortDirection;
 
-    /**
-     * @var PropertyAccessorInterface|null
-     */
-    private $propertyAccessor;
+    private ?PropertyAccessorInterface $propertyAccessor;
 
-    /**
-     * @var Request
-     */
-    private $request;
+    private Request $request;
 
     public function __construct(Request $request = null, PropertyAccessorInterface $accessor = null)
     {
