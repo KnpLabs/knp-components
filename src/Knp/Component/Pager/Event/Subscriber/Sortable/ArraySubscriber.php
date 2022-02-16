@@ -5,6 +5,7 @@ namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -24,9 +25,9 @@ class ArraySubscriber implements EventSubscriberInterface
 
     private ?PropertyAccessorInterface $propertyAccessor;
 
-    private Request $request;
+    private RequestStack $requestStack;
 
-    public function __construct(Request $request = null, PropertyAccessorInterface $accessor = null)
+    public function __construct(RequestStack $requestStack = null, PropertyAccessorInterface $accessor = null)
     {
         if (!$accessor && class_exists(PropertyAccess::class)) {
             $accessor = PropertyAccess::createPropertyAccessorBuilder()->enableMagicCall()->getPropertyAccessor();
@@ -37,11 +38,12 @@ class ArraySubscriber implements EventSubscriberInterface
         if (null === $request) {
             throw new \InvalidArgumentException('Request must be initialized.');
         }
-        $this->request = $request;
+        $this->requestStack = $requestStack;
     }
 
     public function items(ItemsEvent $event): void
     {
+        $this->request= $this->requestStack->getCurrentRequest();
         // Check if the result has already been sorted by an other sort subscriber
         $customPaginationParameters = $event->getCustomPaginationParameters();
         if (!empty($customPaginationParameters['sorted']) ) {
