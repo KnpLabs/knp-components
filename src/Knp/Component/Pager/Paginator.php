@@ -2,6 +2,8 @@
 
 namespace Knp\Component\Pager;
 
+use Knp\Component\Pager\Exception\PageLimitInvalidException;
+use Knp\Component\Pager\Exception\PageNumberInvalidException;
 use Knp\Component\Pager\Exception\PageNumberOutOfRangeException;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -53,9 +55,19 @@ final class Paginator implements PaginatorInterface
 
     public function paginate($target, int $page = 1, int $limit = null, array $options = []): PaginationInterface
     {
+        if ($page <= 0) {
+            throw new PageNumberInvalidException(
+                sprintf('Invalid page number. Page: %d: $page must be positive non-zero integers', $page),
+                $page
+            );
+        }
+
         $limit = $limit ?? $this->defaultOptions[self::DEFAULT_LIMIT];
-        if ($limit <= 0 || $page <= 0) {
-            throw new \LogicException("Invalid item per page number. Limit: $limit and Page: $page, must be positive non-zero integers");
+        if ($limit <= 0) {
+            throw new PageLimitInvalidException(
+                sprintf('Invalid page limit. Limit: %d: $limit must be positive non-zero integers', $limit),
+                $limit
+            );
         }
 
         $offset = ($page - 1) * $limit;

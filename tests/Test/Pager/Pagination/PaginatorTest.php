@@ -2,6 +2,8 @@
 
 namespace Test\Pager\Pagination;
 
+use Knp\Component\Pager\Exception\PageLimitInvalidException;
+use Knp\Component\Pager\Exception\PageNumberInvalidException;
 use Test\Tool\BaseTestCase;
 
 final class PaginatorTest extends BaseTestCase
@@ -9,15 +11,22 @@ final class PaginatorTest extends BaseTestCase
     /**
      * @test
      */
-    public function shouldThrowExceptionOnInvalidPageAndLimitArgs(): void
+    public function shouldThrowExceptionIfPageIsInvalid(): void
     {
-        $exceptionThrown = false;
-        try {
-            $paginator = $this->getPaginatorInstance();
-            $paginator->paginate(['a', 'b'], -1, 0);
-        } catch (\LogicException $e) {
-            $exceptionThrown = true;
-        }
-        $this->assertTrue($exceptionThrown);
+        $this->expectException(PageNumberInvalidException::class);
+
+        $paginator = $this->getPaginatorInstance();
+        $paginator->paginate(['a', 'b'], 0, -1);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldThrowExceptionIfLimitIsInvalid(): void
+    {
+        $this->expectException(PageLimitInvalidException::class);
+
+        $paginator = $this->getPaginatorInstance();
+        $paginator->paginate(['a', 'b'], 10, -1);
     }
 }
