@@ -42,7 +42,6 @@ interface PaginatorInterface
      *                          bool   $distinct           default true for distinction of results
      *                          string $alias              pagination alias, default none
      *                          array  $sortFieldAllowList sortable allow list for target fields being paginated
-     * @throws \LogicException
      */
     public function paginate($target, int $page = 1, int $limit = null, array $options = []): PaginationInterface;
 }
