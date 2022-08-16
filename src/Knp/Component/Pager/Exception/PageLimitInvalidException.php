@@ -3,21 +3,29 @@
 namespace Knp\Component\Pager\Exception;
 
 use OutOfRangeException;
-use Throwable;
 
 final class PageLimitInvalidException extends OutOfRangeException
 {
-    private int $limit;
+    private ?int $limit = null;
 
-    public function __construct(?string $message, int $limit, ?Throwable $previousException = null)
+    public function setLimit(int $limit): void
     {
-        parent::__construct($message, 0, $previousException);
-
         $this->limit = $limit;
     }
 
-    public function getLimit(): int
+    public function getLimit(): ?int
     {
         return $this->limit;
+    }
+
+    public static function create(int $limit): self
+    {
+        $exception = new self(
+            sprintf('Invalid page limit. Limit: %d: $limit must be positive non-zero integer', $limit)
+        );
+
+        $exception->setLimit($limit);
+
+        return $exception;
     }
 }

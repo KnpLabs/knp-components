@@ -56,18 +56,12 @@ final class Paginator implements PaginatorInterface
     public function paginate($target, int $page = 1, int $limit = null, array $options = []): PaginationInterface
     {
         if ($page <= 0) {
-            throw new PageNumberInvalidException(
-                sprintf('Invalid page number. Page: %d: $page must be positive non-zero integers', $page),
-                $page
-            );
+            throw PageNumberInvalidException::create($page);
         }
 
         $limit = $limit ?? $this->defaultOptions[self::DEFAULT_LIMIT];
         if ($limit <= 0) {
-            throw new PageLimitInvalidException(
-                sprintf('Invalid page limit. Limit: %d: $limit must be positive non-zero integers', $limit),
-                $limit
-            );
+            throw PageLimitInvalidException::create($limit);
         }
 
         $offset = ($page - 1) * $limit;

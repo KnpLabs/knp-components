@@ -3,21 +3,29 @@
 namespace Knp\Component\Pager\Exception;
 
 use OutOfRangeException;
-use Throwable;
 
 final class PageNumberInvalidException extends OutOfRangeException
 {
-    private int $page;
+    private ?int $page = null;
 
-    public function __construct(?string $message, int $page, ?Throwable $previousException = null)
+    public function setPage(int $page): void
     {
-        parent::__construct($message, 0, $previousException);
-
         $this->page = $page;
     }
 
     public function getPage(): int
     {
         return $this->page;
+    }
+
+    public static function create(int $page): self
+    {
+        $exception = new self(
+            sprintf('Invalid page number. Page: %d: $page must be positive non-zero integer', $page)
+        );
+
+        $exception->setPage($page);
+
+        return $exception;
     }
 }
