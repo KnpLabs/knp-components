@@ -16,7 +16,7 @@ final class PaginatorTest extends BaseTestCase
         $this->expectException(PageNumberInvalidException::class);
 
         $paginator = $this->getPaginatorInstance();
-        $paginator->paginate(['a', 'b'], 0, -1);
+        $paginator->paginate(['a', 'b'], 0, 10);
     }
 
     /**
