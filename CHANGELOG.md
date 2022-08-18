@@ -1,3 +1,9 @@
+## 3.6.0
+
+*Released at 2022-08-18*
+
+* changed handling of invalid arguments in paginate
+
 ## 3.1.0
 
 *Released at 2021-06-23*
