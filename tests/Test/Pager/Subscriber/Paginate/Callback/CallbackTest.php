@@ -1,5 +1,6 @@
 <?php
 
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Callback\CallbackPagination;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Callback\CallbackSubscriber;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -52,10 +53,12 @@ final class CallbackTest extends BaseTestCase
 
     private function givenPaginatorConfigured(): Paginator
     {
-        $dispatcher = new EventDispatcher;
+        $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new CallbackSubscriber);
         $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
-        return new Paginator($dispatcher);
+        $accessor = $this->createMock(ArgumentAccessInterface::class);
+
+        return new Paginator($dispatcher, $accessor);
     }
 
     private function givenCallbackPagination(): CallbackPagination

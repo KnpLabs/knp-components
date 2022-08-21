@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Pagination;
 
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\CustomParameterSubscriber;
@@ -18,7 +19,8 @@ final class CustomParameterTest extends BaseTestCase
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new CustomParameterSubscriber);
         $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
-        $p = new Paginator($dispatcher);
+        $accessor = $this->createMock(ArgumentAccessInterface::class);
+        $p = new Paginator($dispatcher, $accessor);
 
         $items = ['first', 'second'];
         $view = $p->paginate($items, 1, 10);

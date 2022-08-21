@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ODM\MongoDB;
 
+use Knp\Component\Pager\ArgumentAccess\RequestArgumentAccess;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ODM\MongoDB\QuerySubscriber as Sortable;
 use Knp\Component\Pager\Paginator;
@@ -22,7 +23,8 @@ final class QueryTest extends BaseTestCaseMongoODM
         $dispatcher->addSubscriber(new PaginationSubscriber);
         $dispatcher->addSubscriber(new Sortable($this->createRequestStack([])->getCurrentRequest()));
         $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'asc']);
-        $p = new Paginator($dispatcher, $requestStack);
+        $accessor = new RequestArgumentAccess($requestStack);
+        $p = new Paginator($dispatcher, $accessor);
 
         $qb = $this->dm->createQueryBuilder(Article::class);
         $query = $qb->getQuery();
@@ -36,7 +38,8 @@ final class QueryTest extends BaseTestCaseMongoODM
         $this->assertEquals('winter', $items[3]->getTitle());
 
         $requestStack = $this->createRequestStack(['sort' => 'title', 'direction' => 'desc']);
-        $p = new Paginator($dispatcher, $requestStack);
+        $accessor = new RequestArgumentAccess($requestStack);
+        $p = new Paginator($dispatcher, $accessor);
         $view = $p->paginate($query, 1, 10);
         $items = \array_values($view->getItems());
         $this->assertCount(4, $items);
@@ -46,7 +49,8 @@ final class QueryTest extends BaseTestCaseMongoODM
         $this->assertEquals('autumn', $items[3]->getTitle());
 
         $requestStack = $this->createRequestStack(['sort' => 'status+created_at', 'direction' => 'desc']);
-        $p = new Paginator($dispatcher, $requestStack);
+        $accessor = new RequestArgumentAccess($requestStack);
+        $p = new Paginator($dispatcher, $accessor);
         $view = $p->paginate($query);
         $items = \array_values($view->getItems());
         $this->assertCount(4, $items);

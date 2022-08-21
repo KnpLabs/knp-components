@@ -3,6 +3,8 @@
 namespace Knp\Component\Pager\Event\Subscriber\Paginate;
 
 use Knp\Component\Pager\Event\ItemsEvent;
+use Solarium\Client;
+use Solarium\QueryType\Select\Query\Query;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -14,11 +16,11 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
 {
     public function items(ItemsEvent $event): void
     {
-        if (is_array($event->target) && 2 == count($event->target)) {
+        if (is_array($event->target) && 2 === count($event->target)) {
             $values = array_values($event->target);
             [$client, $query] = $values;
 
-            if ($client instanceof \Solarium\Client && $query instanceof \Solarium\QueryType\Select\Query\Query) {
+            if ($client instanceof Client && $query instanceof Query) {
                 $query->setStart($event->getOffset())->setRows($event->getLimit());
                 $solrResult = $client->select($query);
 

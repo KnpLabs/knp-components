@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Sortable;
 
+use Knp\Component\Pager\ArgumentAccess\RequestArgumentAccess;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Sortable\ArraySubscriber;
 use Knp\Component\Pager\PaginatorInterface;
@@ -27,7 +28,8 @@ final class ArraySubscriberTest extends BaseTestCase
 
         // test asc sort
         $requestStack = $this->createRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'asc']);
-        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
+        $accessor = new RequestArgumentAccess($requestStack);
+        $arraySubscriber = new ArraySubscriber($accessor);
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(1, $array[0]['entry']['sortProperty']);
 
@@ -35,7 +37,8 @@ final class ArraySubscriberTest extends BaseTestCase
 
         // test desc sort
         $requestStack = $this->createRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'desc']);
-        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
+        $accessor = new RequestArgumentAccess($requestStack);
+        $arraySubscriber = new ArraySubscriber($accessor);
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(3, $array[0]['entry']['sortProperty']);
     }
@@ -69,7 +72,8 @@ final class ArraySubscriberTest extends BaseTestCase
 
         // test asc sort
         $requestStack = $this->createRequestStack(['sort' => '.name', 'ord' => 'asc']);
-        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
+        $accessor = new RequestArgumentAccess($requestStack);
+        $arraySubscriber = new ArraySubscriber($accessor);
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals('cold', $array[0]['name']);
 
@@ -77,7 +81,8 @@ final class ArraySubscriberTest extends BaseTestCase
 
         // test desc sort
         $requestStack = $this->createRequestStack(['sort' => '.name', 'ord' => 'desc']);
-        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
+        $accessor = new RequestArgumentAccess($requestStack);
+        $arraySubscriber = new ArraySubscriber($accessor);
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals('hot', $array[0]['name']);
     }
@@ -99,7 +104,8 @@ final class ArraySubscriberTest extends BaseTestCase
 
         // test asc sort
         $requestStack = $this->createRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'asc']);
-        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
+        $accessor = new RequestArgumentAccess($requestStack);
+        $arraySubscriber = new ArraySubscriber($accessor);
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(false, isset($array[0]['entry']['sortProperty']));
 
@@ -107,7 +113,8 @@ final class ArraySubscriberTest extends BaseTestCase
 
         // test desc sort
         $requestStack = $this->createRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'desc']);
-        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
+        $accessor = new RequestArgumentAccess($requestStack);
+        $arraySubscriber = new ArraySubscriber($accessor);
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(2, $array[0]['entry']['sortProperty']);
     }
@@ -132,7 +139,8 @@ final class ArraySubscriberTest extends BaseTestCase
 
         // test asc sort
         $requestStack = $this->createRequestStack(['sort' => 'notExistProperty', 'ord' => 'asc']);
-        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
+        $accessor = new RequestArgumentAccess($requestStack);
+        $arraySubscriber = new ArraySubscriber($accessor);
         $arraySubscriber->items($itemsEvent);
         $this->assertSame($sameSortOrderItems, $items);
 
@@ -140,7 +148,8 @@ final class ArraySubscriberTest extends BaseTestCase
 
         // test desc sort
         $requestStack = $this->createRequestStack(['sort' => 'notExistProperty', 'ord' => 'desc']);
-        $arraySubscriber = new ArraySubscriber($requestStack->getCurrentRequest());
+        $accessor = new RequestArgumentAccess($requestStack);
+        $arraySubscriber = new ArraySubscriber($accessor);
         $arraySubscriber->items($itemsEvent);
         $this->assertSame($sameSortOrderItems, $items);
     }

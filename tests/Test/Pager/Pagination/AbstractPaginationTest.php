@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Pagination;
 
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\ArraySubscriber;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\PaginatorInterface;
@@ -19,7 +20,8 @@ final class AbstractPaginationTest extends BaseTestCase
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
         $dispatcher->addSubscriber(new ArraySubscriber);
-        $p = new Paginator($dispatcher);
+        $accessor = $this->createMock(ArgumentAccessInterface::class);
+        $p = new Paginator($dispatcher, $accessor);
 
         $items = ['first', 'second'];
         $view = $p->paginate($items, 1, 10);

@@ -3,12 +3,12 @@
 namespace Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM\Query;
 
 use Doctrine\DBAL\Types\Types as Type;
-use Doctrine\ORM\Query\AST\Functions\LowerFunction;
 use Doctrine\ORM\Query\AST\ComparisonExpression;
 use Doctrine\ORM\Query\AST\ConditionalExpression;
 use Doctrine\ORM\Query\AST\ConditionalFactor;
 use Doctrine\ORM\Query\AST\ConditionalPrimary;
 use Doctrine\ORM\Query\AST\ConditionalTerm;
+use Doctrine\ORM\Query\AST\Functions\LowerFunction;
 use Doctrine\ORM\Query\AST\LikeExpression;
 use Doctrine\ORM\Query\AST\Literal;
 use Doctrine\ORM\Query\AST\Node;
@@ -34,18 +34,15 @@ class WhereWalker extends TreeWalkerAdapter
     public const HINT_PAGINATOR_FILTER_VALUE = 'knp_paginator.filter.value';
 
     /**
-     * Filter strings in a case insensitive way
+     * Filter strings in a case-insensitive way
      */
-    const HINT_PAGINATOR_FILTER_CASE_INSENSITIVE = 'knp_paginator.filter.case_insensitive';
+    public const HINT_PAGINATOR_FILTER_CASE_INSENSITIVE = 'knp_paginator.filter.case_insensitive';
 
     /**
      * Walks down a SelectStatement AST node, modifying it to
      * filter the query like requested by url
-     *
-     * @param  SelectStatement $AST
-     * @return void|string
      */
-    public function walkSelectStatement(SelectStatement $AST)
+    public function walkSelectStatement(SelectStatement $AST): void
     {
         $query = $this->_getQuery();
         $queriedValue = $query->getHint(self::HINT_PAGINATOR_FILTER_VALUE);
@@ -96,7 +93,8 @@ class WhereWalker extends TreeWalkerAdapter
                             Type::BIGINT,
                             Type::FLOAT,
                             Type::DECIMAL,
-                        ]
+                        ],
+                        true
                     )
                 )
             ) {

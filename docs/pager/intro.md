@@ -1,8 +1,6 @@
 # Intro to Knp Pager Component
 
-This is a PHP 7 paginator with a totally different core concept.
-
-**Note:** it is still experimental, any ideas on structural design are very welcome
+This is a PHP 8 paginator with a totally different core concept.
 
 How is it different? First of all, it uses Symfony's **event dispatcher** to paginate whatever is needed.
 The pagination process involves triggering events which hit the **subscribers**. If the subscriber
@@ -17,6 +15,7 @@ Why reinvent the wheel? Can someone tell me what's the definition of **wheel** i
 ## Requirements:
 
 - Symfony EventDispatcher component
+- Symfony HttpFoundation component (optional, if you want to retrieve data from Symfony Request)
 - Namespace based autoloader for this library
 
 ## Features:
@@ -36,7 +35,10 @@ pagination view - for representation purposes.
 ### Controller
 
 ```php
-$paginator = new Knp\Component\Pager\Paginator;
+// see usage.md for full vars
+$dispatcher = '[..]';   
+$accessor = '[..]';
+$paginator = new Knp\Component\Pager\Paginator($dispatcher, $accessor);
 $target = range('a', 'u');
 // uses event subscribers to paginate $target
 $pagination = $paginator->paginate($target, 2/*page*/, 10/*limit*/);
@@ -49,7 +51,7 @@ echo $pagination; // renders pagination
 
 // overriding view rendering
 
-$pagination->renderer = function($data) use ($template) {
+$pagination->renderer = function ($data) use ($template) {
     return $twig->render($template, $data);
 };
 
@@ -68,7 +70,7 @@ $pagination = $paginator->paginate($em->createQuery('SELECT a FROM Entity\Articl
 ### Custom data repository pagination
 
 For applications having custom data repositories (like DDD repositories, CQRS read models) you can provide custom
-data rerieval inside callbacks.
+data retrieval inside callbacks.
 
 ```php
 $repository = ...;

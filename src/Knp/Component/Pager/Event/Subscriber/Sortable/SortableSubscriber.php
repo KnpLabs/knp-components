@@ -22,13 +22,13 @@ class SortableSubscriber implements EventSubscriberInterface
         /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher */
         $dispatcher = $event->getEventDispatcher();
         // hook all standard sortable subscribers
-        $request = $event->getRequest();
-        $dispatcher->addSubscriber(new Doctrine\ORM\QuerySubscriber($request));
-        $dispatcher->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber($request));
-        $dispatcher->addSubscriber(new ElasticaQuerySubscriber($request));
-        $dispatcher->addSubscriber(new PropelQuerySubscriber($request));
-        $dispatcher->addSubscriber(new SolariumQuerySubscriber($request));
-        $dispatcher->addSubscriber(new ArraySubscriber($request));
+        $argumentAccess = $event->getArgumentAccess();
+        $dispatcher->addSubscriber(new Doctrine\ORM\QuerySubscriber($argumentAccess));
+        $dispatcher->addSubscriber(new Doctrine\ODM\MongoDB\QuerySubscriber($argumentAccess));
+        $dispatcher->addSubscriber(new ElasticaQuerySubscriber($argumentAccess));
+        $dispatcher->addSubscriber(new PropelQuerySubscriber($argumentAccess));
+        $dispatcher->addSubscriber(new SolariumQuerySubscriber($argumentAccess));
+        $dispatcher->addSubscriber(new ArraySubscriber($argumentAccess));
 
         $this->isLoaded = true;
     }

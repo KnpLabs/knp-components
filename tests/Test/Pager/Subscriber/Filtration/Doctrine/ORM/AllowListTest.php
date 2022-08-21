@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Filtration\Doctrine\ORM;
 
+use Knp\Component\Pager\ArgumentAccess\RequestArgumentAccess;
 use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber as Filtration;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Paginator;
@@ -26,7 +27,8 @@ final class AllowListTest extends BaseTestCaseORM
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
         $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => 'summer']);
-        $p = new Paginator($dispatcher, $requestStack);
+        $accessor = new RequestArgumentAccess($requestStack);
+        $p = new Paginator($dispatcher, $accessor);
 
         $filterFieldAllowList = ['a.invalid'];
         $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::FILTER_FIELD_ALLOW_LIST));
@@ -36,7 +38,8 @@ final class AllowListTest extends BaseTestCaseORM
         self::assertEquals('summer', $items[0]->getTitle());
 
         $requestStack = $this->createRequestStack(['filterParam' => 'a.id', 'filterValue' => 'summer']);
-        $p = new Paginator($dispatcher, $requestStack);
+        $accessor = new RequestArgumentAccess($requestStack);
+        $p = new Paginator($dispatcher, $accessor);
         $p->paginate($query, 1, 10, \compact(PaginatorInterface::FILTER_FIELD_ALLOW_LIST));
     }
 
@@ -52,7 +55,8 @@ final class AllowListTest extends BaseTestCaseORM
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
         $requestStack = $this->createRequestStack(['filterParam' => 'a.title', 'filterValue' => 'autumn']);
-        $p = new Paginator($dispatcher, $requestStack);
+        $accessor = new RequestArgumentAccess($requestStack);
+        $p = new Paginator($dispatcher, $accessor);
         $view = $p->paginate($query, 1, 10);
 
         $items = $view->getItems();
@@ -72,7 +76,8 @@ final class AllowListTest extends BaseTestCaseORM
         $dispatcher->addSubscriber(new Filtration());
 
         $requestStack = $this->createRequestStack(['filterParam' => 'a.id', 'filterValue' => 'autumn']);
-        $p = new Paginator($dispatcher, $requestStack);
+        $accessor = new RequestArgumentAccess($requestStack);
+        $p = new Paginator($dispatcher, $accessor);
         $view = $p->paginate($query);
 
         $items = $view->getItems();

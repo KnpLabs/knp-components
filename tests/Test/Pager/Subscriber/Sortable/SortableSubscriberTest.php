@@ -1,5 +1,6 @@
 <?php
 
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\BeforeEvent;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -17,8 +18,8 @@ final class SortableSubscriberTest extends BaseTestCase
 
         $subscriber = new SortableSubscriber;
 
-        $requestStack = $this->createRequestStack([]);
-        $beforeEvent = new BeforeEvent($dispatcher, $requestStack->getCurrentRequest());
+        $accessor = $this->createMock(ArgumentAccessInterface::class);
+        $beforeEvent = new BeforeEvent($dispatcher, $accessor);
         $subscriber->before($beforeEvent);
 
         // Subsequent calls do not add more subscribers

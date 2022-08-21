@@ -2,10 +2,10 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -24,42 +24,38 @@ class ArraySubscriber implements EventSubscriberInterface
 
     private ?PropertyAccessorInterface $propertyAccessor;
 
-    private Request $request;
+    private ArgumentAccessInterface $argumentAccess;
 
-    public function __construct(Request $request = null, PropertyAccessorInterface $accessor = null)
+    public function __construct(ArgumentAccessInterface $argumentAccess, PropertyAccessorInterface $accessor = null)
     {
         if (!$accessor && class_exists(PropertyAccess::class)) {
             $accessor = PropertyAccess::createPropertyAccessorBuilder()->enableMagicCall()->getPropertyAccessor();
         }
 
         $this->propertyAccessor = $accessor;
-        // check needed because $request must be nullable, being the second parameter (with the first one nullable)
-        if (null === $request) {
-            throw new \InvalidArgumentException('Request must be initialized.');
-        }
-        $this->request = $request;
+        $this->argumentAccess = $argumentAccess;
     }
 
     public function items(ItemsEvent $event): void
     {
-        // Check if the result has already been sorted by an other sort subscriber
+        // Check if the result has already been sorted by another sort subscriber
         $customPaginationParameters = $event->getCustomPaginationParameters();
         if (!empty($customPaginationParameters['sorted']) ) {
             return;
         }
         $sortField = $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME];
-        if (!is_array($event->target) || null === $sortField || !$this->request->query->has($sortField)) {
+        if (!is_array($event->target) || null === $sortField || !$this->argumentAccess->has($sortField)) {
             return;
         }
 
         $event->setCustomPaginationParameter('sorted', true);
 
-        if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST]) && !in_array($this->request->query->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
-            throw new \UnexpectedValueException("Cannot sort by: [{$this->request->query->get($sortField)}] this field is not in allow list.");
+        if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST]) && !in_array($this->argumentAccess->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+            throw new \UnexpectedValueException("Cannot sort by: [{$this->argumentAccess->get($sortField)}] this field is not in allow list.");
         }
 
         $sortFunction = $event->options['sortFunction'] ?? [$this, 'proxySortFunction'];
-        $sortField = $this->request->query->get($sortField);
+        $sortField = $this->argumentAccess->get($sortField);
 
         // compatibility layer
         if ($sortField[0] === '.') {
@@ -75,10 +71,10 @@ class ArraySubscriber implements EventSubscriberInterface
 
     private function getSortDirection(array $options): string
     {
-        if (!$this->request->query->has($options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME])) {
+        if (!$this->argumentAccess->has($options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME])) {
             return 'desc';
         }
-        $direction = $this->request->query->get($options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]);
+        $direction = $this->argumentAccess->get($options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME]);
         if (strtolower($direction) === 'asc') {
             return 'asc';
         }
@@ -94,13 +90,7 @@ class ArraySubscriber implements EventSubscriberInterface
         return usort($target, [$this, 'sortFunction']);
     }
 
-    /**
-     * @param mixed $object1 first object to compare
-     * @param mixed $object2 second object to compare
-     *
-     * @return int
-     */
-    private function sortFunction($object1, $object2): int
+    private function sortFunction(object|array $object1, object|array $object2): int
     {
         if (null === $this->propertyAccessor) {
             throw new \UnexpectedValueException('You need symfony/property-access component to use this sorting function');
@@ -112,14 +102,14 @@ class ArraySubscriber implements EventSubscriberInterface
 
         try {
             $fieldValue1 = $this->propertyAccessor->getValue($object1, $this->currentSortingField);
-        } catch (UnexpectedTypeException $e) {
+        } catch (UnexpectedTypeException) {
             return -1 * $this->getSortCoefficient();
         }
 
         try {
             $fieldValue2 = $this->propertyAccessor->getValue($object2, $this->currentSortingField);
-        } catch (UnexpectedTypeException $e) {
-            return 1 * $this->getSortCoefficient();
+        } catch (UnexpectedTypeException) {
+            return $this->getSortCoefficient();
         }
 
         if (is_string($fieldValue1)) {

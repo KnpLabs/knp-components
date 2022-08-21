@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ODM\PHPCR;
 
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ODM\PHPCR\QuerySubscriber;
 use Knp\Component\Pager\Pagination\SlidingPagination;
 use Knp\Component\Pager\Paginator;
@@ -22,7 +23,8 @@ final class QuerySubscriberTest extends BaseTestCasePHPCRODM
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new QuerySubscriber());
         $dispatcher->addSubscriber(new PaginationSubscriber()); // pagination view
-        $p = new Paginator($dispatcher);
+        $accessor = $this->createMock(ArgumentAccessInterface::class);
+        $p = new Paginator($dispatcher, $accessor);
 
         $query = $this->dm->createQueryBuilder()->fromDocument(Article::class, 'a')->getQuery();
 

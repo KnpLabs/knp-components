@@ -15,24 +15,28 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
 
     public function rewind(): void
     {
-        reset($this->items);
+        if (is_object($this->items)) {
+            $items = get_mangled_object_vars($this->items);
+            reset($items);
+            $this->items = new \ArrayObject($items);
+        } else {
+            reset($this->items);
+        }
     }
 
-    /**
-     * @return mixed
-     */
-    #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         return current($this->items);
     }
 
-    /**
-     * @return bool|float|int|string|null
-     */
-    #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): string|int|null
     {
+        if (is_object($this->items)) {
+            $items = get_mangled_object_vars($this->items);
+
+            return key($items);
+        }
+
         return key($this->items);
     }
 
@@ -43,7 +47,7 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
 
     public function valid(): bool
     {
-        return key($this->items) !== null;
+        return null !== $this->key();
     }
 
     public function count(): int
@@ -56,10 +60,7 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
         $this->customParameters = $parameters;
     }
 
-    /**
-     * @return mixed|null
-     */
-    public function getCustomParameter(string $name)
+    public function getCustomParameter(string $name): mixed
     {
         return $this->customParameters[$name] ?? null;
     }
@@ -99,10 +100,7 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
         $this->paginatorOptions = $options;
     }
 
-    /**
-     * @return mixed|null
-     */
-    public function getPaginatorOption(string $name)
+    public function getPaginatorOption(string $name): mixed
     {
         return $this->paginatorOptions[$name] ?? null;
     }
@@ -131,19 +129,16 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
 
     /**
      * @param string|int|float|bool|null $offset
-     * @return mixed
      */
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->items[$offset];
     }
 
     /**
      * @param string|int|float|bool|null $offset
-     * @param mixed $value
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet($offset, mixed $value): void
     {
         if (null === $offset) {
             $this->items[] = $value;

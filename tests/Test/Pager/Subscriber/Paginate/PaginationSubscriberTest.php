@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Paginate;
 
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\BeforeEvent;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -19,8 +20,9 @@ final class PaginationSubscriberTest extends BaseTestCase
 
         $subscriber = new PaginationSubscriber;
 
-        $requestStack = $this->createRequestStack([]);
-        $beforeEvent = new BeforeEvent($dispatcher, $requestStack->getCurrentRequest());
+        $accessor = $this->createMock(ArgumentAccessInterface::class);
+
+        $beforeEvent = new BeforeEvent($dispatcher, $accessor);
         $subscriber->before($beforeEvent);
 
         // Subsequent calls do not add more subscribers

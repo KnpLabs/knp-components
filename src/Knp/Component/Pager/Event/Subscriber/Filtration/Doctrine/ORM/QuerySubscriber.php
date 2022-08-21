@@ -3,27 +3,27 @@
 namespace Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM;
 
 use Doctrine\ORM\Query;
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM\Query\WhereWalker;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\Helper as QueryHelper;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
-    private Request $request;
+    private ArgumentAccessInterface $argumentAccess;
 
-    public function __construct(?Request $request)
+    public function __construct(ArgumentAccessInterface $argumentAccess)
     {
-        $this->request = $request ?? Request::createFromGlobals();
+        $this->argumentAccess = $argumentAccess;
     }
 
     public function items(ItemsEvent $event): void
     {
         if ($event->target instanceof Query) {
             $filterValue = $this->getQueryParameter($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
-            if (null === $filterValue || (empty($filterValue) && $filterValue !== '0')) {
+            if ((empty($filterValue) && $filterValue !== '0')) {
                 return;
             }
             $filterName = $this->getQueryParameter($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]);
@@ -35,7 +35,7 @@ class QuerySubscriber implements EventSubscriberInterface
                 return;
             }
             $value = $this->getQueryParameter($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
-            if (false !== strpos($value, '*')) {
+            if (str_contains($value, '*')) {
                 $value = str_replace('*', '%', $value);
             }
             if (is_string($columns) && false !== strpos($columns, ',')) {
@@ -65,6 +65,6 @@ class QuerySubscriber implements EventSubscriberInterface
 
     private function getQueryParameter(string $name): ?string
     {
-        return $this->request->query->get($name);
+        return $this->argumentAccess->get($name);
     }
 }
