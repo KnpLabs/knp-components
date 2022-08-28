@@ -216,7 +216,7 @@ final class QueryTest extends BaseTestCaseORM
      */
     public function shouldNotAcceptArrayParameter(): void
     {
-        $this->expectException(\UnexpectedValueException::class);
+        $this->expectException(\PHP_VERSION_ID < 80100 ? \TypeError::class : \UnexpectedValueException::class);
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')

@@ -23,12 +23,12 @@
     ],
     "require": {
         "php": "^8.0",
-        "symfony/event-dispatcher-contracts": "^3.0",
+        "symfony/event-dispatcher-contracts": "^3.0"
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
         "doctrine/mongodb-odm": "^2.4",
-        "doctrine/orm": "^2.11",
+        "doctrine/orm": "^2.12",
         "doctrine/phpcr-odm": "^1.6",
         "jackalope/jackalope-doctrine-dbal": "^1.8",
         "phpunit/phpunit": "^9.5",
