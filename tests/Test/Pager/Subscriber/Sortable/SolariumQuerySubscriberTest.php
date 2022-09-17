@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Sortable;
 
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SolariumQuerySubscriber;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -32,13 +33,13 @@ final class SolariumQuerySubscriberTest extends BaseTestCase
             'nbTotalResults' => 2,
         ];
 
-        $requestStack = $this->createRequestStack([]);
+        $accessor = $this->createMock(ArgumentAccessInterface::class);
         $dispatcher = new EventDispatcher();
 
-        $dispatcher->addSubscriber(new SolariumQuerySubscriber($requestStack->getCurrentRequest()));
+        $dispatcher->addSubscriber(new SolariumQuerySubscriber($accessor));
         $dispatcher->addSubscriber(new MockPaginationSubscriber());
 
-        $paginator = new Paginator($dispatcher);
+        $paginator = new Paginator($dispatcher, $accessor);
         $paginator->paginate($array, 1, 10);
     }
 }

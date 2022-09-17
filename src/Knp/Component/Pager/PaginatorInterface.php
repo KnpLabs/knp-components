@@ -43,5 +43,5 @@ interface PaginatorInterface
      *                          string $alias              pagination alias, default none
      *                          array  $sortFieldAllowList sortable allow list for target fields being paginated
      */
-    public function paginate($target, int $page = 1, int $limit = null, array $options = []): PaginationInterface;
+    public function paginate(mixed $target, int $page = 1, int $limit = null, array $options = []): PaginationInterface;
 }

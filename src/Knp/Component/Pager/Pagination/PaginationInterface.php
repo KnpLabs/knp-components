@@ -46,10 +46,8 @@ interface PaginationInterface extends Countable, Traversable, ArrayAccess
 
     /**
      * Get pagination alias
-     *
-     * @return mixed
      */
-    public function getPaginatorOption(string $name);
+    public function getPaginatorOption(string $name): mixed;
 
     /**
      * @param array $parameters
@@ -58,8 +56,6 @@ interface PaginationInterface extends Countable, Traversable, ArrayAccess
 
     /**
      * Return custom parameter
-     * 
-     * @return mixed
      */
-    public function getCustomParameter(string $name);
+    public function getCustomParameter(string $name): mixed;
 }

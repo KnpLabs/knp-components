@@ -12,10 +12,8 @@ final class PaginationEvent extends Event
 {
     /**
      * A target being paginated
-     *
-     * @var mixed
      */
-    public $target;
+    public mixed $target = null;
 
     /**
      * List of options

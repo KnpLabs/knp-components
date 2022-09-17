@@ -2,6 +2,8 @@
 
 namespace Test\Tool;
 
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
+use Knp\Component\Pager\ArgumentAccess\RequestArgumentAccess;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SortableSubscriber;
 use Knp\Component\Pager\Paginator;
@@ -15,10 +17,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 abstract class BaseTestCase extends TestCase
 {
-    protected function setUp(): void
-    {
-    }
-
     protected function getPaginatorInstance(?RequestStack $requestStack = null, ?EventDispatcher $dispatcher = null): Paginator
     {
         if (null === $dispatcher) {
@@ -26,8 +24,13 @@ abstract class BaseTestCase extends TestCase
             $dispatcher->addSubscriber(new PaginationSubscriber());
             $dispatcher->addSubscriber(new SortableSubscriber());
         }
+        if (null !== $requestStack) {
+            $accessor = new RequestArgumentAccess($requestStack);
+        } else {
+            $accessor = $this->createMock(ArgumentAccessInterface::class);
+        }
 
-        return new Paginator($dispatcher, $requestStack);
+        return new Paginator($dispatcher, $accessor);
     }
 
     protected function createRequestStack(array $params): RequestStack

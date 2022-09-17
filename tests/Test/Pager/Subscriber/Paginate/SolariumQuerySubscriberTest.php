@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Paginate;
 
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\SolariumQuerySubscriber;
 use Knp\Component\Pager\Paginator;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +26,8 @@ final class SolariumQuerySubscriberTest extends TestCase
         $dispatcher->addSubscriber(new SolariumQuerySubscriber);
         $dispatcher->addSubscriber(new MockPaginationSubscriber);
 
-        $p = new Paginator($dispatcher);
+        $accessor = $this->createMock(ArgumentAccessInterface::class);
+        $p = new Paginator($dispatcher, $accessor);
         $p->paginate($array, 1, 10);
     }
 }

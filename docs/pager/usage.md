@@ -19,13 +19,24 @@ require 'vendor/autoload.php';
 
 // usage examples will continue here
 
-use Knp\Component\Pager\Paginator; // used class name
+use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\ArgumentAccess\RequestArgumentAccess;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 // end of line and tab definition
 define('EOL', php_sapi_name() === 'cli' ? PHP_EOL : '<br/>');
 define('TAB', php_sapi_name() === 'cli' ? "\t" : '<span style="margin-left:25px"/>');
 
-$paginator = new Paginator; // initializes default event dispatcher, with standard listeners
+$dispatcher = new EventDispatcher();
+$dispatcher->addSubscriber(new PaginationSubscriber());
+$dispatcher->addSubscriber(new SortableSubscriber());
+
+// here we're using the the default access to arguments, based on Symfony Request
+// you can use your preferred way to retrieve them, by implementing RequestArgumentAccessInterface
+$accessor = new RequestArgumentAccess(RequestStack::createFromGlobals());
+
+$paginator = new Paginator($dispatcher, $accessor);
 $target = range('a', 'z'); // an array to paginate
 // paginate target and generate representation class, it can be overrided by event listener
 $pagination = $paginator->paginate($target, 1/*page number*/, 10/*limit per page*/);

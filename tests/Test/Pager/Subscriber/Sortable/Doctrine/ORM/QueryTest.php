@@ -2,6 +2,9 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ORM;
 
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\SchemaTool;
+use Knp\Component\Pager\ArgumentAccess\RequestArgumentAccess;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\QuerySubscriber as Sortable;
@@ -35,12 +38,12 @@ final class QueryTest extends BaseTestCaseORM
             'memory' => true,
         ];
 
-        $em = \Doctrine\ORM\EntityManager::create($conn, $config);
-        $schema = \array_map(function ($class) use ($em) {
+        $em = EntityManager::create($conn, $config);
+        $schema = \array_map(static function ($class) use ($em) {
             return $em->getClassMetadata($class);
-        }, (array)$this->getUsedEntityFixtures());
+        }, $this->getUsedEntityFixtures());
 
-        $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($em);
+        $schemaTool = new SchemaTool($em);
         $schemaTool->dropSchema([]);
         $schemaTool->createSchema($schema);
         $this->populate($em);
@@ -64,10 +67,11 @@ final class QueryTest extends BaseTestCaseORM
         $this->populate($em);
 
         $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'asc']);
+        $accessor = new RequestArgumentAccess($requestStack);
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new PaginationSubscriber);
-        $dispatcher->addSubscriber(new Sortable($requestStack->getCurrentRequest()));
-        $p = new Paginator($dispatcher, $requestStack);
+        $dispatcher->addSubscriber(new Sortable($accessor));
+        $p = new Paginator($dispatcher, $accessor);
 
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
@@ -96,10 +100,11 @@ final class QueryTest extends BaseTestCaseORM
         $this->populate($em);
 
         $requestStack = $this->createRequestStack(['sort' => 'a.title', 'direction' => 'desc']);
+        $accessor = new RequestArgumentAccess($requestStack);
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new PaginationSubscriber);
-        $dispatcher->addSubscriber(new Sortable($requestStack->getCurrentRequest()));
-        $p = new Paginator($dispatcher, $requestStack);
+        $dispatcher->addSubscriber(new Sortable($accessor));
+        $p = new Paginator($dispatcher, $accessor);
 
         $this->startQueryLog();
         $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
@@ -211,17 +216,18 @@ final class QueryTest extends BaseTestCaseORM
      */
     public function shouldNotAcceptArrayParameter(): void
     {
-        $this->expectException(\UnexpectedValueException::class);
+        $this->expectException(\PHP_VERSION_ID < 80100 ? \TypeError::class : \UnexpectedValueException::class);
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')
         ;
         $requestStack = $this->createRequestStack(['sort' => ['field' => 'a.name'], 'direction' => 'asc']);
+        $accessor = new RequestArgumentAccess($requestStack);
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new PaginationSubscriber);
-        $dispatcher->addSubscriber(new Sortable($requestStack->getCurrentRequest()));
-        $p = new Paginator($dispatcher, $requestStack);
-        $view = $p->paginate($query, 1, 10);
+        $dispatcher->addSubscriber(new Sortable($accessor));
+        $p = new Paginator($dispatcher, $accessor);
+        $p->paginate($query, 1, 10);
     }
 
     protected function getUsedEntityFixtures(): array
@@ -250,7 +256,7 @@ final class QueryTest extends BaseTestCaseORM
         $em->flush();
     }
 
-    private function getApcEntityManager()
+    private function getApcEntityManager(): EntityManager
     {
         $config = new \Doctrine\ORM\Configuration();
         $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcCache);
@@ -265,7 +271,6 @@ final class QueryTest extends BaseTestCaseORM
             'memory' => true,
         ];
 
-        $em = \Doctrine\ORM\EntityManager::create($conn, $config);
-        return $em;
+        return EntityManager::create($conn, $config);
     }
 }

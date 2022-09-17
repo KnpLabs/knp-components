@@ -2,7 +2,7 @@
 
 namespace Knp\Component\Pager\Event;
 
-use Symfony\Component\HttpFoundation\Request;
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -13,12 +13,12 @@ final class BeforeEvent extends Event
 {
     private EventDispatcherInterface $eventDispatcher;
 
-    private ?Request $request;
+    private ArgumentAccessInterface $argumentAccess;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher, ?Request $request)
+    public function __construct(EventDispatcherInterface $eventDispatcher, ArgumentAccessInterface $argumentAccess)
     {
         $this->eventDispatcher = $eventDispatcher;
-        $this->request = $request;
+        $this->argumentAccess = $argumentAccess;
     }
 
     public function getEventDispatcher(): EventDispatcherInterface
@@ -26,8 +26,8 @@ final class BeforeEvent extends Event
         return $this->eventDispatcher;
     }
 
-    public function getRequest(): Request
+    public function getArgumentAccess(): ArgumentAccessInterface
     {
-        return $this->request ?? Request::createFromGlobals();
+        return $this->argumentAccess;
     }
 }

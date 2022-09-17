@@ -2,29 +2,29 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Filtration;
 
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 class PropelQuerySubscriber implements EventSubscriberInterface
 {
-    private Request $request;
+    private ArgumentAccessInterface $argumentAccess;
 
-    public function __construct(?Request $request)
+    public function __construct(ArgumentAccessInterface $argumentAccess)
     {
-        $this->request = $request ?? Request::createFromGlobals();
+        $this->argumentAccess = $argumentAccess;
     }
 
     public function items(ItemsEvent $event): void
     {
         $query = $event->target;
         if ($query instanceof \ModelCriteria) {
-            if (!$this->request->query->has($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME])) {
+            if (!$this->argumentAccess->has($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME])) {
                 return;
             }
-            if ($this->request->query->has($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME])) {
-                $columns = $this->request->query->get($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]);
+            if ($this->argumentAccess->has($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME])) {
+                $columns = $this->argumentAccess->get($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]);
             } elseif (!empty($event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS])) {
                 $columns = $event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS];
             } else {
@@ -41,7 +41,7 @@ class PropelQuerySubscriber implements EventSubscriberInterface
                     }
                 }
             }
-            $value = $this->request->query->get($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
+            $value = $this->argumentAccess->get($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
             $criteria = \Criteria::EQUAL;
             if (false !== strpos($value, '*')) {
                 $value = str_replace('*', '%', $value);

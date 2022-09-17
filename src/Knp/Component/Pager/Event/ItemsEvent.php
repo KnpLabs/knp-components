@@ -11,10 +11,8 @@ final class ItemsEvent extends Event
 {
     /**
      * A target being paginated
-     *
-     * @var mixed
      */
-    public $target;
+    public mixed $target = null;
 
     /**
      * List of options
@@ -23,10 +21,8 @@ final class ItemsEvent extends Event
 
     /**
      * Items result
-     *
-     * @var mixed
      */
-    public $items;
+    public mixed $items = null;
 
     /**
      * Count result
@@ -43,7 +39,7 @@ final class ItemsEvent extends Event
         $this->limit = $limit;
     }
 
-    public function setCustomPaginationParameter($name, $value): void
+    public function setCustomPaginationParameter(string $name, mixed $value): void
     {
         $this->customPaginationParams[$name] = $value;
     }
@@ -53,7 +49,7 @@ final class ItemsEvent extends Event
         return $this->customPaginationParams;
     }
 
-    public function unsetCustomPaginationParameter($name): void
+    public function unsetCustomPaginationParameter(string $name): void
     {
         if (isset($this->customPaginationParams[$name])) {
             unset($this->customPaginationParams[$name]);

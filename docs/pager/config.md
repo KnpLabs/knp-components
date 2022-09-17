@@ -1,11 +1,9 @@
 ## Configuration
 
-
 Some subscribers will take into account some options.  
 These options can be passed as the 4th argument of `Paginator::paginate()`.
 
 For example, Doctrine ORM subscriber will generate different sql queries if the `distinct` options changes.
-
 
 The list of existing options are:
 
@@ -32,7 +30,6 @@ The list of existing options are:
 
 If set to true, will add a distinct sql keyword on orm queries to ensuire unicity of counted results
 
-
 ### `wrap-queries`
 
 If set to true, will take advantage of doctrine 2.3 output walkers by using subqueries to handle composite keys and HAVING queries.
@@ -42,22 +39,19 @@ If you want to order your results by a column from a fetch joined t-many associa
 you have to set `wrap-queries` to `true`. Otherwise you will get an exception with this warning:
 *"Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers."*
 
-
 ### `defaultSortFieldName`
 
 Used as default field name for the sorting. It can take an array for sorting by multiple fields.
 
-\* **Attention**: Arrays are only supported for *Doctrine's ORM*.
-
+> **Attention**: Arrays are only supported for *Doctrine's ORM*.
 
 ### `defaultFilterFields`
 
 Used as default field names for the filtration. It can take an array for filtering by multiple fields.
 
-
 ### `pageOutOfRange`
 
 Defines behavior if page number is out of range (i.g. exceeds the last page number):
- * 'ignore' - do nothing;
- * 'fix' - replace page number with max page;
- * 'throwException' - throw PageNumberOutOfRangeException (if you want to handle this case in the app).
+* 'ignore' - do nothing;
+* 'fix' - replace page number with max page;
+* 'throwException' - throw PageNumberOutOfRangeException (if you want to handle this case in the app).

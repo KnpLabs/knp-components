@@ -7,6 +7,7 @@ use Elastica\Query\Term;
 use Elastica\Result;
 use Elastica\ResultSet;
 use Elastica\SearchableInterface;
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\ElasticaQuerySubscriber;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -20,7 +21,8 @@ final class ElasticaTest extends BaseTestCase
         $dispatcher = new EventDispatcher;
         $dispatcher->addSubscriber(new ElasticaQuerySubscriber());
         $dispatcher->addSubscriber(new MockPaginationSubscriber); // pagination view
-        $p = new Paginator($dispatcher);
+        $accessor = $this->createMock(ArgumentAccessInterface::class);
+        $p = new Paginator($dispatcher, $accessor);
 
         $query = Query::create(new Term([
             'name' => 'Fred',

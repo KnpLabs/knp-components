@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber;
 
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\BeforeEvent;
 use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -19,8 +20,8 @@ final class FiltrationSubscriberTest extends BaseTestCase
 
         $subscriber = new FiltrationSubscriber;
 
-        $requestStack = $this->createRequestStack([]);
-        $beforeEvent = new BeforeEvent($dispatcher, $requestStack->getCurrentRequest());
+        $accessor = $this->createMock(ArgumentAccessInterface::class);
+        $beforeEvent = new BeforeEvent($dispatcher, $accessor);
         $subscriber->before($beforeEvent);
 
         // Subsequent calls do not add more subscribers
