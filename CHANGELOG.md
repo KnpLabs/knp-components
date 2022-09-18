@@ -1,6 +1,6 @@
 ## 4.0.0
 
-*Unreleased*
+*Released at 2022-09-18*
 
 * Paginator constructor now accepts as second argument an instance of ArgumentAccessInterface, instead of
   a RequestStack. So you can now paginate outside the web context
