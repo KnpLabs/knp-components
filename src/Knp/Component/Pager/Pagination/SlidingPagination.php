@@ -8,6 +8,11 @@ use Closure;
  * @todo: find a way to avoid exposing private member setters
  *
  * Sliding pagination
+ *
+ * @template TKey
+ * @template TValue
+ *
+ * @template-extends AbstractPagination<TKey, TValue>
  */
 final class SlidingPagination extends AbstractPagination
 {

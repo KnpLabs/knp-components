@@ -4,6 +4,12 @@ namespace Knp\Component\Pager\Pagination;
 
 use Iterator;
 
+/**
+ * @template TKey
+ * @template TValue
+ *
+ * @template-implements PaginationInterface<TKey, TValue>
+ */
 abstract class AbstractPagination implements Iterator, PaginationInterface
 {
     protected ?int $currentPageNumber = null;
