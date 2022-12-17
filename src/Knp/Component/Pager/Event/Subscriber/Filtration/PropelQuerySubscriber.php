@@ -4,6 +4,7 @@ namespace Knp\Component\Pager\Event\Subscriber\Filtration;
 
 use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
+use Knp\Component\Pager\Exception\InvalidValueException;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -37,7 +38,7 @@ class PropelQuerySubscriber implements EventSubscriberInterface
             if (isset($event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
                 foreach ($columns as $column) {
                     if (!in_array($column, $event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
-                        throw new \UnexpectedValueException("Cannot filter by: [{$column}] this field is not in allow list");
+                        throw new InvalidValueException("Cannot filter by: [{$column}] this field is not in allow list");
                     }
                 }
             }
