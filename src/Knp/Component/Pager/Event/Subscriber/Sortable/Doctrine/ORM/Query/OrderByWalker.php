@@ -7,6 +7,7 @@ use Doctrine\ORM\Query\AST\OrderByClause,
     Doctrine\ORM\Query\AST\PathExpression,
     Doctrine\ORM\Query\AST\SelectStatement,
     Doctrine\ORM\Query\TreeWalkerAdapter;
+use Knp\Component\Pager\Exception\InvalidValueException;
 
 /**
  * OrderBy Query TreeWalker for Sortable functionality
@@ -48,15 +49,15 @@ class OrderByWalker extends TreeWalkerAdapter
             $alias = $aliases[$index];
             if ($alias !== false) {
                 if (!array_key_exists($alias, $components)) {
-                    throw new \UnexpectedValueException("There is no component aliased by [{$alias}] in the given Query");
+                    throw new InvalidValueException("There is no component aliased by [{$alias}] in the given Query");
                 }
                 $meta = $components[$alias];
                 if (!$meta['metadata']->hasField($field)) {
-                    throw new \UnexpectedValueException("There is no such field [{$field}] in the given Query component, aliased by [$alias]");
+                    throw new InvalidValueException("There is no such field [{$field}] in the given Query component, aliased by [$alias]");
                 }
             } else {
                 if (!array_key_exists($field, $components)) {
-                    throw new \UnexpectedValueException("There is no component field [{$field}] in the given Query");
+                    throw new InvalidValueException("There is no component field [{$field}] in the given Query");
                 }
             }
 

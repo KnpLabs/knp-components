@@ -6,6 +6,7 @@ use Elastica\Query;
 use Elastica\SearchableInterface;
 use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
+use Knp\Component\Pager\Exception\InvalidValueException;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -36,7 +37,7 @@ class ElasticaQuerySubscriber implements EventSubscriberInterface
                 $dir   = null !== $sortDir && $this->argumentAccess->has($sortDir) && strtolower($this->argumentAccess->get($sortDir)) === 'asc' ? 'asc' : 'desc';
 
                 if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST]) && !in_array($field, $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
-                    throw new \UnexpectedValueException(sprintf('Cannot sort by: [%s] this field is not in allow list.', $field));
+                    throw new InvalidValueException(sprintf('Cannot sort by: [%s] this field is not in allow list.', $field));
                 }
 
                 $query->setSort([
