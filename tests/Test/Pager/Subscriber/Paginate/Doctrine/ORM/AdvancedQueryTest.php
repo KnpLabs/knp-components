@@ -10,7 +10,7 @@ use Test\Tool\BaseTestCaseORM;
 final class AdvancedQueryTest extends BaseTestCaseORM
 {
     /**
-     * Its not possible to make distinction and predict
+     * It's not possible to make distinction and predict
      * count of such query
      *
      * @test
@@ -108,7 +108,7 @@ final class AdvancedQueryTest extends BaseTestCaseORM
             SQL;
         $q = $this->em->createQuery($dql);
         $q->setParameter('keyword', '%Star%');
-        $q->setHydrationMode(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+        $q->setHydrationMode(Query::HYDRATE_ARRAY);
         $p = $this->getPaginatorInstance();
         $view = $p->paginate($q, 1, 10);
         $this->assertCount(1, $view);

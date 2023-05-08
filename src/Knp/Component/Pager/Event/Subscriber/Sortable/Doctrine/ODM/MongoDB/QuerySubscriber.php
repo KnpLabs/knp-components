@@ -34,10 +34,8 @@ class QuerySubscriber implements EventSubscriberInterface
                 $field = $this->argumentAccess->get($sortField);
                 $dir = null !== $sortDir && strtolower($this->argumentAccess->get($sortDir)) === 'asc' ? 1 : -1;
 
-                if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
-                    if (!in_array($field, $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
-                        throw new InvalidValueException("Cannot sort by: [{$field}] this field is not in allow list.");
-                    }
+                if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST]) && (!in_array($field, $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST]))) {
+                    throw new InvalidValueException("Cannot sort by: [$field] this field is not in allow list.");
                 }
                 static $reflectionProperty;
                 if (is_null($reflectionProperty)) {

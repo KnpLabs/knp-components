@@ -49,7 +49,7 @@ class WhereWalker extends TreeWalkerAdapter
         $queriedValue = $query->getHint(self::HINT_PAGINATOR_FILTER_VALUE);
         $columns = $query->getHint(self::HINT_PAGINATOR_FILTER_COLUMNS);
         $filterCaseInsensitive = $query->getHint(self::HINT_PAGINATOR_FILTER_CASE_INSENSITIVE);
-        $components = $this->_getQueryComponents();
+        $components = $this->getQueryComponents();
         $filterExpressions = [];
         $expressions = [];
         foreach ($columns as $column) {
@@ -59,17 +59,17 @@ class WhereWalker extends TreeWalkerAdapter
             if (2 <= count($parts)) {
                 $alias = trim(reset($parts));
                 if (!array_key_exists($alias, $components)) {
-                    throw new InvalidValueException("There is no component aliased by [{$alias}] in the given Query");
+                    throw new InvalidValueException("There is no component aliased by [$alias] in the given Query");
                 }
                 $meta = $components[$alias];
                 if (!$meta['metadata']->hasField($field)) {
-                    throw new InvalidValueException("There is no such field [{$field}] in the given Query component, aliased by [$alias]");
+                    throw new InvalidValueException("There is no such field [$field] in the given Query component, aliased by [$alias]");
                 }
                 $pathExpression = new PathExpression(PathExpression::TYPE_STATE_FIELD, $alias, $field);
                 $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
             } else {
                 if (!array_key_exists($field, $components)) {
-                    throw new InvalidValueException("There is no component field [{$field}] in the given Query");
+                    throw new InvalidValueException("There is no component field [$field] in the given Query");
                 }
                 $pathExpression = $components[$field]['resultVariable'];
             }
@@ -160,12 +160,13 @@ class WhereWalker extends TreeWalkerAdapter
      * @param  Node[]                $filterExpressions
      * @return bool
      */
-    private function expressionContainsFilter(ConditionalExpression $node, $filterExpressions): bool
+    private function expressionContainsFilter(ConditionalExpression $node, array $filterExpressions): bool
     {
         foreach ($node->conditionalTerms as $conditionalTerm) {
             if ($conditionalTerm instanceof ConditionalTerm && $this->termContainsFilter($conditionalTerm, $filterExpressions)) {
                 return true;
-            } elseif ($conditionalTerm instanceof ConditionalPrimary && $this->primaryContainsFilter($conditionalTerm, $filterExpressions)) {
+            }
+            if ($conditionalTerm instanceof ConditionalPrimary && $this->primaryContainsFilter($conditionalTerm, $filterExpressions)) {
                 return true;
             }
         }
@@ -178,7 +179,7 @@ class WhereWalker extends TreeWalkerAdapter
      * @param  Node[]          $filterExpressions
      * @return bool
      */
-    private function termContainsFilter(ConditionalTerm $node, $filterExpressions): bool
+    private function termContainsFilter(ConditionalTerm $node, array $filterExpressions): bool
     {
         foreach ($node->conditionalFactors as $conditionalFactor) {
             if ($conditionalFactor instanceof ConditionalFactor) {
@@ -200,7 +201,7 @@ class WhereWalker extends TreeWalkerAdapter
      * @param  Node[]            $filterExpressions
      * @return bool
      */
-    private function factorContainsFilter(ConditionalFactor $node, $filterExpressions): bool
+    private function factorContainsFilter(ConditionalFactor $node, array $filterExpressions): bool
     {
         if ($node->conditionalPrimary instanceof ConditionalPrimary && $node->not === false) {
             return $this->primaryContainsFilter($node->conditionalPrimary, $filterExpressions);
@@ -214,9 +215,9 @@ class WhereWalker extends TreeWalkerAdapter
      * @param  Node[]             $filterExpressions
      * @return bool
      */
-    private function primaryContainsFilter(ConditionalPrimary $node, $filterExpressions): bool
+    private function primaryContainsFilter(ConditionalPrimary $node, array $filterExpressions): bool
     {
-        if ($node->isSimpleConditionalExpression() && ($node->simpleConditionalExpression instanceof LikeExpression || $node->simpleConditionalExpression instanceof ComparisonExpression)) {
+        if (($node->simpleConditionalExpression instanceof LikeExpression || $node->simpleConditionalExpression instanceof ComparisonExpression) && $node->isSimpleConditionalExpression()) {
             return $this->isExpressionInFilterExpressions($node->simpleConditionalExpression, $filterExpressions);
         }
         if ($node->isConditionalExpression()) {
@@ -231,7 +232,7 @@ class WhereWalker extends TreeWalkerAdapter
      * @param  Node[] $filterExpressions
      * @return bool
      */
-    private function isExpressionInFilterExpressions(Node $node, $filterExpressions): bool
+    private function isExpressionInFilterExpressions(Node $node, array $filterExpressions): bool
     {
         foreach ($filterExpressions as $filterExpression) {
             if ((string) $filterExpression === (string) $node) {
@@ -242,11 +243,7 @@ class WhereWalker extends TreeWalkerAdapter
         return false;
     }
 
-    /**
-     * @param  ConditionalPrimary|ConditionalExpression $node
-     * @return ConditionalPrimary
-     */
-    private function createPrimaryFromNode($node): ConditionalPrimary
+    private function createPrimaryFromNode(ConditionalPrimary|ConditionalExpression $node): ConditionalPrimary
     {
         if ($node instanceof ConditionalPrimary) {
             $conditionalPrimary = $node;

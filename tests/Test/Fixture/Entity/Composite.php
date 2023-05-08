@@ -26,33 +26,21 @@ class Composite
      */
     private ?string $uid = null;
 
-    /**
-     * Sets uid.
-     */
     public function setUid(?string $uid): void
     {
         $this->uid = $uid;
     }
 
-    /**
-     * Returns uid.
-     */
     public function getUid(): ?string
     {
         return $this->uid;
     }
 
-    /**
-     * Sets Id.
-     */
     public function setId(?int $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * Returns Id.
-     */
     public function getId(): ?int
     {
         return $this->id;

@@ -14,7 +14,7 @@ final class DefaultLimitOptionTest extends BaseTestCase
     {
         $p = $this->getPaginatorInstance();
         $items = \range(1, 23);
-        $view = $p->paginate($items, 2, null, []);
+        $view = $p->paginate($items, 2);
         $pagination = $view->getPaginationData();
 
         $this->assertEquals(PaginatorInterface::DEFAULT_LIMIT_VALUE, $pagination['numItemsPerPage']);

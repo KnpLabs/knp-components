@@ -47,14 +47,14 @@ class QuerySubscriber implements EventSubscriberInterface
         if (str_contains($value, '*')) {
             $value = str_replace('*', '%', $value);
         }
-        if (is_string($columns) && false !== strpos($columns, ',')) {
+        if (is_string($columns) && str_contains($columns, ',')) {
             $columns = explode(',', $columns);
         }
         $columns = (array) $columns;
         if (isset($event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
             foreach ($columns as $column) {
                 if (!in_array($column, $event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
-                    throw new InvalidValueException("Cannot filter by: [{$column}] this field is not in allow list");
+                    throw new InvalidValueException("Cannot filter by: [$column] this field is not in allow list");
                 }
             }
         }

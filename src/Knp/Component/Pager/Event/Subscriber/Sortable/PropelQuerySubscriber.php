@@ -35,10 +35,8 @@ class PropelQuerySubscriber implements EventSubscriberInterface
                 $direction = (null !== $sortDir && $this->argumentAccess->has($sortDir) && strtolower($this->argumentAccess->get($sortDir)) === 'asc')
                                 ? 'asc' : 'desc';
 
-                if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
-                    if (!in_array($this->argumentAccess->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
-                        throw new InvalidValueException("Cannot sort by: [{$this->argumentAccess->get($sortField)}] this field is not in allow list.");
-                    }
+                if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST]) && !in_array($this->argumentAccess->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+                    throw new InvalidValueException("Cannot sort by: [{$this->argumentAccess->get($sortField)}] this field is not in allow list.");
                 }
 
                 $query->orderBy($part, $direction);

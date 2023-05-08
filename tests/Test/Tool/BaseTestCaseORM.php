@@ -53,7 +53,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
 
         $schema = \array_map(static function ($class) use ($em) {
             return $em->getClassMetadata($class);
-        }, (array)$this->getUsedEntityFixtures());
+        }, $this->getUsedEntityFixtures());
 
         $schemaTool = new SchemaTool($em);
         $schemaTool->dropSchema([]);
@@ -65,8 +65,6 @@ abstract class BaseTestCaseORM extends BaseTestCase
      * EntityManager mock object together with
      * annotation mapping driver and custom
      * connection
-     *
-     * @param array $conn
      */
     protected function getMockCustomEntityManager(array $conn, EventManager $evm = null): EntityManager
     {
@@ -75,7 +73,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
 
         $schema = \array_map(static function ($class) use ($em) {
             return $em->getClassMetadata($class);
-        }, (array)$this->getUsedEntityFixtures());
+        }, $this->getUsedEntityFixtures());
 
         $schemaTool = new SchemaTool($em);
         $schemaTool->dropSchema([]);

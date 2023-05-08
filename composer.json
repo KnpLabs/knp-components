@@ -51,7 +51,7 @@
         "symfony/property-access": "to allow sorting arrays"
     },
     "conflict": {
-        "doctrine/dbal": "<2.10"
+        "doctrine/dbal": "<3.1"
     },
     "extra": {
         "branch-alias": {

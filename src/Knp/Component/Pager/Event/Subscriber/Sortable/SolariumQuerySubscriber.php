@@ -38,10 +38,8 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
                 $event->setCustomPaginationParameter('sorted', true);
                 $sortField = $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME];
                 if (null !== $sortField && $this->argumentAccess->has($sortField)) {
-                    if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
-                        if (!in_array($this->argumentAccess->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
-                            throw new InvalidValueException("Cannot sort by: [{$this->argumentAccess->get($sortField)}] this field is not in allow list.");
-                        }
+                    if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST]) && !in_array($this->argumentAccess->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+                        throw new InvalidValueException("Cannot sort by: [{$this->argumentAccess->get($sortField)}] this field is not in allow list.");
                     }
 
                     $query->addSort($this->argumentAccess->get($sortField), $this->getSortDirection($event));

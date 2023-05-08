@@ -40,7 +40,7 @@ class OrderByWalker extends TreeWalkerAdapter
         $fields = (array)$query->getHint(self::HINT_PAGINATOR_SORT_FIELD);
         $aliases = (array)$query->getHint(self::HINT_PAGINATOR_SORT_ALIAS);
 
-        $components = $this->_getQueryComponents();
+        $components = $this->getQueryComponents();
         foreach ($fields as $index => $field) {
             if (!$field) {
                 continue;
@@ -49,16 +49,14 @@ class OrderByWalker extends TreeWalkerAdapter
             $alias = $aliases[$index];
             if ($alias !== false) {
                 if (!array_key_exists($alias, $components)) {
-                    throw new InvalidValueException("There is no component aliased by [{$alias}] in the given Query");
+                    throw new InvalidValueException("There is no component aliased by [$alias] in the given Query");
                 }
                 $meta = $components[$alias];
                 if (!$meta['metadata']->hasField($field)) {
-                    throw new InvalidValueException("There is no such field [{$field}] in the given Query component, aliased by [$alias]");
+                    throw new InvalidValueException("There is no such field [$field] in the given Query component, aliased by [$alias]");
                 }
-            } else {
-                if (!array_key_exists($field, $components)) {
-                    throw new InvalidValueException("There is no component field [{$field}] in the given Query");
-                }
+            } elseif (!array_key_exists($field, $components)) {
+                throw new InvalidValueException("There is no component field [$field] in the given Query");
             }
 
             $direction = $query->getHint(self::HINT_PAGINATOR_SORT_DIRECTION);
@@ -75,12 +73,14 @@ class OrderByWalker extends TreeWalkerAdapter
             if ($AST->orderByClause) {
                 $set = false;
                 foreach ($AST->orderByClause->orderByItems as $item) {
-                    if ($item->expression instanceof PathExpression) {
-                        if ($item->expression->identificationVariable === $alias && $item->expression->field === $field) {
-                            $item->type = $direction;
-                            $set = true;
-                            break;
-                        }
+                    if (
+                        $item->expression instanceof PathExpression &&
+                        $item->expression->identificationVariable === $alias &&
+                        $item->expression->field === $field
+                    ) {
+                        $item->type = $direction;
+                        $set = true;
+                        break;
                     }
                 }
                 if (!$set) {

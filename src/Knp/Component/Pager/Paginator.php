@@ -12,7 +12,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 /**
  * Paginator uses event dispatcher to trigger pagination
  * lifecycle events. Subscribers are expected to paginate
- * wanted target and finally it generates pagination view
+ * wanted target, and finally it generates pagination view
  * which is only the result of paginator
  */
 final class Paginator implements PaginatorInterface

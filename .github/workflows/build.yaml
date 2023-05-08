@@ -1,14 +1,22 @@
 name: build
 
-on: [push, pull_request]
+on: 
+    push:
+        branches:
+            - '**'
+        tags:
+            - '!**'
+    pull_request:
+        branches:
+            - '**'
 
 jobs:
     phpstan:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         name: PHPStan
         steps:
             - name: Checkout
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
             - name: PHPStan
               uses: docker://oskarstark/phpstan-ga
               env:
@@ -17,15 +25,15 @@ jobs:
               with:
                   args: analyse
     cs-fixer:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         name: PHP-CS-Fixer
         steps:
             - name: Checkout
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
             - name: Fix CS
               uses: docker://oskarstark/php-cs-fixer-ga
     tests:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         strategy:
             fail-fast: false
             matrix:
@@ -35,12 +43,14 @@ jobs:
                       composer_option: '--prefer-lowest'
                     - description: '8.1'
                       php: '8.1'
+                    - description: '8.2'
+                      php: '8.2'
         name: PHP ${{ matrix.php }} tests (${{ matrix.description }})
         steps:
             - name: Checkout
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
             - name: Cache
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               with: 
                   path: ~/.composer/cache/files
                   key: ${{ matrix.php }}-${{ matrix.symfony }}-${{ matrix.composer_option }} 
@@ -49,7 +59,7 @@ jobs:
               with:
                   php-version: ${{ matrix.php }}
                   extensions: mongodb-stable, pdo_sqlite
-            - name: Configure for PHP 8.1
+            - name: Configure for latest PHP versions
               run: composer require --dev --no-update laminas/laminas-code 4.5.x-dev
               if: matrix.php == '8.1'
             - run: composer update --no-interaction --no-progress --ansi ${{ matrix.composer_option }}

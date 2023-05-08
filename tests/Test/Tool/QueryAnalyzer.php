@@ -25,7 +25,7 @@ final class QueryAnalyzer implements SQLLogger
      *
      * @var int|float|null
      */
-    private $queryStartTime = null;
+    private $queryStartTime;
 
     /**
      * Total execution time of all queries
@@ -84,10 +84,8 @@ final class QueryAnalyzer implements SQLLogger
 
     /**
      * Dump the statistics of executed queries
-     *
-     * @param boolean $dumpOnlySql
      */
-    public function getOutput($dumpOnlySql = false): ?string
+    public function getOutput(bool $dumpOnlySql = false): ?string
     {
         $output = '';
         if (!$dumpOnlySql) {
@@ -202,16 +200,14 @@ final class QueryAnalyzer implements SQLLogger
                 if ($type instanceof Type) {
                     $value = $type->convertToDatabaseValue($value, $this->platform);
                 }
-            } else {
-                if (\is_object($value) && $value instanceof \DateTime) {
-                    $value = $value->format($this->platform->getDateTimeFormatString());
-                } elseif (!\is_null($value)) {
-                    $type = Type::getType(\gettype($value));
-                    $value = $type->convertToDatabaseValue($value, $this->platform);
-                }
+            } elseif ($value instanceof \DateTime) {
+                $value = $value->format($this->platform->getDateTimeFormatString());
+            } elseif (!\is_null($value)) {
+                $type = Type::getType(\gettype($value));
+                $value = $type->convertToDatabaseValue($value, $this->platform);
             }
             if (\is_string($value)) {
-                $value = "'{$value}'";
+                $value = "'$value'";
             } elseif (\is_null($value)) {
                 $value = 'NULL';
             }
