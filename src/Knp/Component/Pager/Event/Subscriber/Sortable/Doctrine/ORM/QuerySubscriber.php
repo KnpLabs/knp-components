@@ -35,10 +35,8 @@ class QuerySubscriber implements EventSubscriberInterface
             if (null !== $sortField && $this->argumentAccess->has($sortField)) {
                 $dir = null !== $sortDir && $this->argumentAccess->has($sortDir) && strtolower($this->argumentAccess->get($sortDir)) === 'asc' ? 'asc' : 'desc';
 
-                if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
-                    if (!in_array($this->argumentAccess->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
-                        throw new InvalidValueException("Cannot sort by: [{$this->argumentAccess->get($sortField)}] this field is not in allow list.");
-                    }
+                if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST]) && !in_array($this->argumentAccess->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+                    throw new InvalidValueException("Cannot sort by: [{$this->argumentAccess->get($sortField)}] this field is not in allow list.");
                 }
 
                 $sortFieldParameterNames = $this->argumentAccess->get($sortField);
@@ -51,7 +49,7 @@ class QuerySubscriber implements EventSubscriberInterface
                 foreach (explode('+', $sortFieldParameterNames) as $sortFieldParameterName) {
                     $parts = explode('.', $sortFieldParameterName, 2);
 
-                    // We have to prepend the field. Otherwise OrderByWalker will add
+                    // We have to prepend the field. Otherwise, OrderByWalker will add
                     // the order-by items in the wrong order
                     array_unshift($fields, end($parts));
                     array_unshift($aliases, 2 <= count($parts) ? reset($parts) : false);

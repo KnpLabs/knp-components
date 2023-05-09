@@ -22,7 +22,7 @@ class PropelQuerySubscriber implements EventSubscriberInterface
             if ($event->options[PaginatorInterface::DISTINCT]) {
                 $countQuery->distinct();
             }
-            $event->count = intval($countQuery->count());
+            $event->count = (int) $countQuery->count();
             // process items
             $result = null;
             if ($event->count) {

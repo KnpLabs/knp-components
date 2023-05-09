@@ -31,25 +31,25 @@ class PropelQuerySubscriber implements EventSubscriberInterface
             } else {
                 return;
             }
-            if (is_string($columns) && false !== strpos($columns, ',')) {
+            if (is_string($columns) && str_contains($columns, ',')) {
                 $columns = explode(',', $columns);
             }
             $columns = (array) $columns;
             if (isset($event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
                 foreach ($columns as $column) {
                     if (!in_array($column, $event->options[PaginatorInterface::FILTER_FIELD_ALLOW_LIST])) {
-                        throw new InvalidValueException("Cannot filter by: [{$column}] this field is not in allow list");
+                        throw new InvalidValueException("Cannot filter by: [$column] this field is not in allow list");
                     }
                 }
             }
             $value = $this->argumentAccess->get($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
             $criteria = \Criteria::EQUAL;
-            if (false !== strpos($value, '*')) {
+            if (str_contains($value, '*')) {
                 $value = str_replace('*', '%', $value);
                 $criteria = \Criteria::LIKE;
             }
             foreach ($columns as $column) {
-                if (false !== strpos($column, '.')) {
+                if (str_contains($column, '.')) {
                     $query->where($column.$criteria.'?', $value);
                 } else {
                     $query->{'filterBy'.$column}($value, $criteria);

@@ -14,9 +14,9 @@ final class CustomParameterSubscriber extends ArraySubscriber
         ];
     }
 
-    public function items(ItemsEvent $e): void
+    public function items(ItemsEvent $event): void
     {
-        $e->setCustomPaginationParameter('test', 'val');
-        parent::items($e);
+        $event->setCustomPaginationParameter('test', 'val');
+        parent::items($event);
     }
 }

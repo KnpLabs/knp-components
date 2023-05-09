@@ -20,10 +20,7 @@ class QuerySubscriber implements EventSubscriberInterface
         }
         $event->stopPropagation();
 
-        $useOutputWalkers = false;
-        if (isset($event->options['wrap-queries'])) {
-            $useOutputWalkers = $event->options['wrap-queries'];
-        }
+        $useOutputWalkers = $event->options['wrap-queries'] ?? false;
 
         $event->target
             ->setFirstResult($event->getOffset())

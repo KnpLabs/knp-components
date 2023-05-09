@@ -107,7 +107,7 @@ final class ArraySubscriberTest extends BaseTestCase
         $accessor = new RequestArgumentAccess($requestStack);
         $arraySubscriber = new ArraySubscriber($accessor);
         $arraySubscriber->items($itemsEvent);
-        $this->assertEquals(false, isset($array[0]['entry']['sortProperty']));
+        $this->assertFalse(isset($array[0]['entry']['sortProperty']));
 
         $itemsEvent->unsetCustomPaginationParameter('sorted');
 
@@ -155,9 +155,9 @@ final class ArraySubscriberTest extends BaseTestCase
     }
 
     /**
-     * @return array
+     * @return array<string, array<string, array<int, array<string, int>|TestItem>>>
      */
-    public function getItemsData(): array
+    public static function getItemsData(): array
     {
         return [
             'Associative array case' => [

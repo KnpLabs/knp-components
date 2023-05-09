@@ -235,7 +235,7 @@ final class QueryTest extends BaseTestCaseORM
         return [Article::class];
     }
 
-    private function populate($em): void
+    private function populate(EntityManager $em): void
     {
         $summer = new Article;
         $summer->setTitle('summer');
@@ -254,23 +254,5 @@ final class QueryTest extends BaseTestCaseORM
         $em->persist($autumn);
         $em->persist($spring);
         $em->flush();
-    }
-
-    private function getApcEntityManager(): EntityManager
-    {
-        $config = new \Doctrine\ORM\Configuration();
-        $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcCache);
-        $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcCache);
-        $config->setProxyDir(__DIR__);
-        $config->setProxyNamespace('Gedmo\Mapping\Proxy');
-        $config->setAutoGenerateProxyClasses(false);
-        $config->setMetadataDriverImpl($this->getMetadataDriverImplementation());
-
-        $conn = [
-            'driver' => 'pdo_sqlite',
-            'memory' => true,
-        ];
-
-        return EntityManager::create($conn, $config);
     }
 }
