@@ -45,13 +45,16 @@ jobs:
                       php: '8.1'
                     - description: '8.2'
                       php: '8.2'
+                    - description: 'Dev deps'
+                      php: '8.2'
+                      dev: true
         name: PHP ${{ matrix.php }} tests (${{ matrix.description }})
         steps:
             - name: Checkout
               uses: actions/checkout@v3
             - name: Cache
               uses: actions/cache@v3
-              with: 
+              with:
                   path: ~/.composer/cache/files
                   key: ${{ matrix.php }}-${{ matrix.symfony }}-${{ matrix.composer_option }} 
             - name: Setup PHP
@@ -59,9 +62,12 @@ jobs:
               with:
                   php-version: ${{ matrix.php }}
                   extensions: mongodb-stable, pdo_sqlite
-            - name: Configure for latest PHP versions
-              run: composer require --dev --no-update laminas/laminas-code 4.5.x-dev
+            - name: Configure for PHP 8.1
+              run: composer require --dev --no-update laminas/laminas-code 4.12.0
               if: matrix.php == '8.1'
+            - name: Go for dev dependencies
+              run: composer config minimum-stability dev && composer config prefer-stable true
+              if: matrix.dev
             - run: composer update --no-interaction --no-progress --ansi ${{ matrix.composer_option }}
             - run: vendor/bin/phpunit
 
