@@ -1,7 +1,0 @@
-parameters:
-	ignoreErrors:
-		-
-			message: "#^Instanceof between Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalExpression and Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalPrimary will always evaluate to false\\.$#"
-			count: 1
-			path: src/Knp/Component/Pager/Event/Subscriber/Filtration/Doctrine/ORM/Query/WhereWalker.php
-
