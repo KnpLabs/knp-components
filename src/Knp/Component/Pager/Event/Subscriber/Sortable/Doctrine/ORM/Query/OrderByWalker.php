@@ -34,7 +34,7 @@ class OrderByWalker extends TreeWalkerAdapter
      * Walks down a SelectStatement AST node, modifying it to
      * sort the query like requested by url
      */
-    public function walkSelectStatement(SelectStatement $AST): string
+    public function walkSelectStatement(SelectStatement $AST): void
     {
         $query = $this->_getQuery();
         $fields = (array)$query->getHint(self::HINT_PAGINATOR_SORT_FIELD);
@@ -90,7 +90,5 @@ class OrderByWalker extends TreeWalkerAdapter
                 $AST->orderByClause = new OrderByClause([$orderByItem]);
             }
         }
-
-        return '';
     }
 }
