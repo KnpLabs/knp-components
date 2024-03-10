@@ -16,7 +16,7 @@ jobs:
         name: PHPStan
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
             - name: PHPStan
               uses: docker://oskarstark/phpstan-ga
               env:
@@ -29,7 +29,7 @@ jobs:
         name: PHP-CS-Fixer
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
             - name: Fix CS
               uses: docker://oskarstark/php-cs-fixer-ga
     tests:
@@ -45,15 +45,17 @@ jobs:
                       php: '8.1'
                     - description: '8.2'
                       php: '8.2'
+                    - description: '8.3'
+                      php: '8.3'
                     - description: 'Dev deps'
-                      php: '8.2'
+                      php: '8.3'
                       dev: true
         name: PHP ${{ matrix.php }} tests (${{ matrix.description }})
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
             - name: Cache
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ~/.composer/cache/files
                   key: ${{ matrix.php }}-${{ matrix.symfony }}-${{ matrix.composer_option }} 
@@ -65,6 +67,9 @@ jobs:
             - name: Configure for PHP 8.1
               run: composer require --dev --no-update laminas/laminas-code 4.12.0
               if: matrix.php == '8.1'
+            - name: Get jackalope dev
+              run: composer require jackalope/jackalope-doctrine-dbal ^2.0@dev doctrine/phpcr-odm ^2.0@dev jackalope/jackalope ^2.0@dev --no-update --dev
+              if: matrix.dev
             - name: Go for dev dependencies
               run: composer config minimum-stability dev && composer config prefer-stable true
               if: matrix.dev

@@ -28,10 +28,10 @@
     "require-dev": {
         "ext-pdo_sqlite": "*",
         "doctrine/mongodb-odm": "^2.4",
-        "doctrine/orm": "^2.12",
+        "doctrine/orm": "^2.12 || ^3.0",
         "doctrine/phpcr-odm": "^1.6",
-        "jackalope/jackalope-doctrine-dbal": "^1.8",
-        "phpunit/phpunit": "^9.5",
+        "jackalope/jackalope-doctrine-dbal": "^1.8 || ^2.0@dev",
+        "phpunit/phpunit": "^9.6",
         "propel/propel1": "^1.7",
         "ruflin/elastica": "^7.0",
         "solarium/solarium": "^6.0",
