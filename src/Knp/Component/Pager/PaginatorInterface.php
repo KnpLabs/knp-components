@@ -35,13 +35,15 @@ interface PaginatorInterface
      * pagination object (might be aggregated helper object)
      * responsible for the pagination result representation
      *
-     * @param mixed    $target  anything what needs to be paginated
-     * @param int      $page    page number, starting from 1
-     * @param int|null $limit   number of items per page
-     * @param array    $options less used options:
-     *                          bool   $distinct           default true for distinction of results
-     *                          string $alias              pagination alias, default none
-     *                          array  $sortFieldAllowList sortable allow list for target fields being paginated
+     * @param mixed                 $target  anything what needs to be paginated
+     * @param int                   $page    page number, starting from 1
+     * @param int|null              $limit   number of items per page
+     * @param array<string, mixed>  $options less used options:
+     *                                       bool   $distinct           default true for distinction of results
+     *                                       string $alias              pagination alias, default none
+     *                                       array  $sortFieldAllowList sortable allow list for target fields being paginated
+     *
+     * @return PaginationInterface<int, mixed>
      */
     public function paginate(mixed $target, int $page = 1, int $limit = null, array $options = []): PaginationInterface;
 }

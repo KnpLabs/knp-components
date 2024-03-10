@@ -15,7 +15,7 @@ final class ItemsEvent extends Event
     public mixed $target = null;
 
     /**
-     * List of options
+     * @var array<string, mixed>
      */
     public array $options;
 
@@ -31,6 +31,10 @@ final class ItemsEvent extends Event
 
     private int $offset;
     private int $limit;
+
+    /**
+     * @var array<string, mixed>
+     */
     private array $customPaginationParams = [];
 
     public function __construct(int $offset, int $limit)
@@ -44,6 +48,9 @@ final class ItemsEvent extends Event
         $this->customPaginationParams[$name] = $value;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getCustomPaginationParameters(): array
     {
         return $this->customPaginationParams;

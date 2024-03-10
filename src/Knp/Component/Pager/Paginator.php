@@ -44,21 +44,27 @@ final class Paginator implements PaginatorInterface
     }
 
     /**
-     * Override the default paginator options
-     * to be reused for paginations
+     * Override the default paginator options to be reused for paginations
+     *
+     * @param array<string, string|int|bool> $options
      */ 
     public function setDefaultPaginatorOptions(array $options): void
     {
         $this->defaultOptions = \array_merge($this->defaultOptions, $options);
     }
 
+    /**
+     * @param array<string, mixed> $options
+     *
+     * @return PaginationInterface<int, mixed>
+     */
     public function paginate($target, int $page = 1, int $limit = null, array $options = []): PaginationInterface
     {
         if ($page <= 0) {
             throw PageNumberInvalidException::create($page);
         }
 
-        $limit = $limit ?? $this->defaultOptions[self::DEFAULT_LIMIT];
+        $limit = $limit ?? (int) $this->defaultOptions[self::DEFAULT_LIMIT];
         if ($limit <= 0) {
             throw PageLimitInvalidException::create($limit);
         }
