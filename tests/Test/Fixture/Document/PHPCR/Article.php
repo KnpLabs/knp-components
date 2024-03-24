@@ -2,26 +2,18 @@
 
 namespace Test\Fixture\Document\PHPCR;
 
-use Doctrine\ODM\PHPCR\Mapping\Annotations as PHPCR;
+use Doctrine\ODM\PHPCR\Mapping\Attributes as PHPCR;
 
-/**
- * @PHPCR\Document
- */
+#[PHPCR\Document]
 final class Article
 {
-    /**
-     * @PHPCR\Id
-     */
+    #[PHPCR\Id]
     private $id;
 
-    /**
-     * @PHPCR\ParentDocument
-     */
+    #[PHPCR\ParentDocument]
     private $parent;
 
-    /**
-     * @PHPCR\Field(type="string")
-     */
+    #[PHPCR\Field(type: "string")]
     private $title;
 
     public function getId()

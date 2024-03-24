@@ -5,15 +5,19 @@ namespace Test\Tool;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 
 /**
  * Base test case contains common mock objects
@@ -34,6 +38,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
 
     protected function setUp(): void
     {
+        $this->queryAnalyzer = new QueryAnalyzer();
     }
 
     /**
@@ -41,7 +46,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
      * annotation mapping driver and pdo_sqlite
      * database in memory
      */
-    protected function getMockSqliteEntityManager(EventManager $evm = null): EntityManager
+    protected function getMockSqliteEntityManager(?EventManager $evm = null): EntityManager
     {
         $conn = [
             'driver' => 'pdo_sqlite',
@@ -49,27 +54,28 @@ abstract class BaseTestCaseORM extends BaseTestCase
         ];
 
         $config = $this->getMockAnnotatedConfig();
-        $em = EntityManager::create($conn, $config, $evm ?: $this->getEventManager());
+        $connection = DriverManager::getConnection($conn, $config);
 
-        $schema = \array_map(static function ($class) use ($em) {
-            return $em->getClassMetadata($class);
-        }, $this->getUsedEntityFixtures());
+        $em = new EntityManager($connection, $config, $evm ?: $this->getEventManager());
+
+        $schema = \array_map(static fn (string $class): ClassMetadata => $em->getClassMetadata($class), $this->getUsedEntityFixtures());
 
         $schemaTool = new SchemaTool($em);
         $schemaTool->dropSchema([]);
         $schemaTool->createSchema($schema);
+
         return $this->em = $em;
     }
 
     /**
      * EntityManager mock object together with
-     * annotation mapping driver and custom
-     * connection
+     * annotation mapping driver and custom connection
      */
-    protected function getMockCustomEntityManager(array $conn, EventManager $evm = null): EntityManager
+    protected function getMockCustomEntityManager(array $conn, ?EventManager $evm = null): EntityManager
     {
         $config = $this->getMockAnnotatedConfig();
-        $em = EntityManager::create($conn, $config, $evm ?: $this->getEventManager());
+        $connection = DriverManager::getConnection($conn, $config);
+        $em = new EntityManager($connection, $config, $evm ?: $this->getEventManager());
 
         $schema = \array_map(static function ($class) use ($em) {
             return $em->getClassMetadata($class);
@@ -78,6 +84,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
         $schemaTool = new SchemaTool($em);
         $schemaTool->dropSchema([]);
         $schemaTool->createSchema($schema);
+
         return $this->em = $em;
     }
 
@@ -85,7 +92,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
      * EntityManager mock object with
      * annotation mapping driver
      */
-    protected function getMockMappedEntityManager(EventManager $evm = null): EntityManager
+    protected function getMockMappedEntityManager(?EventManager $evm = null): EntityManager
     {
         $driver = $this->createMock(Driver::class);
         $driver->expects($this->once())
@@ -101,7 +108,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
             ->willReturn($evm ?: $this->getEventManager());
 
         $config = $this->getMockAnnotatedConfig();
-        $this->em = EntityManager::create($connection, $config);
+        $this->em = new EntityManager($connection, $config);
 
         return $this->em;
     }
@@ -116,11 +123,6 @@ abstract class BaseTestCaseORM extends BaseTestCase
         if (null === $this->em) {
             throw new \RuntimeException('EntityManager and database platform must be initialized');
         }
-        $this->queryAnalyzer = new QueryAnalyzer($this->em->getConnection()->getDatabasePlatform());
-        $this->em
-            ->getConfiguration()
-            ->method('getSQLLogger')
-            ->willReturn($this->queryAnalyzer);
     }
 
     /**
@@ -155,13 +157,19 @@ abstract class BaseTestCaseORM extends BaseTestCase
     /**
      * Creates default mapping driver
      */
-    protected function getMetadataDriverImplementation(): AnnotationDriver
+    protected function getMetadataDriverImplementation(): MappingDriver
     {
+        if (PHP_VERSION_ID >= 80300) {
+            return new AttributeDriver([]);
+        }
+
         return new AnnotationDriver($_ENV['annotation_reader']);
     }
 
     /**
      * Get a list of used fixture classes
+     *
+     * @return array<int, class-string>
      */
     abstract protected function getUsedEntityFixtures(): array;
 
@@ -176,7 +184,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
     /**
      * Get annotation mapping configuration
      *
-     * @return Configuration|\PHPUnit\Framework\MockObject\MockObject
+     * @return Configuration&\PHPUnit\Framework\MockObject\MockObject
      */
     private function getMockAnnotatedConfig()
     {
@@ -196,7 +204,15 @@ abstract class BaseTestCaseORM extends BaseTestCase
         $config
             ->expects($this->once())
             ->method('getAutoGenerateProxyClasses')
-            ->willReturn(true)
+            ->willReturn(1)
+        ;
+
+        $metadata = $this->createMock(ClassMetadata::class);
+        $factory = $this->createMock(ClassMetadataFactory::class);
+
+        $factory
+            ->method('getMetadataFor')
+            ->willReturn($metadata)
         ;
 
         $config
@@ -208,37 +224,31 @@ abstract class BaseTestCaseORM extends BaseTestCase
         $mappingDriver = $this->getMetadataDriverImplementation();
 
         $config
-            ->expects($this->any())
             ->method('getMetadataDriverImpl')
             ->willReturn($mappingDriver)
         ;
 
         $config
-            ->expects($this->any())
             ->method('getDefaultRepositoryClassName')
             ->willReturn(EntityRepository::class)
         ;
 
         $config
-            ->expects($this->any())
             ->method('getQuoteStrategy')
             ->willReturn(new DefaultQuoteStrategy())
         ;
 
         $config
-            ->expects($this->any())
             ->method('getNamingStrategy')
             ->willReturn(new DefaultNamingStrategy())
         ;
 
         $config
-            ->expects($this->any())
             ->method('getCustomHydrationMode')
             ->willReturn('Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\AsIsHydrator')
         ;
 
         $config
-            ->expects($this->any())
             ->method('getDefaultQueryHints')
             ->willReturn([])
         ;

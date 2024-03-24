@@ -107,7 +107,7 @@ abstract class BaseTestCaseMongoODM extends BaseTestCase
             ->method('getHydratorNamespace')
             ->willReturn('Hydrator');
 
-        $config->expects($this->any())
+        $config
             ->method('getDefaultDB')
             ->willReturn('knp_pager_tests');
 
@@ -123,18 +123,17 @@ abstract class BaseTestCaseMongoODM extends BaseTestCase
             ->method('getClassMetadataFactoryName')
             ->willReturn(ClassMetadataFactory::class);
 
-        $config->expects($this->any())
+        $config
             ->method('getMongoCmd')
             ->willReturn('$');
 
         $config
-            ->expects($this->any())
             ->method('getDefaultCommitOptions')
             ->willReturn(['safe' => true])
         ;
         $mappingDriver = $this->getMetadataDriverImplementation();
 
-        $config->expects($this->any())
+        $config
             ->method('getMetadataDriverImpl')
             ->willReturn($mappingDriver);
 

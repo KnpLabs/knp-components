@@ -4,26 +4,16 @@ namespace Test\Fixture\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class Composite
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id, ORM\Column(type: "integer")]
     private $id;
 
-    /**
-     * @ORM\Column(length=64)
-     */
+    #[ORM\Column(length: 64)]
     private ?string $title = null;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Id, ORM\Column(type: "string")]
     private ?string $uid = null;
 
     public function setUid(?string $uid): void

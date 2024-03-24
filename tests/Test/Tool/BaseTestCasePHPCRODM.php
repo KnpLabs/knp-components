@@ -7,6 +7,7 @@ use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ODM\PHPCR\DocumentManager;
 use Doctrine\ODM\PHPCR\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\PHPCR\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\PHPCR\Query\Query;
 use Jackalope\RepositoryFactoryDoctrineDBAL;
 use Jackalope\Transport\DoctrineDBAL\RepositorySchema;
@@ -42,9 +43,12 @@ abstract class BaseTestCasePHPCRODM extends BaseTestCase
         return $this->dm;
     }
 
-    protected function getMetadataDriverImplementation(): AnnotationDriver
+    protected function getMetadataDriverImplementation(): object
     {
-        return new AnnotationDriver($_ENV['annotation_reader']);
+        return class_exists('AnnotationDriver') ?
+            new AnnotationDriver($_ENV['annotation_reader']) :
+            new AttributeDriver([])
+        ;
     }
 
     private function getSession()
