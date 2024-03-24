@@ -22,15 +22,16 @@ class DBALQueryBuilderSubscriber implements EventSubscriberInterface
             $qb = clone $target;
             
             //reset count orderBy since it can break query and slow it down
-            $qb
-                ->resetQueryPart('orderBy')
-            ;
-            
+            if (method_exists($qb, 'resetOrderBy')) {
+                $qb->resetOrderBy();
+            } else {
+                $qb->resetQueryParts();
+            }
+
             // get the query
             $sql = $qb->getSQL();
             
             $qb
-                ->resetQueryParts()
                 ->select('count(*) as cnt')
                 ->from('(' . $sql . ')', 'dbal_count_tbl')
             ;
