@@ -14,9 +14,12 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
 {
     protected ?int $currentPageNumber = null;
     protected ?int $numItemsPerPage = null;
+    /** @var iterable<int, mixed>|object */
     protected iterable $items = [];
     protected ?int $totalCount = null;
+    /** @var array<string, mixed>  */
     protected ?array $paginatorOptions = null;
+    /** @var array<string, mixed>  */
     protected ?array $customParameters = null;
 
     public function rewind(): void

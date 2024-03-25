@@ -14,7 +14,7 @@ use Closure;
  *
  * @template-extends AbstractPagination<TKey, TValue>
  */
-final class SlidingPagination extends AbstractPagination
+final class SlidingPagination extends AbstractPagination implements \Stringable
 {
     /**
      * Pagination page range
@@ -45,6 +45,9 @@ final class SlidingPagination extends AbstractPagination
         return $output;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getPaginationData(): array
     {
         $pageCount = (int) ceil($this->totalCount / $this->numItemsPerPage);

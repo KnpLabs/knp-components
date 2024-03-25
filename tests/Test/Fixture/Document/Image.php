@@ -26,20 +26,14 @@ final class Image
     private $file;
 
     /**
-     * Set file.
-     *
      * @param int|string $file
      */
-    public function setFile($file): self
+    public function setFile($file): void
     {
         $this->file = $file;
-
-        return $this;
     }
 
     /**
-     * Get file.
-     *
      * @return int|string
      */
     public function getFile()

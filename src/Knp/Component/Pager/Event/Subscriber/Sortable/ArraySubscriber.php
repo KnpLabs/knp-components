@@ -70,6 +70,9 @@ class ArraySubscriber implements EventSubscriberInterface
         ]);
     }
 
+    /**
+     * @param array<string, mixed> $options
+     */
     private function getSortDirection(array $options): string
     {
         if (!$this->argumentAccess->has($options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME])) {
@@ -83,7 +86,7 @@ class ArraySubscriber implements EventSubscriberInterface
         return 'desc';
     }
 
-    private function proxySortFunction(&$target, $sortField, $sortDirection): bool
+    private function proxySortFunction(mixed &$target, string $sortField, string $sortDirection): bool
     {
         $this->currentSortingField = $sortField;
         $this->sortDirection = $sortDirection;

@@ -1,0 +1,32 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method Knp\\\\Component\\\\Pager\\\\Event\\\\Subscriber\\\\Sortable\\\\ArraySubscriber\\:\\:sortFunction\\(\\) has parameter \\$object1 with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Knp/Component/Pager/Event/Subscriber/Sortable/ArraySubscriber.php
+
+		-
+			message: "#^Method Knp\\\\Component\\\\Pager\\\\Event\\\\Subscriber\\\\Sortable\\\\ArraySubscriber\\:\\:sortFunction\\(\\) has parameter \\$object2 with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Knp/Component/Pager/Event/Subscriber/Sortable/ArraySubscriber.php
+
+		-
+			message: "#^Class Knp\\\\Component\\\\Pager\\\\Pagination\\\\AbstractPagination implements generic interface Iterator but does not specify its types\\: TKey, TValue$#"
+			count: 1
+			path: src/Knp/Component/Pager/Pagination/AbstractPagination.php
+
+		-
+			message: "#^PHPDoc tag @var for property Knp\\\\Component\\\\Pager\\\\Pagination\\\\AbstractPagination\\:\\:\\$items with type iterable\\<int, mixed\\>\\|object is not subtype of native type iterable\\.$#"
+			count: 1
+			path: src/Knp/Component/Pager/Pagination/AbstractPagination.php
+
+		-
+			message: "#^Property Knp\\\\Component\\\\Pager\\\\Pagination\\\\AbstractPagination\\:\\:\\$items type has no value type specified in iterable type iterable\\.$#"
+			count: 1
+			path: src/Knp/Component/Pager/Pagination/AbstractPagination.php
+
+		-
+			message: "#^Interface Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface extends generic interface ArrayAccess but does not specify its types\\: TKey, TValue$#"
+			count: 1
+			path: src/Knp/Component/Pager/Pagination/PaginationInterface.php
+

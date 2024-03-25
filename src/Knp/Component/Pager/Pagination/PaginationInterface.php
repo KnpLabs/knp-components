@@ -50,7 +50,7 @@ interface PaginationInterface extends Countable, Traversable, ArrayAccess
     public function getItems(): iterable;
 
     /**
-     * @param array $options
+     * @param array<string, mixed> $options
      */
     public function setPaginatorOptions(array $options): void;
 
@@ -60,7 +60,7 @@ interface PaginationInterface extends Countable, Traversable, ArrayAccess
     public function getPaginatorOption(string $name): mixed;
 
     /**
-     * @param array $parameters
+     * @param array<string, mixed> $parameters
      */
     public function setCustomParameters(array $parameters): void;
 

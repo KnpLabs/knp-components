@@ -56,7 +56,7 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
         ];
     }
 
-    private function getSortDirection($event): string
+    private function getSortDirection(ItemsEvent $event): string
     {
         $sortDir = $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME];
 
