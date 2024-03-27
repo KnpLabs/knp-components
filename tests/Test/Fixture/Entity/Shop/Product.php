@@ -6,41 +6,25 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class Product
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
     private $id;
 
-    /**
-     * @ORM\Column(length=64)
-     */
+    #[ORM\Column(length: 64)]
     private ?string $title = null;
 
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
-    /**
-     * @ORM\Column(type="float", nullable=false)
-     */
+    #[ORM\Column(type: "float", nullable: true)]
     private ?float $price = null;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="Tag")
-     */
+    #[ORM\ManyToMany(targetEntity: "Tag")]
     private Collection $tags;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: "integer")]
     private int $numTags = 0;
 
     public function __construct()

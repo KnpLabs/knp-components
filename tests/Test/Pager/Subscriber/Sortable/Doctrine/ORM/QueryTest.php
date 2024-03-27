@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ORM;
 
+use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use Knp\Component\Pager\ArgumentAccess\RequestArgumentAccess;
@@ -38,7 +39,8 @@ final class QueryTest extends BaseTestCaseORM
             'memory' => true,
         ];
 
-        $em = EntityManager::create($conn, $config);
+        $connection = DriverManager::getConnection($conn, $config);
+        $em = new EntityManager($connection, $config);
         $schema = \array_map(static function ($class) use ($em) {
             return $em->getClassMetadata($class);
         }, $this->getUsedEntityFixtures());
