@@ -2,17 +2,30 @@
 
 namespace Test\Fixture\Document\PHPCR;
 
+use Doctrine\ODM\PHPCR\Mapping\Annotations as PHPCRAnnotations;
 use Doctrine\ODM\PHPCR\Mapping\Attributes as PHPCR;
 
+/**
+ * @PHPCRAnnotations\Document
+ */
 #[PHPCR\Document]
 final class Article
 {
+    /**
+     * @PHPCRAnnotations\Id
+     */
     #[PHPCR\Id]
     private $id;
 
+    /**
+     * @PHPCRAnnotations\ParentDocument
+     */
     #[PHPCR\ParentDocument]
     private $parent;
 
+    /**
+     * @PHPCRAnnotations\Field(type="string")
+     */
     #[PHPCR\Field(type: "string")]
     private $title;
 

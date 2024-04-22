@@ -4,18 +4,33 @@ namespace Test\Fixture\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @ODM\Document
+ */
 #[ODM\Document]
 final class Article
 {
+    /**
+     * @ODM\Id
+     */
     #[ODM\Id]
     private $id;
 
+    /**
+     * @ODM\Field(type="string")
+     */
     #[ODM\Field(type: "string")]
     private ?string $title = null;
 
+    /**
+     * @ODM\Field(type="bool", name="status")
+     */
     #[ODM\Field(type: "bool")]
     private bool $status = false;
 
+    /**
+     * @ODM\Field(type="date", name="created_at")
+     */
     #[ODM\Field(type: "date", name: "created_at")]
     private ?\DateTime $createdAt = null;
 
