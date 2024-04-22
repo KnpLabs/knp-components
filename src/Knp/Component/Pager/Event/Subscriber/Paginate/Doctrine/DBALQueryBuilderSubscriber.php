@@ -25,15 +25,14 @@ class DBALQueryBuilderSubscriber implements EventSubscriberInterface
             if (method_exists($qb, 'resetOrderBy')) {
                 $qb->resetOrderBy();
             } else {
-                $qb->resetQueryParts();
+                $qb->resetQueryParts(['orderBy']);
             }
 
             // get the query
             $sql = $qb->getSQL();
-            
+
             $qb
                 ->select('count(*) as cnt')
-                ->from('(' . $sql . ')', 'dbal_count_tbl')
             ;
 
             $compat = $qb->executeQuery();
