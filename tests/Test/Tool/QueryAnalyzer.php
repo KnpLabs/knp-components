@@ -15,6 +15,7 @@ final class QueryAnalyzer extends AbstractLogger
 {
     /** @var array<int, array{message: string, context: mixed[]}> */
     public array $queries = [];
+    private bool $logEnabled = false;
 
     /**
      * @param mixed   $level
@@ -23,6 +24,10 @@ final class QueryAnalyzer extends AbstractLogger
      */
     public function log($level, $message, array $context = []): void
     {
+        if (!$this->logEnabled) {
+            return;
+        }
+
         $this->queries[] = [
             'message' => $message,
             'context' => $context,
@@ -70,11 +75,24 @@ final class QueryAnalyzer extends AbstractLogger
 
     public function getExecutedQueries(): array
     {
-        return $this->queries;
+        return array_map(
+            fn (array $data) => $data['context']['sql'],
+            $this->queries
+        );
     }
 
     public function getNumExecutedQueries(): int
     {
         return \count($this->queries);
+    }
+
+    public function enable(): void
+    {
+        $this->logEnabled = true;
+    }
+
+    public function disable(): void
+    {
+        $this->logEnabled = false;
     }
 }

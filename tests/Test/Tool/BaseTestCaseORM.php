@@ -6,6 +6,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Logging\Middleware;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
@@ -123,6 +124,8 @@ abstract class BaseTestCaseORM extends BaseTestCase
         if (null === $this->em) {
             throw new \RuntimeException('EntityManager and database platform must be initialized');
         }
+        
+        $this->queryAnalyzer->enable();
     }
 
     /**
@@ -252,6 +255,10 @@ abstract class BaseTestCaseORM extends BaseTestCase
             ->method('getDefaultQueryHints')
             ->willReturn([])
         ;
+
+        $config
+            ->method('getMiddlewares')
+            ->willReturn([new Middleware($this->queryAnalyzer)]);
 
         return $config;
     }
