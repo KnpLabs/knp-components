@@ -159,11 +159,11 @@ abstract class BaseTestCaseORM extends BaseTestCase
      */
     protected function getMetadataDriverImplementation(): MappingDriver
     {
-        if (PHP_VERSION_ID >= 80300) {
-            return new AttributeDriver([]);
+        if (class_exists(AnnotationDriver::class)) {
+            return new AnnotationDriver($_ENV['annotation_reader']);
         }
 
-        return new AnnotationDriver($_ENV['annotation_reader']);
+        return new AttributeDriver([]);
     }
 
     /**

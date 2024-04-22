@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 
 /**
  * Base test case contains common mock objects
@@ -69,10 +70,16 @@ abstract class BaseTestCaseMongoODM extends BaseTestCase
 
     /**
      * Creates default mapping driver
+     * 
+     * @return AnnotationDriver|AttributeDriver
      */
-    protected function getMetadataDriverImplementation(): AnnotationDriver
+    protected function getMetadataDriverImplementation()
     {
-        return new AnnotationDriver($_ENV['annotation_reader']);
+        if (null !== $_ENV['annotation_reader']) {
+            return new AnnotationDriver($_ENV['annotation_reader']);
+        }
+
+        return new AttributeDriver();
     }
 
     /**
