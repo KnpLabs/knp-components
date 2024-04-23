@@ -1,19 +1,25 @@
+## 4.4.0
+
+*Released on 2024-04-23*
+
+* Allow the latest versions of Doctrine libraries
+
 ## 4.0.0
 
-*Released at 2022-09-18*
+*Released on 2022-09-18*
 
 * Paginator constructor now accepts as second argument an instance of ArgumentAccessInterface, instead of
   a RequestStack. So you can now paginate outside the web context
 
 ## 3.6.0
 
-*Released at 2022-08-18*
+*Released on 2022-08-18*
 
 * changed handling of invalid arguments in paginate
 
 ## 3.1.0
 
-*Released at 2021-06-23*
+*Released on 2021-06-23*
 
 * fixed ORM where with numeric values on string fields
 * added option to allow ODM subscriber
@@ -22,7 +28,7 @@
 
 ## 3.0.0
 
-*Released at 2020-11-30*
+*Released on 2020-11-30*
 
 * dropped support for Symfony 3
 * dropped support for PHP 7.2
@@ -32,13 +38,13 @@
 
 ## 2.5.0
 
-*Released at 2020-11-22*
+*Released on 2020-11-22*
 
 * deprecated not passing EventDispatcher to Paginator constructor
 
 ## 2.4.0
 
-*Released at 2020-07-13*
+*Released on 2020-07-13*
 
 * fixed error with older Symfony versions
 * added new option to handle out of range page numbers
@@ -47,7 +53,7 @@
 
 ## 2.3.0
 
-*Released at 2019-11-25*
+*Released on 2019-11-25*
 
 * allowed Symfony 5 components
 * fixed bug MongoDb query
@@ -55,13 +61,13 @@
 
 ## 2.2.0
 
-*Released at 2019-09-02*
+*Released on 2019-09-02*
 
 * added some missing return types
 
 ## 2.1.0
 
-*Released at 2019-07-15*
+*Released on 2019-07-15*
 
 * added new callback pagination
 * fixed sorting when using class properties
@@ -72,7 +78,7 @@
 
 ## 2.0.0
 
-*Released at 2019-06-26*
+*Released on 2019-06-26*
 
 * increased php minimum version
 * added support form mongodb-odm version 2 (and removed support for version 1)
