@@ -16,7 +16,7 @@ jobs:
         name: PHPStan
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
             - name: PHPStan
               uses: docker://oskarstark/phpstan-ga
               env:
@@ -29,7 +29,7 @@ jobs:
         name: PHP-CS-Fixer
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
             - name: Fix CS
               uses: docker://oskarstark/php-cs-fixer-ga
     tests:
@@ -45,15 +45,17 @@ jobs:
                       php: '8.1'
                     - description: '8.2'
                       php: '8.2'
+                    - description: '8.3'
+                      php: '8.3'
                     - description: 'Dev deps'
-                      php: '8.2'
+                      php: '8.3'
                       dev: true
         name: PHP ${{ matrix.php }} tests (${{ matrix.description }})
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
             - name: Cache
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ~/.composer/cache/files
                   key: ${{ matrix.php }}-${{ matrix.symfony }}-${{ matrix.composer_option }} 

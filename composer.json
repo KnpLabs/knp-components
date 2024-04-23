@@ -27,17 +27,18 @@
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
-        "doctrine/mongodb-odm": "^2.4",
-        "doctrine/orm": "^2.12",
-        "doctrine/phpcr-odm": "^1.6",
-        "jackalope/jackalope-doctrine-dbal": "^1.8",
-        "phpunit/phpunit": "^9.5",
+        "doctrine/dbal": "^3.8 || ^4.0",
+        "doctrine/mongodb-odm": "^2.5.5",
+        "doctrine/orm": "^2.13 || ^3.0",
+        "doctrine/phpcr-odm": "^1.8 || ^2.0",
+        "jackalope/jackalope-doctrine-dbal": "^1.12 || ^2.0",
+        "phpunit/phpunit": "^9.6",
         "propel/propel1": "^1.7",
         "ruflin/elastica": "^7.0",
         "solarium/solarium": "^6.0",
-        "symfony/http-foundation": "^5.4 || ^6.0 || ^7.0",
-        "symfony/http-kernel": "^5.4 || ^6.0 || ^7.0",
-        "symfony/property-access": "^5.4 || ^6.0 || ^7.0"
+        "symfony/http-foundation": "^5.4.38 || ^6.4.4 || ^7.0",
+        "symfony/http-kernel": "^5.4.38 || ^6.4.4 || ^7.0",
+        "symfony/property-access": "^5.4.38 || ^6.4.4 || ^7.0"
     },
     "suggest": {
         "doctrine/common": "to allow usage pagination with Doctrine ArrayCollection",
@@ -51,7 +52,7 @@
         "symfony/property-access": "to allow sorting arrays"
     },
     "conflict": {
-        "doctrine/dbal": "<3.1"
+        "doctrine/dbal": "<3.8"
     },
     "extra": {
         "branch-alias": {

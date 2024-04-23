@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  */
+#[ORM\Entity]
 class Article
 {
     /**
@@ -14,16 +15,19 @@ class Article
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
     private $id;
 
     /**
      * @ORM\Column(length=64)
      */
+    #[ORM\Column(length: 64)]
     private ?string $title = null;
 
     /**
      * @ORM\Column(type="boolean")
      */
+    #[ORM\Column(type: "boolean")]
     private bool $enabled = true;
 
     public function getId()

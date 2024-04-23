@@ -2,27 +2,32 @@
 
 namespace Test\Fixture\Document;
 
+use Doctrine\ODM\PHPCR\Mapping\Annotations as PHPCRAnnotations;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
  * @ODM\Document
  */
+#[ODM\Document]
 final class Image
 {
     /**
      * @ODM\Id
      */
+    #[ODM\Id]
     private $id;
 
     /**
      * @ODM\Field
      */
+    #[ODM\Field]
     private ?string $title = null;
 
     /**
      * @ODM\File
      * @var int|string
      */
+    #[ODM\File]
     private $file;
 
     /**

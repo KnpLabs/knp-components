@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  */
+#[ORM\Entity]
 class Tag
 {
     /**
@@ -14,11 +15,13 @@ class Tag
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
     private $id;
 
     /**
      * @ORM\Column(length=64)
      */
+    #[ORM\Column(length: 64)]
     private ?string $name = null;
 
     public function getId()

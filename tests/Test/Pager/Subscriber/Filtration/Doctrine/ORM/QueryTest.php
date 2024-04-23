@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Filtration\Doctrine\ORM;
 
+use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\ArgumentAccess\RequestArgumentAccess;
 use Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM\Query\WhereWalker;
@@ -39,8 +40,9 @@ final class QueryTest extends BaseTestCaseORM
             'memory' => true,
         ];
 
-        $em = \Doctrine\ORM\EntityManager::create($conn, $config);
-        $schema = \array_map(static function ($class) use ($em) {
+        $connection = DriverManager::getConnection($conn, $config);
+        $em = new \Doctrine\ORM\EntityManager($connection, $config);
+        $schema = \array_map(static function (string $class) use ($em) {
             return $em->getClassMetadata($class);
         }, $this->getUsedEntityFixtures());
 
@@ -756,7 +758,7 @@ final class QueryTest extends BaseTestCaseORM
     }
 
     /**
-     * @return Article[]
+     * @return string[]
      */
     protected function getUsedEntityFixtures(): array
     {
