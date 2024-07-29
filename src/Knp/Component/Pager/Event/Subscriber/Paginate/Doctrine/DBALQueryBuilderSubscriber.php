@@ -2,6 +2,7 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -13,26 +14,21 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class DBALQueryBuilderSubscriber implements EventSubscriberInterface
 {
+    public function __construct(private Connection $connection)
+    {
+    }
+
     public function items(ItemsEvent $event): void
     {
         if ($event->target instanceof QueryBuilder) {
             $target = $event->target;
-        
-            // count results
-            $qb = clone $target;
-            
-            //reset count orderBy since it can break query and slow it down
-            if (method_exists($qb, 'resetOrderBy')) {
-                $qb->resetOrderBy();
-            } else {
-                $qb->resetQueryParts(['orderBy']);
-            }
 
-            // get the query
-            $sql = $qb->getSQL();
-
-            $qb
-                ->select('count(*) as cnt')
+            $qb = $this
+                ->connection
+                ->createQueryBuilder()
+                ->select('COUNT(*)')
+                ->from('(' . $target->getSQL() . ')', 'tmp')
+                ->setParameters($target->getParameters(), $target->getParameterTypes())
             ;
 
             $compat = $qb->executeQuery();

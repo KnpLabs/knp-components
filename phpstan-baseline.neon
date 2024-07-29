@@ -1,11 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Call to an undefined method Doctrine\\\\DBAL\\\\Query\\\\QueryBuilder\\:\\:resetQueryParts\\(\\)\\.$#"
-			count: 1
-			path: src/Knp/Component/Pager/Event/Subscriber/Paginate/Doctrine/DBALQueryBuilderSubscriber.php
-
-		-
 			message: "#^Method Knp\\\\Component\\\\Pager\\\\Event\\\\Subscriber\\\\Sortable\\\\ArraySubscriber\\:\\:sortFunction\\(\\) has parameter \\$object1 with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Knp/Component/Pager/Event/Subscriber/Sortable/ArraySubscriber.php

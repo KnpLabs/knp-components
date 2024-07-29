@@ -2,7 +2,6 @@
 
 namespace Test\Fixture\Document;
 
-use Doctrine\ODM\PHPCR\Mapping\Annotations as PHPCRAnnotations;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**

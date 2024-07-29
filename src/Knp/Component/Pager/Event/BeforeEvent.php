@@ -2,6 +2,7 @@
 
 namespace Knp\Component\Pager\Event;
 
+use Doctrine\DBAL\Connection;
 use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -11,14 +12,11 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  */
 final class BeforeEvent extends Event
 {
-    private EventDispatcherInterface $eventDispatcher;
-
-    private ArgumentAccessInterface $argumentAccess;
-
-    public function __construct(EventDispatcherInterface $eventDispatcher, ArgumentAccessInterface $argumentAccess)
-    {
-        $this->eventDispatcher = $eventDispatcher;
-        $this->argumentAccess = $argumentAccess;
+    public function __construct(
+        private EventDispatcherInterface $eventDispatcher,
+        private ArgumentAccessInterface $argumentAccess,
+        private ?Connection $connection = null
+    ) {
     }
 
     public function getEventDispatcher(): EventDispatcherInterface
@@ -29,5 +27,10 @@ final class BeforeEvent extends Event
     public function getArgumentAccess(): ArgumentAccessInterface
     {
         return $this->argumentAccess;
+    }
+
+    public function getConnection(): ?Connection
+    {
+        return $this->connection;
     }
 }
