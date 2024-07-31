@@ -12,6 +12,7 @@ use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Pagination\SlidingPagination;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\PaginatorInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Test\Fixture\Entity\Article;
@@ -19,9 +20,7 @@ use Test\Tool\BaseTestCaseORM;
 
 final class QueryTest extends BaseTestCaseORM
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldHandleApcQueryCache(): void
     {
         if (!\extension_loaded('apc') || !\ini_get('apc.enable_cli')) {
@@ -60,9 +59,7 @@ final class QueryTest extends BaseTestCaseORM
         $p->paginate($query, 1, 10);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterSimpleDoctrineQuery(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -92,9 +89,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterSimpleDoctrineQueryWithoutWildcard(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -123,9 +118,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'summer\' LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterBooleanFilterValuesWithInteger(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -153,9 +146,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 1 LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterBooleanFilterValues(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -183,9 +174,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 1 LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterBooleanFilterValuesWithZero(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -212,9 +201,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 0 LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterBooleanFilterValuesFalse(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -241,9 +228,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.enabled = 0 LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldNotFilterInvalidBooleanFilterValues(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -269,9 +254,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterNumericFilterValues(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -298,9 +281,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'0\' LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterNumericFilterValuesOne(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -328,9 +309,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'1\' LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterComplexDoctrineQuery(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -356,9 +335,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterComplexDoctrineQuery2(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -402,9 +379,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' LIMIT 10', $executed[5]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterComplexDoctrineQuery3(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -431,9 +406,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.title LIKE \'%er\' AND a0_.title <> \'\' LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterSimpleDoctrineQueryWithMultipleProperties(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -469,9 +442,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\' LIMIT 10', $executed[3]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterComplexDoctrineQueryWithMultipleProperties(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -497,9 +468,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE (a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\') AND a0_.title <> \'\' AND (a0_.title LIKE \'summer\' OR a0_.title LIKE \'spring\') LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldValidateFiltrationParameter(): void
     {
         $this->expectException(\UnexpectedValueException::class);
@@ -519,9 +488,7 @@ final class QueryTest extends BaseTestCaseORM
         $items = $view->getItems();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldValidateFiltrationParameterWithoutAlias(): void
     {
         $this->expectException(\UnexpectedValueException::class);
@@ -541,9 +508,7 @@ final class QueryTest extends BaseTestCaseORM
         $items = $view->getItems();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldValidateFiltrationParameterExistance(): void
     {
         $this->expectException(\UnexpectedValueException::class);
@@ -564,9 +529,7 @@ final class QueryTest extends BaseTestCaseORM
         $items = $view->getItems();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterByAnyAvailableAlias(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -598,9 +561,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2, a0_.title AS title_3 FROM Article a0_ WHERE a0_.title LIKE \'%er\' LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldNotWorkWithInitialPaginatorEventDispatcher(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -621,9 +582,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldNotExecuteExtraQueriesWhenCountIsZero(): void
     {
         $query = $this
@@ -641,9 +600,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterWithEmptyParametersAndDefaults(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -681,9 +638,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'summer\' OR a0_.title LIKE \'summer\' LIMIT 10', $executed[5]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldNotFilterWithEmptyParametersAndDefaults(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -723,9 +678,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ LIMIT 10', $executed[5]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterCaseInsensitiveWhenAsked(): void
     {
         $em = $this->getMockSqliteEntityManager();

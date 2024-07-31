@@ -6,15 +6,14 @@ use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\ArraySubscriber;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\Paginator;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 use Test\Tool\BaseTestCase;
 
 final class ArrayTest extends BaseTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldPaginateAnArray(): void
     {
         $dispatcher = new EventDispatcher;
@@ -33,9 +32,7 @@ final class ArrayTest extends BaseTestCase
         $this->assertEquals(2, $view->getTotalItemCount());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSlicePaginateAnArray(): void
     {
         $dispatcher = new EventDispatcher;
@@ -53,9 +50,7 @@ final class ArrayTest extends BaseTestCase
         $this->assertEquals(21, $view->getTotalItemCount());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSupportPaginateStrategySubscriber(): void
     {
         $items = ['first', 'second'];
@@ -64,9 +59,7 @@ final class ArrayTest extends BaseTestCase
         $this->assertInstanceOf(PaginationInterface::class, $view);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldPaginateArrayObject(): void
     {
         $items = ['first', 'second'];

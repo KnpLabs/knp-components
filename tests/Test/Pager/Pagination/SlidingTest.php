@@ -2,13 +2,12 @@
 
 namespace Test\Pager\Pagination;
 
+use PHPUnit\Framework\Attributes\Test;
 use Test\Tool\BaseTestCase;
 
 final class SlidingTest extends BaseTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldBeAbleToProducePagination(): void
     {
         $p = $this->getPaginatorInstance();
@@ -35,9 +34,7 @@ final class SlidingTest extends BaseTestCase
         $this->assertEquals(10, $pagination['lastItemNumber']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldBeAbleToProduceWiderPagination(): void
     {
         $p = $this->getPaginatorInstance();
@@ -62,9 +59,7 @@ final class SlidingTest extends BaseTestCase
         $this->assertEquals(20, $pagination['lastItemNumber']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldHandleOddAndEvenRange(): void
     {
         $p = $this->getPaginatorInstance();
@@ -88,9 +83,7 @@ final class SlidingTest extends BaseTestCase
         $this->assertEquals(5, $pagination['lastPageInRange']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldNotFallbackToPageInCaseIfExceedsItemLimit(): void
     {
         $p = $this->getPaginatorInstance();

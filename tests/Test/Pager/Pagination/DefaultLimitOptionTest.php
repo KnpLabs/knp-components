@@ -3,13 +3,12 @@
 namespace Test\Pager\Pagination;
 
 use Knp\Component\Pager\PaginatorInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Test\Tool\BaseTestCase;
 
 final class DefaultLimitOptionTest extends BaseTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldBeAbleToHandleNullLimit(): void
     {
         $p = $this->getPaginatorInstance();
@@ -20,9 +19,7 @@ final class DefaultLimitOptionTest extends BaseTestCase
         $this->assertEquals(PaginatorInterface::DEFAULT_LIMIT_VALUE, $pagination['numItemsPerPage']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldBeAbleToOverwriteDefaultLimit(): void
     {
         $p = $this->getPaginatorInstance();

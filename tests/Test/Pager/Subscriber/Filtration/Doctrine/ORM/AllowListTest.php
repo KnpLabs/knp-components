@@ -7,15 +7,14 @@ use Knp\Component\Pager\Event\Subscriber\Filtration\FiltrationSubscriber as Filt
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\PaginatorInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Entity\Article;
 use Test\Tool\BaseTestCaseORM;
 
 final class AllowListTest extends BaseTestCaseORM
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldAllowListFiltrationFields(): void
     {
         $this->expectException(\UnexpectedValueException::class);
@@ -43,9 +42,7 @@ final class AllowListTest extends BaseTestCaseORM
         $p->paginate($query, 1, 10, \compact(PaginatorInterface::FILTER_FIELD_ALLOW_LIST));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterWithoutSpecificAllowList(): void
     {
         $this->populate();
@@ -63,9 +60,7 @@ final class AllowListTest extends BaseTestCaseORM
         self::assertEquals('autumn', $items[0]->getTitle());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFilterWithoutSpecificAllowList2(): void
     {
         $this->populate();

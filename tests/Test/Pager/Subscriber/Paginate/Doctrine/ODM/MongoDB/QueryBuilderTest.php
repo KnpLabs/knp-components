@@ -2,14 +2,13 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ODM\MongoDB;
 
+use PHPUnit\Framework\Attributes\Test;
 use Test\Fixture\Document\Article;
 use Test\Tool\BaseTestCaseMongoODM;
 
 final class QueryBuilderTest extends BaseTestCaseMongoODM
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSupportPaginateStrategySubscriber(): void
     {
         $this->populate();

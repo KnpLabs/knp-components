@@ -3,14 +3,13 @@
 namespace Test\Pager\Subscriber\Paginate\Doctrine;
 
 use Doctrine\DBAL\Query\QueryBuilder;
+use PHPUnit\Framework\Attributes\Test;
 use Test\Fixture\Entity\Article;
 use Test\Tool\BaseTestCaseORM;
 
 final class DBALQueryBuilderTest extends BaseTestCaseORM
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldPaginateSimpleDoctrineQuery(): void
     {
         $this->populate();

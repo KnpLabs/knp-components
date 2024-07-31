@@ -6,14 +6,14 @@ use Knp\Component\Pager\ArgumentAccess\RequestArgumentAccess;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Sortable\ArraySubscriber;
 use Knp\Component\Pager\PaginatorInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Test\Fixture\TestItem;
 use Test\Tool\BaseTestCase;
 
 final class ArraySubscriberTest extends BaseTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSort(): void
     {
         $array = [
@@ -43,9 +43,7 @@ final class ArraySubscriberTest extends BaseTestCase
         $this->assertEquals(3, $array[0]['entry']['sortProperty']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSortWithCustomCallback(): void
     {
         $array = [
@@ -87,9 +85,7 @@ final class ArraySubscriberTest extends BaseTestCase
         $this->assertEquals('hot', $array[0]['name']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSortEvenWhenTheSortPropertyIsNotAccessible(): void
     {
         $array = [
@@ -119,10 +115,8 @@ final class ArraySubscriberTest extends BaseTestCase
         $this->assertEquals(2, $array[0]['entry']['sortProperty']);
     }
 
-    /**
-     * @test
-     * @dataProvider getItemsData
-     */
+    #[Test]
+    #[DataProvider('getItemsData')]
     public function shouldBeKeptTheOrderWhenSortPropertyDoesNotExist(array $items): void
     {
         $sameSortOrderItems = [

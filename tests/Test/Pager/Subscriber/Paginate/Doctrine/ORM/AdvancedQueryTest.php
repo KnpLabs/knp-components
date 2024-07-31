@@ -3,6 +3,7 @@
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
 use Doctrine\ORM\Query;
+use PHPUnit\Framework\Attributes\Test;
 use Test\Fixture\Entity\Shop\Product;
 use Test\Fixture\Entity\Shop\Tag;
 use Test\Tool\BaseTestCaseORM;
@@ -12,9 +13,8 @@ final class AdvancedQueryTest extends BaseTestCaseORM
     /**
      * It's not possible to make distinction and predict
      * count of such query
-     *
-     * @test
      */
+    #[Test]
     public function shouldFailToPaginateMultiRootQuery(): void
     {
         $this->expectException(\RuntimeException::class);
@@ -33,9 +33,7 @@ final class AdvancedQueryTest extends BaseTestCaseORM
         $view = $p->paginate($q, 1, 2);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldBeAbleToPaginateWithHavingClause(): void
     {
         $this->populate();
@@ -54,9 +52,7 @@ final class AdvancedQueryTest extends BaseTestCaseORM
         $this->assertCount(3, $view);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldBeAbleToPaginateMixedKeyArray(): void
     {
         $this->populate();
@@ -76,9 +72,7 @@ final class AdvancedQueryTest extends BaseTestCaseORM
         $this->assertTrue(isset($items[0]['title']));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldBeAbleToPaginateCaseBasedQuery(): void
     {
         $this->populate();
@@ -118,9 +112,7 @@ final class AdvancedQueryTest extends BaseTestCaseORM
         $this->assertEquals(1, $items[0]['relevance']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldUseOutputWalkersIfHinted(): void
     {
         $this->populate();

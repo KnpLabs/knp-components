@@ -2,14 +2,13 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ODM\PHPCR;
 
+use PHPUnit\Framework\Attributes\Test;
 use Test\Fixture\Document\PHPCR\Article;
 use Test\Tool\BaseTestCasePHPCRODM;
 
 final class QueryBuilderSubscriberTest extends BaseTestCasePHPCRODM
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSupportPaginateStrategySubscriber(): void
     {
         $this->populate();

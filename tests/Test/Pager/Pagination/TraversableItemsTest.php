@@ -2,13 +2,12 @@
 
 namespace Test\Pager\Pagination;
 
+use PHPUnit\Framework\Attributes\Test;
 use Test\Tool\BaseTestCase;
 
 final class TraversableItemsTest extends BaseTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldBeAbleToUseTraversableItems(): void
     {
         $p = $this->getPaginatorInstance();

@@ -7,15 +7,14 @@ use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\CollectionSubscriber;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\Paginator;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 use Test\Tool\BaseTestCase;
 
 final class CollectionTest extends BaseTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldPaginateCollection(): void
     {
         $dispatcher = new EventDispatcher;
@@ -33,9 +32,7 @@ final class CollectionTest extends BaseTestCase
         $this->assertEquals(2, $view->getTotalItemCount());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldLoopOverPagination(): void
     {
         $dispatcher = new EventDispatcher;
@@ -58,9 +55,7 @@ final class CollectionTest extends BaseTestCase
         $this->assertEquals(2, $counter);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSlicePaginateAnArray(): void
     {
         $dispatcher = new EventDispatcher;
@@ -78,9 +73,7 @@ final class CollectionTest extends BaseTestCase
         $this->assertEquals(21, $view->getTotalItemCount());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSupportPaginateStrategySubscriber(): void
     {
         $items = new ArrayCollection(['first', 'second']);

@@ -4,14 +4,13 @@ namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
+use PHPUnit\Framework\Attributes\Test;
 use Test\Fixture\Entity\Composite;
 use Test\Tool\BaseTestCaseORM;
 
 final class CompositeKeyTest extends BaseTestCaseORM
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldBeHandledByQueryHintByPassingCount(): void
     {
         $p = $this->getPaginatorInstance();

@@ -3,14 +3,13 @@
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ODM\MongoDB;
 
 use Knp\Component\Pager\PaginatorInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Test\Fixture\Document\Article;
 use Test\Tool\BaseTestCaseMongoODM;
 
 final class AllowListTest extends BaseTestCaseMongoODM
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldAllowListSortableFields(): void
     {
         $this->expectException(\UnexpectedValueException::class);
@@ -35,9 +34,7 @@ final class AllowListTest extends BaseTestCaseMongoODM
         $view = $p->paginate($query, 1, 10, \compact(PaginatorInterface::SORT_FIELD_ALLOW_LIST));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSortWithoutSpecificAllowList(): void
     {
         $this->populate();

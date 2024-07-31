@@ -2,14 +2,13 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ODM\MongoDB;
 
+use PHPUnit\Framework\Attributes\Test;
 use Test\Fixture\Document\Image;
 use Test\Tool\BaseTestCaseMongoODM;
 
 final class GridFsTest extends BaseTestCaseMongoODM
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldPaginate(): void
     {
         $this->populate();

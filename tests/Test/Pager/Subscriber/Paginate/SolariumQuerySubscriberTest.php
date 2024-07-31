@@ -5,6 +5,7 @@ namespace Test\Pager\Subscriber\Paginate;
 use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\SolariumQuerySubscriber;
 use Knp\Component\Pager\Paginator;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -12,9 +13,7 @@ use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 
 final class SolariumQuerySubscriberTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function arrayShouldNotBeHandled(): void
     {
         $this->expectException(\RuntimeException::class);

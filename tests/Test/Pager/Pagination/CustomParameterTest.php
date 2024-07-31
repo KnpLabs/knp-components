@@ -4,6 +4,7 @@ namespace Test\Pager\Pagination;
 
 use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Paginator;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\CustomParameterSubscriber;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
@@ -11,9 +12,7 @@ use Test\Tool\BaseTestCase;
 
 final class CustomParameterTest extends BaseTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldGiveCustomParametersToPaginationView(): void
     {
         $dispatcher = new EventDispatcher;
