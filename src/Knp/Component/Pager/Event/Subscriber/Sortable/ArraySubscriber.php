@@ -25,7 +25,7 @@ class ArraySubscriber implements EventSubscriberInterface
 
     private readonly ?PropertyAccessorInterface $propertyAccessor;
 
-    public function __construct(private readonly ArgumentAccessInterface $argumentAccess, PropertyAccessorInterface $accessor = null)
+    public function __construct(private readonly ArgumentAccessInterface $argumentAccess, ?PropertyAccessorInterface $accessor = null)
     {
         if (!$accessor && class_exists(PropertyAccess::class)) {
             $accessor = PropertyAccess::createPropertyAccessorBuilder()->enableMagicCall()->getPropertyAccessor();

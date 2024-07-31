@@ -56,7 +56,7 @@ final class Paginator implements PaginatorInterface
      *
      * @return PaginationInterface<int, mixed>
      */
-    public function paginate($target, int $page = 1, int $limit = null, array $options = []): PaginationInterface
+    public function paginate($target, int $page = 1, ?int $limit = null, array $options = []): PaginationInterface
     {
         if ($page <= 0) {
             throw PageNumberInvalidException::create($page);

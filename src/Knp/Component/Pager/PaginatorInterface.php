@@ -45,5 +45,5 @@ interface PaginatorInterface
      *
      * @return PaginationInterface<int, mixed>
      */
-    public function paginate(mixed $target, int $page = 1, int $limit = null, array $options = []): PaginationInterface;
+    public function paginate(mixed $target, int $page = 1, ?int $limit = null, array $options = []): PaginationInterface;
 }
