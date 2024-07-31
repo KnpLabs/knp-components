@@ -10,15 +10,11 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 final class AfterEvent extends Event
 {
-    /** @var PaginationInterface<int, mixed> */
-    private PaginationInterface $pagination;
-
     /**
-     * @param PaginationInterface<int, mixed> $paginationView
+     * @param PaginationInterface<int, mixed> $pagination
      */
-    public function __construct(PaginationInterface $paginationView)
+    public function __construct(private readonly PaginationInterface $pagination)
     {
-        $this->pagination = $paginationView;
     }
 
     /**

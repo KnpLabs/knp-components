@@ -16,9 +16,7 @@ final class TraversableItemsTest extends BaseTestCase
         $items = new \ArrayObject(\range(1, 23));
         $view = $p->paginate($items, 3, 10);
 
-        $view->renderer = static function ($data) {
-            return 'custom';
-        };
+        $view->renderer = static fn($data) => 'custom';
         $this->assertEquals('custom', (string)$view);
 
         $items = $view->getItems();

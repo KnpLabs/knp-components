@@ -78,9 +78,7 @@ abstract class BaseTestCaseORM extends BaseTestCase
         $connection = DriverManager::getConnection($conn, $config);
         $em = new EntityManager($connection, $config, $evm ?: $this->getEventManager());
 
-        $schema = \array_map(static function ($class) use ($em) {
-            return $em->getClassMetadata($class);
-        }, $this->getUsedEntityFixtures());
+        $schema = \array_map(static fn($class) => $em->getClassMetadata($class), $this->getUsedEntityFixtures());
 
         $schemaTool = new SchemaTool($em);
         $schemaTool->dropSchema([]);

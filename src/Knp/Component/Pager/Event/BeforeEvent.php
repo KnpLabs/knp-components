@@ -13,9 +13,9 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 final class BeforeEvent extends Event
 {
     public function __construct(
-        private EventDispatcherInterface $eventDispatcher,
-        private ArgumentAccessInterface $argumentAccess,
-        private ?Connection $connection = null
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly ArgumentAccessInterface $argumentAccess,
+        private readonly ?Connection $connection = null
     ) {
     }
 

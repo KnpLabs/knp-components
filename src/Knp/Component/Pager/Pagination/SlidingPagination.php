@@ -42,7 +42,7 @@ final class SlidingPagination extends AbstractPagination implements \Stringable
             $output = call_user_func($this->renderer, $data);
         }
 
-        return $output;
+        return (string) $output;
     }
 
     /**

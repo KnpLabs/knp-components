@@ -49,7 +49,7 @@ abstract class BaseTestCaseMongoODM extends BaseTestCase
         try {
             $this->dm = DocumentManager::create($conn, $config, $evm ?: $this->getEventManager());
             $this->dm->getConnection()->connect();
-        } catch (\MongoException $e) {
+        } catch (\MongoException) {
             $this->markTestSkipped('Doctrine MongoDB ODM failed to connect');
         }
         return $this->dm;

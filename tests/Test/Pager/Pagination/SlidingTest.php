@@ -16,9 +16,7 @@ final class SlidingTest extends BaseTestCase
         $items = \range(1, 23);
         $view = $p->paginate($items, 1, 10);
 
-        $view->renderer = static function ($data) {
-            return 'custom';
-        };
+        $view->renderer = static fn($data) => 'custom';
         $this->assertEquals('custom', (string) $view);
 
         $pagination = $view->getPaginationData();

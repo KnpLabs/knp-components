@@ -12,11 +12,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ElasticaQuerySubscriber implements EventSubscriberInterface
 {
-    private ArgumentAccessInterface $argumentAccess;
-
-    public function __construct(ArgumentAccessInterface $argumentAccess)
+    public function __construct(private readonly ArgumentAccessInterface $argumentAccess)
     {
-        $this->argumentAccess = $argumentAccess;
     }
 
     public function items(ItemsEvent $event): void

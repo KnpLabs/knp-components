@@ -23,18 +23,15 @@ class ArraySubscriber implements EventSubscriberInterface
      */
     private string $sortDirection;
 
-    private ?PropertyAccessorInterface $propertyAccessor;
+    private readonly ?PropertyAccessorInterface $propertyAccessor;
 
-    private ArgumentAccessInterface $argumentAccess;
-
-    public function __construct(ArgumentAccessInterface $argumentAccess, PropertyAccessorInterface $accessor = null)
+    public function __construct(private readonly ArgumentAccessInterface $argumentAccess, PropertyAccessorInterface $accessor = null)
     {
         if (!$accessor && class_exists(PropertyAccess::class)) {
             $accessor = PropertyAccess::createPropertyAccessorBuilder()->enableMagicCall()->getPropertyAccessor();
         }
 
         $this->propertyAccessor = $accessor;
-        $this->argumentAccess = $argumentAccess;
     }
 
     public function items(ItemsEvent $event): void

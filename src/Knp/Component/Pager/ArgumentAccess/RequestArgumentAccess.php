@@ -7,11 +7,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 final class RequestArgumentAccess implements ArgumentAccessInterface
 {
-    private RequestStack $requestStack;
-
-    public function __construct(RequestStack $requestStack)
+    public function __construct(private readonly RequestStack $requestStack)
     {
-        $this->requestStack = $requestStack;
     }
 
     public function has(string $name): bool
