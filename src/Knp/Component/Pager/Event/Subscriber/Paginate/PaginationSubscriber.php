@@ -39,7 +39,9 @@ class PaginationSubscriber implements EventSubscriberInterface
         $dispatcher->addSubscriber(new Doctrine\ODM\PHPCR\QueryBuilderSubscriber);
         $dispatcher->addSubscriber(new Doctrine\ODM\PHPCR\QuerySubscriber);
         $dispatcher->addSubscriber(new Doctrine\CollectionSubscriber);
-        $dispatcher->addSubscriber(new Doctrine\DBALQueryBuilderSubscriber);
+        if (null !== $connection = $event->getConnection()) {
+            $dispatcher->addSubscriber(new Doctrine\DBALQueryBuilderSubscriber($connection));
+        }
         $dispatcher->addSubscriber(new PropelQuerySubscriber);
         $dispatcher->addSubscriber(new SolariumQuerySubscriber());
         $dispatcher->addSubscriber(new ElasticaQuerySubscriber());

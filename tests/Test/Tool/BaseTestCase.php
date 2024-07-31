@@ -2,6 +2,7 @@
 
 namespace Test\Tool;
 
+use Doctrine\DBAL\Connection;
 use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\ArgumentAccess\RequestArgumentAccess;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
@@ -17,8 +18,11 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 abstract class BaseTestCase extends TestCase
 {
-    protected function getPaginatorInstance(?RequestStack $requestStack = null, ?EventDispatcher $dispatcher = null): Paginator
-    {
+    protected function getPaginatorInstance(
+        ?RequestStack $requestStack = null,
+        ?EventDispatcher $dispatcher = null,
+        ?Connection $connection = null
+    ): Paginator {
         if (null === $dispatcher) {
             $dispatcher = new EventDispatcher();
             $dispatcher->addSubscriber(new PaginationSubscriber());
@@ -30,7 +34,7 @@ abstract class BaseTestCase extends TestCase
             $accessor = $this->createMock(ArgumentAccessInterface::class);
         }
 
-        return new Paginator($dispatcher, $accessor);
+        return new Paginator($dispatcher, $accessor, $connection);
     }
 
     protected function createRequestStack(array $params): RequestStack

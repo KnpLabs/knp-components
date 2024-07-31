@@ -2,6 +2,7 @@
 
 namespace Knp\Component\Pager;
 
+use Doctrine\DBAL\Connection;
 use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Exception\PageLimitInvalidException;
 use Knp\Component\Pager\Exception\PageNumberInvalidException;
@@ -17,8 +18,6 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  */
 final class Paginator implements PaginatorInterface
 {
-    private EventDispatcherInterface $eventDispatcher;
-
     /**
      * Default options of paginator
      *
@@ -35,12 +34,11 @@ final class Paginator implements PaginatorInterface
         self::DEFAULT_LIMIT => self::DEFAULT_LIMIT_VALUE,
     ];
 
-    private ArgumentAccessInterface $argumentAccess;
-
-    public function __construct(EventDispatcherInterface $eventDispatcher, ArgumentAccessInterface $argumentAccess)
-    {
-        $this->eventDispatcher = $eventDispatcher;
-        $this->argumentAccess = $argumentAccess;
+    public function __construct(
+        private EventDispatcherInterface $eventDispatcher,
+        private ArgumentAccessInterface $argumentAccess,
+        private ?Connection $connection = null
+    ) {
     }
 
     /**
@@ -89,7 +87,7 @@ final class Paginator implements PaginatorInterface
         }
 
         // before pagination start
-        $beforeEvent = new Event\BeforeEvent($this->eventDispatcher, $this->argumentAccess);
+        $beforeEvent = new Event\BeforeEvent($this->eventDispatcher, $this->argumentAccess, $this->connection);
         $this->eventDispatcher->dispatch($beforeEvent, 'knp_pager.before');
         // items
         $itemsEvent = new Event\ItemsEvent($offset, $limit);
