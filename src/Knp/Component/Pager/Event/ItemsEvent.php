@@ -29,18 +29,13 @@ final class ItemsEvent extends Event
      */
     public int $count;
 
-    private int $offset;
-    private int $limit;
-
     /**
      * @var array<string, mixed>
      */
     private array $customPaginationParams = [];
 
-    public function __construct(int $offset, int $limit)
+    public function __construct(private readonly int $offset, private readonly int $limit)
     {
-        $this->offset = $offset;
-        $this->limit = $limit;
     }
 
     public function setCustomPaginationParameter(string $name, mixed $value): void

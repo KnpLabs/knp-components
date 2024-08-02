@@ -33,7 +33,7 @@ abstract class BaseTestCasePHPCRODM extends BaseTestCase
         }
     }
 
-    protected function getMockDocumentManager(EventManager $evm = null): DocumentManager
+    protected function getMockDocumentManager(?EventManager $evm = null): DocumentManager
     {
         $config = new \Doctrine\ODM\PHPCR\Configuration();
         $config->setMetadataDriverImpl($this->getMetadataDriverImplementation());

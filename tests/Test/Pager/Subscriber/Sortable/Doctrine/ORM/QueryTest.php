@@ -2,6 +2,7 @@
 
 namespace Test\Pager\Subscriber\Sortable\Doctrine\ORM;
 
+use Composer\InstalledVersions;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -41,9 +42,7 @@ final class QueryTest extends BaseTestCaseORM
 
         $connection = DriverManager::getConnection($conn, $config);
         $em = new EntityManager($connection, $config);
-        $schema = \array_map(static function ($class) use ($em) {
-            return $em->getClassMetadata($class);
-        }, $this->getUsedEntityFixtures());
+        $schema = \array_map(static fn($class) => $em->getClassMetadata($class), $this->getUsedEntityFixtures());
 
         $schemaTool = new SchemaTool($em);
         $schemaTool->dropSchema([]);
@@ -218,7 +217,12 @@ final class QueryTest extends BaseTestCaseORM
      */
     public function shouldNotAcceptArrayParameter(): void
     {
-        $this->expectException(\PHP_VERSION_ID < 80100 ? \TypeError::class : \UnexpectedValueException::class);
+        if (version_compare(InstalledVersions::getVersion('symfony/http-foundation'), '6.0', '<')) {
+            $this->expectException(\TypeError::class);
+        } else {
+            $this->expectException(\UnexpectedValueException::class);
+        }
+
         $query = $this
             ->getMockSqliteEntityManager()
             ->createQuery('SELECT a FROM Test\Fixture\Entity\Article a')

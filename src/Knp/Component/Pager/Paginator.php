@@ -35,9 +35,9 @@ final class Paginator implements PaginatorInterface
     ];
 
     public function __construct(
-        private EventDispatcherInterface $eventDispatcher,
+        private readonly EventDispatcherInterface $eventDispatcher,
         private ArgumentAccessInterface $argumentAccess,
-        private ?Connection $connection = null
+        private readonly ?Connection $connection = null
     ) {
     }
 
@@ -56,13 +56,13 @@ final class Paginator implements PaginatorInterface
      *
      * @return PaginationInterface<int, mixed>
      */
-    public function paginate($target, int $page = 1, int $limit = null, array $options = []): PaginationInterface
+    public function paginate($target, int $page = 1, ?int $limit = null, array $options = []): PaginationInterface
     {
         if ($page <= 0) {
             throw PageNumberInvalidException::create($page);
         }
 
-        $limit = $limit ?? (int) $this->defaultOptions[self::DEFAULT_LIMIT];
+        $limit ??= (int) $this->defaultOptions[self::DEFAULT_LIMIT];
         if ($limit <= 0) {
             throw PageLimitInvalidException::create($limit);
         }

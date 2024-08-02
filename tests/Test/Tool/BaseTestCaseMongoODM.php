@@ -41,7 +41,7 @@ abstract class BaseTestCaseMongoODM extends BaseTestCase
      * DocumentManager mock object together with
      * annotation mapping driver and database
      */
-    protected function getMockDocumentManager(EventManager $evm = null): DocumentManager
+    protected function getMockDocumentManager(?EventManager $evm = null): DocumentManager
     {
         $conn = new Connection();
         $config = $this->getMockAnnotatedConfig();
@@ -49,7 +49,7 @@ abstract class BaseTestCaseMongoODM extends BaseTestCase
         try {
             $this->dm = DocumentManager::create($conn, $config, $evm ?: $this->getEventManager());
             $this->dm->getConnection()->connect();
-        } catch (\MongoException $e) {
+        } catch (\MongoException) {
             $this->markTestSkipped('Doctrine MongoDB ODM failed to connect');
         }
         return $this->dm;
@@ -59,7 +59,7 @@ abstract class BaseTestCaseMongoODM extends BaseTestCase
      * DocumentManager mock object with
      * annotation mapping driver
      */
-    protected function getMockMappedDocumentManager(EventManager $evm = null): DocumentManager
+    protected function getMockMappedDocumentManager(?EventManager $evm = null): DocumentManager
     {
         $conn = $this->createMock(Connection::class);
         $config = $this->getMockAnnotatedConfig();

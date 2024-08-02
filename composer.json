@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "symfony/event-dispatcher-contracts": "^3.0"
     },
     "require-dev": {

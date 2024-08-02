@@ -39,7 +39,7 @@ jobs:
             matrix:
                 include:
                     - description: 'Lowest'
-                      php: '8.0'
+                      php: '8.1'
                       composer_option: '--prefer-lowest'
                     - description: '8.1'
                       php: '8.1'

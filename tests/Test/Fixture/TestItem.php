@@ -4,11 +4,8 @@ namespace Test\Fixture;
 
 class TestItem
 {
-    private int $sortProperty;
-
-    public function __construct(int $sortProperty)
+    public function __construct(private readonly int $sortProperty)
     {
-        $this->sortProperty = $sortProperty;
     }
 
     public function getSortProperty(): int

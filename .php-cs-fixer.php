@@ -18,6 +18,7 @@ return (new PhpCsFixer\Config())
         'php_unit_mock_short_will_return' => true,
         'no_extra_blank_lines' => true,
         'no_unused_imports' => true,
+        'nullable_type_declaration_for_default_null_value' => true,
     ])
     ->setFinder($finder)
 ;

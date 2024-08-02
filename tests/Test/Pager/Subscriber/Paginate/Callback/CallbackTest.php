@@ -65,12 +65,8 @@ final class CallbackTest extends BaseTestCase
     {
         $data = \range(1, self::TOTAL_NUMBER_OF_ITEMS);
 
-        $count = function () use ($data) {
-            return \count($data);
-        };
-        $items = function ($offset, $limit) use ($data) {
-            return \array_slice($data, $offset, $limit);
-        };
+        $count = fn() => \count($data);
+        $items = fn($offset, $limit) => \array_slice($data, $offset, $limit);
 
         return new CallbackPagination($count, $items);
     }
