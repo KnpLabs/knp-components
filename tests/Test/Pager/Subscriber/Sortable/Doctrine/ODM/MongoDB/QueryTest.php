@@ -6,15 +6,14 @@ use Knp\Component\Pager\ArgumentAccess\RequestArgumentAccess;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ODM\MongoDB\QuerySubscriber as Sortable;
 use Knp\Component\Pager\Paginator;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Document\Article;
 use Test\Tool\BaseTestCaseMongoODM;
 
 final class QueryTest extends BaseTestCaseMongoODM
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSortSimpleDoctrineQuery(): void
     {
         $this->populate();
@@ -60,9 +59,7 @@ final class QueryTest extends BaseTestCaseMongoODM
         $this->assertEquals('spring', $items[3]->getTitle());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSortOnAnyField(): void
     {
         $query = $this

@@ -5,15 +5,14 @@ namespace Test\Pager\Subscriber\Sortable;
 use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\Subscriber\Sortable\SolariumQuerySubscriber;
 use Knp\Component\Pager\Paginator;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 use Test\Tool\BaseTestCase;
 
 final class SolariumQuerySubscriberTest extends BaseTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function testArrayShouldNotBeHandled(): void
     {
         $this->expectException(\RuntimeException::class);

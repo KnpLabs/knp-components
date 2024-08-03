@@ -3,14 +3,13 @@
 namespace Test\Pager;
 
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Tool\BaseTestCase;
 
 final class PaginatorTest extends BaseTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldNotBeAbleToPaginateWithoutListeners(): void
     {
         $this->expectException(\RuntimeException::class);
@@ -19,9 +18,7 @@ final class PaginatorTest extends BaseTestCase
         $paginator->paginate([]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFailToPaginateUnsupportedValue(): void
     {
         $this->expectException(\RuntimeException::class);

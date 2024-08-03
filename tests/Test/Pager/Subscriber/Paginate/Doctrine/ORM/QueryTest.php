@@ -4,15 +4,14 @@ namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
 use Doctrine\ORM\Query;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
+use PHPUnit\Framework\Attributes\Test;
 use Test\Fixture\Entity\Shop\Product;
 use Test\Fixture\Entity\Shop\Tag;
 use Test\Tool\BaseTestCaseORM;
 
 final class QueryTest extends BaseTestCaseORM
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldUseOutputWalkersIfAskedTo(): void
     {
         $this->populate();
@@ -34,9 +33,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertCount(3, $view);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldNotUseOutputWalkersByDefault(): void
     {
         $this->populate();
@@ -56,9 +53,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertCount(3, $view);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldFetchJoinCollectionsIfNeeded(): void
     {
         $this->populate();

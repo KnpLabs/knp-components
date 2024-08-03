@@ -2,14 +2,13 @@
 
 namespace Test\Pager\Subscriber\Paginate\Doctrine\ORM;
 
+use PHPUnit\Framework\Attributes\Test;
 use Test\Fixture\Entity\Article;
 use Test\Tool\BaseTestCaseORM;
 
 final class QueryBuilderTest extends BaseTestCaseORM
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldPaginateSimpleDoctrineQuery(): void
     {
         $this->populate();

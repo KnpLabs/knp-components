@@ -13,15 +13,14 @@ use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\QuerySubscriber a
 use Knp\Component\Pager\Pagination\SlidingPagination;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\PaginatorInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Entity\Article;
 use Test\Tool\BaseTestCaseORM;
 
 final class QueryTest extends BaseTestCaseORM
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldHandleApcQueryCache(): void
     {
         if (!\extension_loaded('apc') || !\ini_get('apc.enable_cli')) {
@@ -59,9 +58,7 @@ final class QueryTest extends BaseTestCaseORM
         $view = $p->paginate($query, 1, 10);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSortSimpleDoctrineQuery(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -92,9 +89,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSortSimpleDoctrineQuery2(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -125,9 +120,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ ORDER BY a0_.title DESC LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldValidateSortableParameters(): void
     {
         $this->expectException(\UnexpectedValueException::class);
@@ -142,9 +135,7 @@ final class QueryTest extends BaseTestCaseORM
         $view = $p->paginate($query, 1, 10);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSortByAnyAvailableAlias(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -168,9 +159,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2, COUNT(a0_.id) AS sclr_3 FROM Article a0_ ORDER BY sclr_3 ASC LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldWorkWithInitialPaginatorEventDispatcher(): void
     {
         $em = $this->getMockSqliteEntityManager();
@@ -193,9 +182,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ ORDER BY a0_.title ASC LIMIT 10', $executed[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldNotExecuteExtraQueriesWhenCountIsZero(): void
     {
         $query = $this
@@ -212,9 +199,7 @@ final class QueryTest extends BaseTestCaseORM
         $this->assertEquals(2, $this->queryAnalyzer->getNumExecutedQueries());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldNotAcceptArrayParameter(): void
     {
         if (version_compare(InstalledVersions::getVersion('symfony/http-foundation'), '6.0', '<')) {

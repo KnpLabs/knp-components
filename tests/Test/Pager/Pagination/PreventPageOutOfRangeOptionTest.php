@@ -4,13 +4,12 @@ namespace Test\Pager\Pagination;
 
 use Knp\Component\Pager\Exception\PageNumberOutOfRangeException;
 use Knp\Component\Pager\PaginatorInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Test\Tool\BaseTestCase;
 
 final class PreventPageOutOfRangeOptionTest extends BaseTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldBeAbleToHandleOutOfRangePageNumberAsArgument(): void
     {
         $p = $this->getPaginatorInstance();
@@ -31,9 +30,7 @@ final class PreventPageOutOfRangeOptionTest extends BaseTestCase
         $p->paginate($items, 10, 10, [PaginatorInterface::PAGE_OUT_OF_RANGE => PaginatorInterface::PAGE_OUT_OF_RANGE_THROW_EXCEPTION]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldBeAbleToHandleOutOfRangePageNumberAsArgumentWithEmptyList(): void
     {
         $p = $this->getPaginatorInstance();
@@ -54,9 +51,7 @@ final class PreventPageOutOfRangeOptionTest extends BaseTestCase
         $p->paginate($items, 10, 10, [PaginatorInterface::PAGE_OUT_OF_RANGE => PaginatorInterface::PAGE_OUT_OF_RANGE_THROW_EXCEPTION]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldBeAbleToHandleOutOfRangePageNumberAsDefaultOption(): void
     {
         $p = $this->getPaginatorInstance();
@@ -83,9 +78,7 @@ final class PreventPageOutOfRangeOptionTest extends BaseTestCase
         $p->paginate($items, 10, 10);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldBeAbleToGetMaxPageWhenExceptionIsThrown(): void
     {
         $p = $this->getPaginatorInstance();
@@ -98,9 +91,7 @@ final class PreventPageOutOfRangeOptionTest extends BaseTestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldBeAbleToTreatFirstPageAsValidWithEmptyList(): void
     {
         $p = $this->getPaginatorInstance();

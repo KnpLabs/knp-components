@@ -6,15 +6,14 @@ use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\ArraySubscriber;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\PaginatorInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 use Test\Tool\BaseTestCase;
 
 final class AbstractPaginationTest extends BaseTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldCustomizeParameterNames(): void
     {
         $dispatcher = new EventDispatcher;

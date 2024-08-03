@@ -5,15 +5,14 @@ namespace Test\Pager\Subscriber\Paginate\Doctrine\ODM\MongoDB;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ODM\MongoDB\QuerySubscriber;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Pagination\SlidingPagination;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Document\Article;
 use Test\Tool\BaseTestCaseMongoODM;
 
 final class QueryTest extends BaseTestCaseMongoODM
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldPaginateSimpleDoctrineMongoDBQuery(): void
     {
         $this->populate();
@@ -38,9 +37,7 @@ final class QueryTest extends BaseTestCaseMongoODM
         $this->assertEquals('winter', $items[1]->getTitle());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSupportPaginateStrategySubscriber(): void
     {
         $query = $this

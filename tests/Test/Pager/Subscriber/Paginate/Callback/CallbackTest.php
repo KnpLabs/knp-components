@@ -5,6 +5,7 @@ use Knp\Component\Pager\Event\Subscriber\Paginate\Callback\CallbackPagination;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Callback\CallbackSubscriber;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\Paginator;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Mock\PaginationSubscriber as MockPaginationSubscriber;
 use Test\Tool\BaseTestCase;
@@ -14,9 +15,7 @@ final class CallbackTest extends BaseTestCase
     public const ITEMS_PER_PAGE = 10;
     public const TOTAL_NUMBER_OF_ITEMS = 35;
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldPaginate(): void
     {
         $p = $this->givenPaginatorConfigured();
@@ -33,9 +32,7 @@ final class CallbackTest extends BaseTestCase
         $this->assertEquals(self::TOTAL_NUMBER_OF_ITEMS, $view->getTotalItemCount());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSlicePaginate(): void
     {
         $p = $this->givenPaginatorConfigured();

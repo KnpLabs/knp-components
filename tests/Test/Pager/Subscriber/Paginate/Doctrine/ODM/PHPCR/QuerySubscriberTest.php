@@ -6,6 +6,7 @@ use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ODM\PHPCR\QuerySubscriber;
 use Knp\Component\Pager\Pagination\SlidingPagination;
 use Knp\Component\Pager\Paginator;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Document\PHPCR\Article;
 use Test\Mock\PaginationSubscriber;
@@ -13,9 +14,7 @@ use Test\Tool\BaseTestCasePHPCRODM;
 
 final class QuerySubscriberTest extends BaseTestCasePHPCRODM
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldPaginateSimpleDoctrinePHPCRQuery(): void
     {
         $this->populate();
@@ -42,9 +41,7 @@ final class QuerySubscriberTest extends BaseTestCasePHPCRODM
         $this->assertEquals('winter', $items->last()->getTitle());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function shouldSupportPaginateStrategySubscriber(): void
     {
         $this->getMockDocumentManager();
