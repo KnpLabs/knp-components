@@ -15,7 +15,8 @@ final class BeforeEvent extends Event
     public function __construct(
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly ArgumentAccessInterface $argumentAccess,
-        private readonly ?Connection $connection = null
+        private readonly ?Connection $connection = null,
+        private array &$options = [],
     ) {
     }
 
@@ -27,6 +28,11 @@ final class BeforeEvent extends Event
     public function getArgumentAccess(): ArgumentAccessInterface
     {
         return $this->argumentAccess;
+    }
+
+    public function &getOptions(): array
+    {
+        return $this->options;
     }
 
     public function getConnection(): ?Connection
