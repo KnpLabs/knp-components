@@ -12,11 +12,15 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  */
 final class BeforeEvent extends Event
 {
+    /**
+     * @var array<string, mixed>
+     */
+    public array $options = [];
+
     public function __construct(
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly ArgumentAccessInterface $argumentAccess,
-        private readonly ?Connection $connection = null,
-        private array &$options = [],
+        private readonly ?Connection $connection = null
     ) {
     }
 
@@ -28,11 +32,6 @@ final class BeforeEvent extends Event
     public function getArgumentAccess(): ArgumentAccessInterface
     {
         return $this->argumentAccess;
-    }
-
-    public function &getOptions(): array
-    {
-        return $this->options;
     }
 
     public function getConnection(): ?Connection
