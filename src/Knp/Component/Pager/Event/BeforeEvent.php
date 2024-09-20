@@ -12,6 +12,11 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  */
 final class BeforeEvent extends Event
 {
+    /**
+     * @var array<string, mixed>
+     */
+    public array $options = [];
+
     public function __construct(
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly ArgumentAccessInterface $argumentAccess,
