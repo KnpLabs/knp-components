@@ -2,7 +2,6 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Filtration;
 
-use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Exception\InvalidValueException;
 use Knp\Component\Pager\PaginatorInterface;
@@ -10,19 +9,17 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PropelQuerySubscriber implements EventSubscriberInterface
 {
-    public function __construct(private readonly ArgumentAccessInterface $argumentAccess)
-    {
-    }
-
     public function items(ItemsEvent $event): void
     {
         $query = $event->target;
+        $argumentAccess = $event->getArgumentAccess();
+        
         if ($query instanceof \ModelCriteria) {
-            if (!$this->argumentAccess->has($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME])) {
+            if (!$argumentAccess->has($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME])) {
                 return;
             }
-            if ($this->argumentAccess->has($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME])) {
-                $columns = $this->argumentAccess->get($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]);
+            if ($argumentAccess->has($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME])) {
+                $columns = $argumentAccess->get($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]);
             } elseif (!empty($event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS])) {
                 $columns = $event->options[PaginatorInterface::DEFAULT_FILTER_FIELDS];
             } else {
@@ -39,7 +36,7 @@ class PropelQuerySubscriber implements EventSubscriberInterface
                     }
                 }
             }
-            $value = $this->argumentAccess->get($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
+            $value = $argumentAccess->get($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
             $criteria = \Criteria::EQUAL;
             if (str_contains($value, '*')) {
                 $value = str_replace('*', '%', $value);

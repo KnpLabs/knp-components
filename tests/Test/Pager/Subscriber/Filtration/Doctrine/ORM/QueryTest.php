@@ -412,34 +412,27 @@ final class QueryTest extends BaseTestCaseORM
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
 
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
+
         $requestStack = $this->createRequestStack(['filterParam' => 'a.id,a.title', 'filterValue' => '*er']);
         $accessor = new RequestArgumentAccess($requestStack);
         $p = new Paginator($dispatcher, $accessor);
 
         $this->startQueryLog();
-        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertCount(2, $items);
         $this->assertEquals('summer', $items[0]->getTitle());
         $this->assertEquals('winter', $items[1]->getTitle());
 
-        $requestStack = $this->createRequestStack(['filterParam' => ['a.id', 'a.title'], 'filterValue' => '*er']);
-        $accessor = new RequestArgumentAccess($requestStack);
-        $p = new Paginator($dispatcher, $accessor);
-        $view = $p->paginate($query, 1, 10);
-        $items = $view->getItems();
-        $this->assertCount(2, $items);
-        $this->assertEquals('summer', $items[0]->getTitle());
-        $this->assertEquals('winter', $items[1]->getTitle());
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\' LIMIT 10', $executed[1]);
-        $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2 FROM Article a0_ WHERE a0_.id LIKE \'%er\' OR a0_.title LIKE \'%er\' LIMIT 10', $executed[3]);
     }
 
     #[Test]

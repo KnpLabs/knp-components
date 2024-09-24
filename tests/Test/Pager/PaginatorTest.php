@@ -2,10 +2,12 @@
 
 namespace Test\Pager;
 
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\BeforeEvent;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Pagination\SlidingPagination;
+use Knp\Component\Pager\Paginator;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -73,5 +75,28 @@ final class PaginatorTest extends BaseTestCase
         $paginator = $this->getPaginatorInstance(null, $dispatcher);
 
         $paginator->paginate([], 1, 10, ['some_option' => 'value']);
+    }
+    #[Test]
+    public function shouldPassArgumentAccessToItemsEventSubscriber(): void
+    {
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addSubscriber(new PaginationSubscriber());
+        $dispatcher->addSubscriber(new class implements EventSubscriberInterface {
+            public static function getSubscribedEvents(): array
+            {
+                return [
+                    'knp_pager.items' => ['items', 1],
+                ];
+            }
+            public function items(ItemsEvent $event): void
+            {
+                BaseTestCase::assertInstanceOf(ArgumentAccessInterface::class, $event->getArgumentAccess());
+            }
+        });
+
+        $accessor = $this->createMock(ArgumentAccessInterface::class);
+        $paginator = new Paginator($dispatcher, $accessor);
+
+        $paginator->paginate([]);
     }
 }
