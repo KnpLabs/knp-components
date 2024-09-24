@@ -13,10 +13,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
-    public function __construct(private readonly ArgumentAccessInterface $argumentAccess)
-    {
-    }
-
     public function items(ItemsEvent $event): void
     {
         if (!$event->target instanceof Query) {
