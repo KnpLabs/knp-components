@@ -412,18 +412,16 @@ final class QueryTest extends BaseTestCaseORM
         $em = $this->getMockSqliteEntityManager();
         $this->populate($em);
 
-        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
-        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
-
         $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber(new PaginationSubscriber());
         $dispatcher->addSubscriber(new Filtration());
-
         $requestStack = $this->createRequestStack(['filterParam' => 'a.id,a.title', 'filterValue' => '*er']);
         $accessor = new RequestArgumentAccess($requestStack);
         $p = new Paginator($dispatcher, $accessor);
 
         $this->startQueryLog();
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
         $view = $p->paginate($query, 1, 10);
         $items = $view->getItems();
         $this->assertCount(2, $items);

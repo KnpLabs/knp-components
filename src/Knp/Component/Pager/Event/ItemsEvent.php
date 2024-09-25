@@ -35,8 +35,11 @@ final class ItemsEvent extends Event
      */
     private array $customPaginationParams = [];
 
-    public function __construct(private readonly int $offset, private readonly int $limit, private readonly ArgumentAccessInterface $argumentAccess)
-    {
+    public function __construct(
+        private readonly int $offset,
+        private readonly int $limit,
+        private readonly ArgumentAccessInterface $argumentAccess
+    ) {
     }
 
     public function setCustomPaginationParameter(string $name, mixed $value): void
