@@ -13,25 +13,23 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class QuerySubscriber implements EventSubscriberInterface
 {
-    public function __construct(private readonly ArgumentAccessInterface $argumentAccess)
-    {
-    }
-
     public function items(ItemsEvent $event): void
     {
         if (!$event->target instanceof Query) {
             return;
         }
-        if (!$this->hasQueryParameter($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME])) {
+        $argumentAccess = $event->getArgumentAccess();
+
+        if (!$argumentAccess->has($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME])) {
             return;
         }
-        $filterValue = $this->getQueryParameter($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
+        $filterValue = $argumentAccess->get($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
         if ((empty($filterValue) && $filterValue !== '0')) {
             return;
         }
         $filterName = null;
-        if ($this->hasQueryParameter($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME])) {
-            $filterName = $this->getQueryParameter($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]);
+        if ($argumentAccess->has($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME])) {
+            $filterName = $argumentAccess->get($event->options[PaginatorInterface::FILTER_FIELD_PARAMETER_NAME]);
         }
         if (!empty($filterName)) {
             $columns = $filterName;
@@ -40,7 +38,7 @@ class QuerySubscriber implements EventSubscriberInterface
         } else {
             return;
         }
-        $value = $this->getQueryParameter($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
+        $value = $argumentAccess->get($event->options[PaginatorInterface::FILTER_VALUE_PARAMETER_NAME]);
         if (str_contains($value, '*')) {
             $value = str_replace('*', '%', $value);
         }
@@ -66,15 +64,5 @@ class QuerySubscriber implements EventSubscriberInterface
         return [
             'knp_pager.items' => ['items', 0],
         ];
-    }
-
-    private function hasQueryParameter(string $name): bool
-    {
-        return $this->argumentAccess->has($name);
-    }
-
-    private function getQueryParameter(string $name): ?string
-    {
-        return $this->argumentAccess->get($name);
     }
 }

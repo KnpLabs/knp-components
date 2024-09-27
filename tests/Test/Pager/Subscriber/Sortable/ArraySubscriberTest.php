@@ -22,23 +22,19 @@ final class ArraySubscriberTest extends BaseTestCase
             ['entry' => ['sortProperty' => 1]],
         ];
 
-        $itemsEvent = new ItemsEvent(0, 10);
-        $itemsEvent->target = &$array;
-        $itemsEvent->options = [PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort', PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord'];
+        $arraySubscriber = new ArraySubscriber();
 
         // test asc sort
-        $requestStack = $this->createRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'asc']);
-        $accessor = new RequestArgumentAccess($requestStack);
-        $arraySubscriber = new ArraySubscriber($accessor);
+        $itemsEvent = $this->createItemsEvent(['sort' => '[entry][sortProperty]', 'ord' => 'asc']);
+        $itemsEvent->target = &$array;
+
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(1, $array[0]['entry']['sortProperty']);
 
-        $itemsEvent->unsetCustomPaginationParameter('sorted');
-
         // test desc sort
-        $requestStack = $this->createRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'desc']);
-        $accessor = new RequestArgumentAccess($requestStack);
-        $arraySubscriber = new ArraySubscriber($accessor);
+        $itemsEvent = $this->createItemsEvent(['sort' => '[entry][sortProperty]', 'ord' => 'desc']);
+        $itemsEvent->target = &$array;
+
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(3, $array[0]['entry']['sortProperty']);
     }
@@ -52,35 +48,31 @@ final class ArraySubscriberTest extends BaseTestCase
             ['name' => 'hot'],
         ];
 
-        $itemsEvent = new ItemsEvent(0, 10);
-        $itemsEvent->target = &$array;
-        $itemsEvent->options = [
-            PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort',
-            PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord',
-            'sortFunction' => static function (&$target, $sortField, $sortDirection): void {
-                \usort($target, static function ($object1, $object2) use ($sortField, $sortDirection) {
-                    if ($object1[$sortField] === $object2[$sortField]) {
-                        return 0;
-                    }
+        $arraySubscriber = new ArraySubscriber();
 
-                    return ($object1[$sortField] === 'hot' ? 1 : -1) * ($sortDirection === 'asc' ? 1 : -1);
-                });
-            },
-        ];
+        $sortFunction = static function (&$target, $sortField, $sortDirection): void {
+            \usort($target, static function ($object1, $object2) use ($sortField, $sortDirection) {
+                if ($object1[$sortField] === $object2[$sortField]) {
+                    return 0;
+                }
+
+                return ($object1[$sortField] === 'hot' ? 1 : -1) * ($sortDirection === 'asc' ? 1 : -1);
+            });
+        };
 
         // test asc sort
-        $requestStack = $this->createRequestStack(['sort' => '.name', 'ord' => 'asc']);
-        $accessor = new RequestArgumentAccess($requestStack);
-        $arraySubscriber = new ArraySubscriber($accessor);
+        $itemsEvent = $this->createItemsEvent(['sort' => '.name', 'ord' => 'asc']);
+        $itemsEvent->target = &$array;
+        $itemsEvent->options['sortFunction'] = $sortFunction;
+
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals('cold', $array[0]['name']);
 
-        $itemsEvent->unsetCustomPaginationParameter('sorted');
-
         // test desc sort
-        $requestStack = $this->createRequestStack(['sort' => '.name', 'ord' => 'desc']);
-        $accessor = new RequestArgumentAccess($requestStack);
-        $arraySubscriber = new ArraySubscriber($accessor);
+        $itemsEvent = $this->createItemsEvent(['sort' => '.name', 'ord' => 'desc']);
+        $itemsEvent->target = &$array;
+        $itemsEvent->options['sortFunction'] = $sortFunction;
+
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals('hot', $array[0]['name']);
     }
@@ -94,23 +86,19 @@ final class ArraySubscriberTest extends BaseTestCase
             ['entry' => ['sortProperty' => 1]],
         ];
 
-        $itemsEvent = new ItemsEvent(0, 10);
-        $itemsEvent->target = &$array;
-        $itemsEvent->options = [PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort', PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord'];
+        $arraySubscriber = new ArraySubscriber();
 
         // test asc sort
-        $requestStack = $this->createRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'asc']);
-        $accessor = new RequestArgumentAccess($requestStack);
-        $arraySubscriber = new ArraySubscriber($accessor);
+        $itemsEvent = $this->createItemsEvent(['sort' => '[entry][sortProperty]', 'ord' => 'asc']);
+        $itemsEvent->target = &$array;
+
         $arraySubscriber->items($itemsEvent);
         $this->assertFalse(isset($array[0]['entry']['sortProperty']));
 
-        $itemsEvent->unsetCustomPaginationParameter('sorted');
-
         // test desc sort
-        $requestStack = $this->createRequestStack(['sort' => '[entry][sortProperty]', 'ord' => 'desc']);
-        $accessor = new RequestArgumentAccess($requestStack);
-        $arraySubscriber = new ArraySubscriber($accessor);
+        $itemsEvent = $this->createItemsEvent(['sort' => '[entry][sortProperty]', 'ord' => 'desc']);
+        $itemsEvent->target = &$array;
+
         $arraySubscriber->items($itemsEvent);
         $this->assertEquals(2, $array[0]['entry']['sortProperty']);
     }
@@ -124,26 +112,20 @@ final class ArraySubscriberTest extends BaseTestCase
             $items[1],
             $items[2],
         ];
-        $itemsEvent = new ItemsEvent(0, 10);
-        $itemsEvent->target = &$items;
-        $itemsEvent->options = [
-            PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort',
-            PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord',
-        ];
+
+        $arraySubscriber = new ArraySubscriber();
 
         // test asc sort
-        $requestStack = $this->createRequestStack(['sort' => 'notExistProperty', 'ord' => 'asc']);
-        $accessor = new RequestArgumentAccess($requestStack);
-        $arraySubscriber = new ArraySubscriber($accessor);
+        $itemsEvent = $this->createItemsEvent(['sort' => 'notExistProperty', 'ord' => 'asc']);
+        $itemsEvent->target = &$array;
+
         $arraySubscriber->items($itemsEvent);
         $this->assertSame($sameSortOrderItems, $items);
 
-        $itemsEvent->unsetCustomPaginationParameter('sorted');
-
         // test desc sort
-        $requestStack = $this->createRequestStack(['sort' => 'notExistProperty', 'ord' => 'desc']);
-        $accessor = new RequestArgumentAccess($requestStack);
-        $arraySubscriber = new ArraySubscriber($accessor);
+        $itemsEvent = $this->createItemsEvent(['sort' => 'notExistProperty', 'ord' => 'desc']);
+        $itemsEvent->target = &$array;
+
         $arraySubscriber->items($itemsEvent);
         $this->assertSame($sameSortOrderItems, $items);
     }
@@ -169,5 +151,16 @@ final class ArraySubscriberTest extends BaseTestCase
                 ],
             ],
         ];
+    }
+
+    private function createItemsEvent(array $requestParams = []): ItemsEvent
+    {
+        $requestStack = $this->createRequestStack($requestParams);
+        $accessor = new RequestArgumentAccess($requestStack);
+
+        $event = new ItemsEvent(0, 10, $accessor);
+        $event->options = [PaginatorInterface::SORT_FIELD_PARAMETER_NAME => 'sort', PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME => 'ord'];
+
+        return $event;
     }
 }

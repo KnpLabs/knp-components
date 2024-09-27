@@ -2,6 +2,7 @@
 
 namespace Knp\Component\Pager\Event;
 
+use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
@@ -34,8 +35,11 @@ final class ItemsEvent extends Event
      */
     private array $customPaginationParams = [];
 
-    public function __construct(private readonly int $offset, private readonly int $limit)
-    {
+    public function __construct(
+        private readonly int $offset,
+        private readonly int $limit,
+        private readonly ArgumentAccessInterface $argumentAccess
+    ) {
     }
 
     public function setCustomPaginationParameter(string $name, mixed $value): void
@@ -66,5 +70,10 @@ final class ItemsEvent extends Event
     public function getOffset(): int
     {
         return $this->offset;
+    }
+
+    public function getArgumentAccess(): ArgumentAccessInterface
+    {
+        return $this->argumentAccess;
     }
 }

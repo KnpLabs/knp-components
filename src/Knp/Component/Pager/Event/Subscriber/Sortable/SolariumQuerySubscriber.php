@@ -15,12 +15,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class SolariumQuerySubscriber implements EventSubscriberInterface
 {
-    public function __construct(private readonly ArgumentAccessInterface $argumentAccess)
-    {
-    }
-
     public function items(ItemsEvent $event): void
     {
+        $argumentAccess = $event->getArgumentAccess();
+
         // Check if the result has already been sorted by another sort subscriber
         $customPaginationParameters = $event->getCustomPaginationParameters();
         if (!empty($customPaginationParameters['sorted']) ) {
@@ -34,12 +32,12 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
             if ($client instanceof \Solarium\Client && $query instanceof \Solarium\QueryType\Select\Query\Query) {
                 $event->setCustomPaginationParameter('sorted', true);
                 $sortField = $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME];
-                if (null !== $sortField && $this->argumentAccess->has($sortField)) {
-                    if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST]) && !in_array($this->argumentAccess->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
-                        throw new InvalidValueException("Cannot sort by: [{$this->argumentAccess->get($sortField)}] this field is not in allow list.");
+                if (null !== $sortField && $argumentAccess->has($sortField)) {
+                    if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST]) && !in_array($argumentAccess->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
+                        throw new InvalidValueException("Cannot sort by: [{$argumentAccess->get($sortField)}] this field is not in allow list.");
                     }
 
-                    $query->addSort($this->argumentAccess->get($sortField), $this->getSortDirection($event));
+                    $query->addSort($argumentAccess->get($sortField), $this->getSortDirection($event));
                 }
             }
         }
@@ -55,9 +53,11 @@ class SolariumQuerySubscriber implements EventSubscriberInterface
 
     private function getSortDirection(ItemsEvent $event): string
     {
+        $argumentAccess = $event->getArgumentAccess();
+
         $sortDir = $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME];
 
-        return null !== $sortDir && $this->argumentAccess->has($sortDir) &&
-            strtolower($this->argumentAccess->get($sortDir)) === 'asc' ? 'asc' : 'desc';
+        return null !== $sortDir && $argumentAccess->has($sortDir) &&
+            strtolower($argumentAccess->get($sortDir)) === 'asc' ? 'asc' : 'desc';
     }
 }
