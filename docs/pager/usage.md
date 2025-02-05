@@ -33,7 +33,7 @@ $dispatcher->addSubscriber(new PaginationSubscriber());
 $dispatcher->addSubscriber(new SortableSubscriber());
 
 // here we're using the the default access to arguments, based on Symfony Request
-// you can use your preferred way to retrieve them, by implementing RequestArgumentAccessInterface
+// you can use your preferred way to retrieve them, by implementing ArgumentAccessInterface
 $accessor = new RequestArgumentAccess(RequestStack::createFromGlobals());
 
 $paginator = new Paginator($dispatcher, $accessor);
