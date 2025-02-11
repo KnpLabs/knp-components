@@ -3,7 +3,6 @@
 namespace Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM;
 
 use Doctrine\ORM\Query;
-use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM\Query\WhereWalker;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\Query\Helper as QueryHelper;

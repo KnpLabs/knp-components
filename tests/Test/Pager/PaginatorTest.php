@@ -6,7 +6,6 @@ use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\BeforeEvent;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
-use Knp\Component\Pager\Pagination\SlidingPagination;
 use Knp\Component\Pager\Paginator;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;

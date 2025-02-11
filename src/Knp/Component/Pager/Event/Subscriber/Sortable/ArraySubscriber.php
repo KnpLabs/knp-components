@@ -2,7 +2,6 @@
 
 namespace Knp\Component\Pager\Event\Subscriber\Sortable;
 
-use Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface;
 use Knp\Component\Pager\Event\ItemsEvent;
 use Knp\Component\Pager\Exception\InvalidValueException;
 use Knp\Component\Pager\PaginatorInterface;
