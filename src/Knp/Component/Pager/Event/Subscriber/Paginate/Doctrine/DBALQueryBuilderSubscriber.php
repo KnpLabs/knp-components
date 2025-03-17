@@ -27,7 +27,7 @@ class DBALQueryBuilderSubscriber implements EventSubscriberInterface
                 ->connection
                 ->createQueryBuilder()
                 ->select('COUNT(*)')
-                ->from('(' . $target->getSQL() . ')', 'tmp')
+                ->from('(' . (clone $target)->resetOrderBy()->getSQL() . ')', 'tmp')
                 ->setParameters($target->getParameters(), $target->getParameterTypes())
             ;
 
