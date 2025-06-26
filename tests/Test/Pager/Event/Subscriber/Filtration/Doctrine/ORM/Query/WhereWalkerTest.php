@@ -3,21 +3,21 @@
 namespace Knp\Component\Pager\Event\Subscriber\Filtration\Doctrine\ORM\Query;
 
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\ParserResult;
-use Doctrine\ORM\Query\AST\SelectStatement;
-use Doctrine\ORM\Query\AST\SelectClause;
-use Doctrine\ORM\Query\AST\FromClause;
-use Doctrine\ORM\Query\AST\IdentificationVariableDeclaration;
-use Doctrine\ORM\Query\AST\RangeVariableDeclaration;
-use Doctrine\ORM\Query\AST\WhereClause;
+use Doctrine\ORM\Query\AST\ComparisonExpression;
 use Doctrine\ORM\Query\AST\ConditionalExpression;
-use Doctrine\ORM\Query\AST\ConditionalTerm;
 use Doctrine\ORM\Query\AST\ConditionalFactor;
 use Doctrine\ORM\Query\AST\ConditionalPrimary;
-use Doctrine\ORM\Query\AST\ComparisonExpression;
+use Doctrine\ORM\Query\AST\ConditionalTerm;
+use Doctrine\ORM\Query\AST\FromClause;
+use Doctrine\ORM\Query\AST\IdentificationVariableDeclaration;
 use Doctrine\ORM\Query\AST\InputParameter;
-use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\Literal;
+use Doctrine\ORM\Query\AST\PathExpression;
+use Doctrine\ORM\Query\AST\RangeVariableDeclaration;
+use Doctrine\ORM\Query\AST\SelectClause;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\AST\WhereClause;
+use Doctrine\ORM\Query\ParserResult;
 use PHPUnit\Framework\TestCase;
 
 class WhereWalkerTest extends TestCase
@@ -69,7 +69,7 @@ class WhereWalkerTest extends TestCase
                 new RangeVariableDeclaration('Entity', 'tdf'),
                 null,
                 []
-            )
+            ),
         ]);
         $whereClause = new WhereClause($conditionalExpression);
         $selectStatement = new SelectStatement($selectClause, $fromClause);
@@ -132,7 +132,7 @@ class WhereWalkerTest extends TestCase
                 new RangeVariableDeclaration('Entity', 'tdf'),
                 null,
                 []
-            )
+            ),
         ]);
         $whereClause = new WhereClause($conditionalExpression);
         $selectStatement = new SelectStatement($selectClause, $fromClause);
