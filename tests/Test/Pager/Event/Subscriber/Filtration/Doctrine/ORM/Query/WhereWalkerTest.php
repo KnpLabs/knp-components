@@ -92,8 +92,8 @@ class WhereWalkerTest extends TestCase
 
         // Assert that the whereClause is still present and contains a ConditionalTerm
         $this->assertInstanceOf(WhereClause::class, $selectStatement->whereClause);
-        $this->assertInstanceOf(ConditionalTerm::class, $selectStatement->whereClause->conditionalExpression);
-        $this->assertGreaterThanOrEqual(2, count($selectStatement->whereClause->conditionalExpression->conditionalFactors));
+        $this->assertInstanceOf(ConditionalExpression::class, $selectStatement->whereClause->conditionalExpression);
+        $this->assertGreaterThanOrEqual(2, count($selectStatement->whereClause->conditionalExpression->conditionalTerms));
     }
 
     /**
