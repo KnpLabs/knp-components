@@ -22,23 +22,36 @@ use PHPUnit\Framework\TestCase;
 
 class WhereWalkerTest extends TestCase
 {
-    /**
-     * Test that WhereWalker correctly handles complex WHERE clauses with ConditionalTerm.
-     */
-    public function testWalkSelectStatementWithComplexConditionalTerm(): void
+    private Query $query;
+    private ParserResult $parserResult;
+    private array $queryComponents;
+
+    protected function setUp(): void
     {
         // Mock Doctrine Query and ParserResult
-        $query = $this->createMock(Query::class);
-        $parserResult = $this->createMock(ParserResult::class);
+        $this->query = $this->createMock(Query::class);
+        $this->parserResult = $this->createMock(ParserResult::class);
 
         // Set up query hints
-        $query->method('getHint')
+        $this->query->method('getHint')
             ->willReturnMap([
                 [WhereWalker::HINT_PAGINATOR_FILTER_VALUE, 'test'],
                 [WhereWalker::HINT_PAGINATOR_FILTER_COLUMNS, ['tdf.name']],
                 [WhereWalker::HINT_PAGINATOR_FILTER_CASE_INSENSITIVE, false],
             ]);
 
+        // Mock query components
+        $this->queryComponents = [
+            'tdf' => [
+                'metadata' => $this->createMock(\Doctrine\ORM\Mapping\ClassMetadata::class),
+            ],
+        ];
+        $this->queryComponents['tdf']['metadata']->method('hasField')->willReturn(true);
+        $this->queryComponents['tdf']['metadata']->method('getTypeOfField')->willReturn('string');
+    }
+
+    public function testWalkSelectStatementWithComplexConditionalTerm(): void
+    {
         // Create a complex WHERE clause AST
         $conditionalPrimary = new ConditionalPrimary();
         $conditionalPrimary->simpleConditionalExpression = new ComparisonExpression(
@@ -75,44 +88,20 @@ class WhereWalkerTest extends TestCase
         $selectStatement = new SelectStatement($selectClause, $fromClause);
         $selectStatement->whereClause = $whereClause;
 
-        // Mock query components
-        $queryComponents = [
-            'tdf' => [
-                'metadata' => $this->createMock(\Doctrine\ORM\Mapping\ClassMetadata::class),
-            ],
-        ];
-        $queryComponents['tdf']['metadata']->method('hasField')->willReturn(true);
-        $queryComponents['tdf']['metadata']->method('getTypeOfField')->willReturn('string');
-
         // Create WhereWalker instance
-        $whereWalker = new WhereWalker($query, $parserResult, $queryComponents);
+        $whereWalker = new WhereWalker($this->query, $this->parserResult, $this->queryComponents);
 
         // Invoke walkSelectStatement
         $whereWalker->walkSelectStatement($selectStatement);
 
-        // Assert that the whereClause is still present and contains a ConditionalTerm
+        // Assert that the whereClause is still present and contains a ConditionalExpression
         $this->assertInstanceOf(WhereClause::class, $selectStatement->whereClause);
         $this->assertInstanceOf(ConditionalExpression::class, $selectStatement->whereClause->conditionalExpression);
         $this->assertGreaterThanOrEqual(2, count($selectStatement->whereClause->conditionalExpression->conditionalTerms));
     }
 
-    /**
-     * Test that WhereWalker correctly handles ConditionalFactor with filter expression.
-     */
     public function testWalkSelectStatementWithConditionalFactor(): void
     {
-        // Mock Doctrine Query and ParserResult
-        $query = $this->createMock(Query::class);
-        $parserResult = $this->createMock(ParserResult::class);
-
-        // Set up query hints
-        $query->method('getHint')
-            ->willReturnMap([
-                [WhereWalker::HINT_PAGINATOR_FILTER_VALUE, 'test'],
-                [WhereWalker::HINT_PAGINATOR_FILTER_COLUMNS, ['tdf.name']],
-                [WhereWalker::HINT_PAGINATOR_FILTER_CASE_INSENSITIVE, false],
-            ]);
-
         // Create a simple WHERE clause with a filter parameter
         $conditionalPrimary = new ConditionalPrimary();
         $conditionalPrimary->simpleConditionalExpression = new ComparisonExpression(
@@ -138,22 +127,13 @@ class WhereWalkerTest extends TestCase
         $selectStatement = new SelectStatement($selectClause, $fromClause);
         $selectStatement->whereClause = $whereClause;
 
-        // Mock query components
-        $queryComponents = [
-            'tdf' => [
-                'metadata' => $this->createMock(\Doctrine\ORM\Mapping\ClassMetadata::class),
-            ],
-        ];
-        $queryComponents['tdf']['metadata']->method('hasField')->willReturn(true);
-        $queryComponents['tdf']['metadata']->method('getTypeOfField')->willReturn('string');
-
         // Create WhereWalker instance
-        $whereWalker = new WhereWalker($query, $parserResult, $queryComponents);
+        $whereWalker = new WhereWalker($this->query, $this->parserResult, $this->queryComponents);
 
         // Invoke walkSelectStatement
         $whereWalker->walkSelectStatement($selectStatement);
 
-        // Assert that the whereClause is still present and contains a ConditionalTerm with an additional factor
+        // Assert that the whereClause is still present and contains a ConditionalExpression with an additional factor
         $this->assertInstanceOf(WhereClause::class, $selectStatement->whereClause);
         $this->assertInstanceOf(ConditionalExpression::class, $selectStatement->whereClause->conditionalExpression);
         $this->assertGreaterThanOrEqual(2, count($selectStatement->whereClause->conditionalExpression->conditionalTerms[0]->conditionalFactors));
