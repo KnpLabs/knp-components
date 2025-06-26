@@ -221,7 +221,7 @@ class WhereWalker extends TreeWalkerAdapter
             return $this->isExpressionInFilterExpressions($node->simpleConditionalExpression, $filterExpressions);
         }
         if ($node->isConditionalExpression()) {
-           if($node->conditionalExpression instanceof ConditionalExpression) {
+           if ($node->conditionalExpression instanceof ConditionalExpression) {
                 return $this->expressionContainsFilter($node->conditionalExpression, $filterExpressions);
             } elseif ($node->conditionalExpression instanceof ConditionalTerm) {
                 return $this->termContainsFilter($node->conditionalExpression, $filterExpressions);
