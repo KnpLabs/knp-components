@@ -71,21 +71,20 @@ class OrderByWalker extends TreeWalkerAdapter
             $orderByItem->type = $direction;
 
             if ($AST->orderByClause) {
-                $set = false;
-                foreach ($AST->orderByClause->orderByItems as $item) {
+                $orderByItems = &$AST->orderByClause->orderByItems;
+                foreach ($orderByItems as $orderByIndex => $item) {
                     if (
                         $item->expression instanceof PathExpression &&
                         $item->expression->identificationVariable === $alias &&
                         $item->expression->field === $field
                     ) {
-                        $item->type = $direction;
-                        $set = true;
+                        unset($orderByItems[$orderByIndex]);
+
                         break;
                     }
                 }
-                if (!$set) {
-                    array_unshift($AST->orderByClause->orderByItems, $orderByItem);
-                }
+
+                array_unshift($orderByItems, $orderByItem);
             } else {
                 $AST->orderByClause = new OrderByClause([$orderByItem]);
             }
