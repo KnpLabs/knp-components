@@ -92,6 +92,10 @@ class ArraySubscriber implements EventSubscriberInterface
         return usort($target, [$this, 'sortFunction']);
     }
 
+    /**
+     * @param array<array-key, mixed>|object $object1
+     * @param array<array-key, mixed>|object $object2
+     */
     private function sortFunction(object|array $object1, object|array $object2): int
     {
         if (null === $this->propertyAccessor) {

@@ -35,7 +35,6 @@ class QuerySubscriber implements EventSubscriberInterface
                 if (is_null($reflectionProperty)) {
                     $reflectionClass = new \ReflectionClass(Query::class);
                     $reflectionProperty = $reflectionClass->getProperty('query');
-                    $reflectionProperty->setAccessible(true);
                 }
                 $queryOptions = $reflectionProperty->getValue($event->target);
 

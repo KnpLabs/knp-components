@@ -3,21 +3,12 @@
 namespace Knp\Component\Pager\Event\Subscriber\Paginate\Callback;
 
 /**
- * Callback pagination.
- *
  * @author Piotr Pelczar <me@athlan.pl>
  */
 class CallbackPagination
 {
-    /**
-     * @var callable
-     */
-    private $count;
-
-    /**
-     * @var callable
-     */
-    private $items;
+    private readonly mixed $count;
+    private readonly mixed $items;
 
     public function __construct(callable $count, callable $items)
     {

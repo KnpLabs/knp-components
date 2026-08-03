@@ -12,7 +12,8 @@ use ArrayAccess, Countable, Traversable;
  * @template TKey
  * @template TValue
  *
- * @template-extends Traversable<TKey, TValue>
+ * @extends Traversable<TKey, TValue>
+ * @extends ArrayAccess<TKey, TValue>
  */
 interface PaginationInterface extends Countable, Traversable, ArrayAccess
 {

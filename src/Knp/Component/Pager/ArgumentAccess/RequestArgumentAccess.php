@@ -5,9 +5,9 @@ namespace Knp\Component\Pager\ArgumentAccess;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-final class RequestArgumentAccess implements ArgumentAccessInterface
+final readonly class RequestArgumentAccess implements ArgumentAccessInterface
 {
-    public function __construct(private readonly RequestStack $requestStack)
+    public function __construct(private RequestStack $requestStack)
     {
     }
 

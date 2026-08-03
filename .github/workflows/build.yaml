@@ -1,6 +1,6 @@
 name: build
 
-on: 
+on:
     push:
         branches:
             - '**'
@@ -16,9 +16,9 @@ jobs:
         name: PHPStan
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
             - name: PHPStan
-              uses: docker://oskarstark/phpstan-ga:1.8.0
+              uses: docker://oskarstark/phpstan-ga
               env:
                   REQUIRE_DEV: true
                   CHECK_PLATFORM_REQUIREMENTS: false
@@ -29,7 +29,7 @@ jobs:
         name: PHP-CS-Fixer
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
             - name: Fix CS
               uses: docker://oskarstark/php-cs-fixer-ga
               with:
@@ -41,37 +41,30 @@ jobs:
             matrix:
                 include:
                     - description: 'Lowest'
-                      php: '8.1'
-                      composer_option: '--prefer-lowest'
-                    - description: '8.1'
-                      php: '8.1'
-                    - description: '8.2'
                       php: '8.2'
+                      dependencies: lowest
                     - description: '8.3'
                       php: '8.3'
-                    - description: 'Dev deps'
+                    - description: '8.4'
                       php: '8.4'
-                      dev: true
+                    - description: '8.5'
+                      php: '8.5'
         name: PHP ${{ matrix.php }} tests (${{ matrix.description }})
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
-            - name: Cache
-              uses: actions/cache@v4
-              with:
-                  path: ~/.composer/cache/files
-                  key: ${{ matrix.php }}-${{ matrix.symfony }}-${{ matrix.composer_option }} 
+              uses: actions/checkout@v7
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
                   extensions: mongodb-stable, pdo_sqlite
-            - name: Configure for PHP 8.1
-              run: composer require --dev --no-update laminas/laminas-code 4.12.0
-              if: matrix.php == '8.1'
             - name: Go for dev dependencies
               run: composer config minimum-stability dev && composer config prefer-stable true
               if: matrix.dev
-            - run: composer update --no-interaction --no-progress --ansi ${{ matrix.composer_option }}
-            - run: vendor/bin/phpunit
+            - name: Install dependencies
+              uses: ramsey/composer-install@v4
+              with:
+                  dependency-versions: ${{ matrix.dependencies }}
+            - name: Run tests
+              run: vendor/bin/phpunit --colors=always
 
