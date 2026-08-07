@@ -31,8 +31,7 @@ class DBALQueryBuilderSubscriber implements EventSubscriberInterface
                 ->setParameters($target->getParameters(), $target->getParameterTypes())
             ;
 
-            $compat = $qb->executeQuery();
-            $event->count = method_exists($compat, 'fetchColumn') ? $compat->fetchColumn(0) : $compat->fetchOne();
+            $event->count = (int) $qb->executeQuery()->fetchOne();
 
             // if there is results
             $event->items = [];

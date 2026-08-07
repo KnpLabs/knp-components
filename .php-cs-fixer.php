@@ -9,9 +9,9 @@ $finder = PhpCsFixer\Finder::create()
 return (new PhpCsFixer\Config())
     ->setRiskyAllowed(true)
     ->setRules([
-        '@PHP80Migration:risky' => true,
-        '@PHP81Migration' => true,
-        '@PHPUnit100Migration:risky' => true,
+        '@PHP8x0Migration:risky' => true,
+        '@PHP8x2Migration' => true,
+        '@PHPUnit10x0Migration:risky' => true,
         'array_syntax' => ['syntax' => 'short'],
         'ordered_imports' => true,
         'declare_strict_types' => false,

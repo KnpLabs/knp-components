@@ -8,13 +8,14 @@ use Iterator;
  * @template TKey
  * @template TValue
  *
+ * @template-implements Iterator<TKey, TValue>
  * @template-implements PaginationInterface<TKey, TValue>
  */
 abstract class AbstractPagination implements Iterator, PaginationInterface
 {
     protected ?int $currentPageNumber = null;
     protected ?int $numItemsPerPage = null;
-    /** @var iterable<int, mixed>|object */
+    /** @var iterable<TKey, TValue> */
     protected iterable $items = [];
     protected ?int $totalCount = null;
     /** @var array<string, mixed>  */
