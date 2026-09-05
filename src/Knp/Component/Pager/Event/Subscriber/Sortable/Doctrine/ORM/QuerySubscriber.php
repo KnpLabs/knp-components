@@ -27,8 +27,6 @@ class QuerySubscriber implements EventSubscriberInterface
             $sortField = $event->options[PaginatorInterface::SORT_FIELD_PARAMETER_NAME];
             $sortDir = $event->options[PaginatorInterface::SORT_DIRECTION_PARAMETER_NAME];
             if (null !== $sortField && $argumentAccess->has($sortField)) {
-                $dir = null !== $sortDir && $argumentAccess->has($sortDir) && strtolower($argumentAccess->get($sortDir)) === 'asc' ? 'asc' : 'desc';
-
                 if (isset($event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST]) && !in_array($argumentAccess->get($sortField), $event->options[PaginatorInterface::SORT_FIELD_ALLOW_LIST])) {
                     throw new InvalidValueException("Cannot sort by: [{$argumentAccess->get($sortField)}] this field is not in allow list.");
                 }
@@ -50,7 +48,10 @@ class QuerySubscriber implements EventSubscriberInterface
                 }
 
                 $event->target
-                    ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_DIRECTION, $dir)
+                    ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_DIRECTION, $this->resolveDirections(
+                        null !== $sortDir && $argumentAccess->has($sortDir) ? $argumentAccess->get($sortDir) : null,
+                        count($fields)
+                    ))
                     ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_FIELD, $fields)
                     ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_ALIAS, $aliases)
                 ;
@@ -58,6 +59,31 @@ class QuerySubscriber implements EventSubscriberInterface
                 QueryHelper::addCustomTreeWalker($event->target, OrderByWalker::class);
             }
         }
+    }
+
+    /**
+     * Directions are given the same way as the fields, joined by a "+", and are matched to them by
+     * position. A single direction therefore applies to every field, and a missing one repeats the
+     * last given direction.
+     *
+     * @return list<string>
+     */
+    private function resolveDirections(mixed $sortDirectionParameterValue, int $fieldCount): array
+    {
+        if (null !== $sortDirectionParameterValue && !is_string($sortDirectionParameterValue)) {
+            throw new InvalidValueException('Cannot sort with array parameter.');
+        }
+
+        $directions = [];
+        foreach (explode('+', (string) $sortDirectionParameterValue) as $direction) {
+            $directions[] = 'asc' === strtolower($direction) ? 'asc' : 'desc';
+        }
+
+        $directions = array_pad($directions, $fieldCount, end($directions));
+
+        // Directions in excess are dropped, and the fields were prepended one by one, so the
+        // directions have to follow that same order.
+        return array_reverse(array_slice($directions, 0, $fieldCount));
     }
 
     public static function getSubscribedEvents(): array

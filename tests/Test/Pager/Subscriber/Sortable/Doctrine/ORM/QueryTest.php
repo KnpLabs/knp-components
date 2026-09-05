@@ -121,6 +121,61 @@ final class QueryTest extends BaseTestCaseORM
     }
 
     #[Test]
+    public function shouldSortByMultipleFieldsWithOneDirectionEach(): void
+    {
+        $this->assertOrderBy(
+            ['sort' => 'a.enabled+a.title', 'direction' => 'desc+asc'],
+            'a0_.enabled DESC, a0_.title ASC'
+        );
+    }
+
+    #[Test]
+    public function shouldApplyASingleDirectionToEveryField(): void
+    {
+        $this->assertOrderBy(
+            ['sort' => 'a.enabled+a.title', 'direction' => 'desc'],
+            'a0_.enabled DESC, a0_.title DESC'
+        );
+    }
+
+    #[Test]
+    public function shouldRepeatTheLastDirectionWhenFewerThanTheFields(): void
+    {
+        $this->assertOrderBy(
+            ['sort' => 'a.enabled+a.title+a.id', 'direction' => 'asc+desc'],
+            'a0_.enabled ASC, a0_.title DESC, a0_.id DESC'
+        );
+    }
+
+    #[Test]
+    public function shouldIgnoreTheDirectionsInExcessOfTheFields(): void
+    {
+        $this->assertOrderBy(
+            ['sort' => 'a.enabled', 'direction' => 'asc+desc'],
+            'a0_.enabled ASC'
+        );
+    }
+
+    #[Test]
+    public function shouldAcceptTheDefaultSortDirectionAsAnArray(): void
+    {
+        $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
+
+        $p = $this->getPaginatorInstance($this->createRequestStack([]));
+
+        $this->startQueryLog();
+        $query = $this->em->createQuery('SELECT a FROM Test\Fixture\Entity\Article a');
+        $p->paginate($query, 1, 10, [
+            PaginatorInterface::DEFAULT_SORT_FIELD_NAME => ['a.enabled', 'a.title'],
+            PaginatorInterface::DEFAULT_SORT_DIRECTION => ['desc', 'asc'],
+        ]);
+
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+        $this->assertStringContainsString('ORDER BY a0_.enabled DESC, a0_.title ASC', end($executed));
+    }
+
+    #[Test]
     public function shouldValidateSortableParameters(): void
     {
         $this->expectException(\UnexpectedValueException::class);
@@ -224,6 +279,30 @@ final class QueryTest extends BaseTestCaseORM
     protected function getUsedEntityFixtures(): array
     {
         return [Article::class];
+    }
+
+    /**
+     * @param array<string, mixed> $requestParameters
+     */
+    private function assertOrderBy(array $requestParameters, string $expectedOrderBy): void
+    {
+        $em = $this->getMockSqliteEntityManager();
+        $this->populate($em);
+
+        $requestStack = $this->createRequestStack($requestParameters);
+        $accessor = new RequestArgumentAccess($requestStack);
+        $dispatcher = new EventDispatcher;
+        $dispatcher->addSubscriber(new PaginationSubscriber);
+        $dispatcher->addSubscriber(new Sortable($accessor));
+        $p = new Paginator($dispatcher, $accessor);
+
+        $this->startQueryLog();
+        $query = $this->em->createQuery('SELECT a FROM Test\\Fixture\\Entity\\Article a');
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+        $p->paginate($query, 1, 10);
+
+        $executed = $this->queryAnalyzer->getExecutedQueries();
+        $this->assertStringContainsString('ORDER BY '.$expectedOrderBy, end($executed));
     }
 
     private function populate(EntityManager $em): void
