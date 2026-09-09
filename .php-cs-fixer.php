@@ -13,6 +13,7 @@ return (new PhpCsFixer\Config())
         '@PHP8x2Migration' => true,
         '@PHPUnit10x0Migration:risky' => true,
         'array_syntax' => ['syntax' => 'short'],
+        'cast_spaces' => true,
         'ordered_imports' => true,
         'declare_strict_types' => false,
         'php_unit_mock_short_will_return' => true,
