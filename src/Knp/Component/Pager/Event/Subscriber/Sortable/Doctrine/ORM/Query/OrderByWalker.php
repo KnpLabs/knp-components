@@ -40,7 +40,7 @@ class OrderByWalker extends TreeWalkerAdapter
         $fields = (array)$query->getHint(self::HINT_PAGINATOR_SORT_FIELD);
         $aliases = (array)$query->getHint(self::HINT_PAGINATOR_SORT_ALIAS);
         // One direction per field, but a single one is still accepted and then applies to all of them.
-        $directions = (array)$query->getHint(self::HINT_PAGINATOR_SORT_DIRECTION);
+        $directions = (array) $query->getHint(self::HINT_PAGINATOR_SORT_DIRECTION);
 
         $components = $this->getQueryComponents();
         foreach ($fields as $index => $field) {

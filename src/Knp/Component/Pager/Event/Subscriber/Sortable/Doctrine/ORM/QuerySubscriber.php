@@ -38,6 +38,11 @@ class QuerySubscriber implements EventSubscriberInterface
                     throw new InvalidValueException('Cannot sort with array parameter.');
                 }
 
+                $sortDirectionParameterValue = null !== $sortDir && $argumentAccess->has($sortDir) ? $argumentAccess->get($sortDir) : null;
+                if (null !== $sortDirectionParameterValue && !is_string($sortDirectionParameterValue)) {
+                    throw new InvalidValueException('Cannot sort with array parameter.');
+                }
+
                 foreach (explode('+', $sortFieldParameterNames) as $sortFieldParameterName) {
                     $parts = explode('.', $sortFieldParameterName, 2);
 
@@ -48,10 +53,7 @@ class QuerySubscriber implements EventSubscriberInterface
                 }
 
                 $event->target
-                    ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_DIRECTION, $this->resolveDirections(
-                        null !== $sortDir && $argumentAccess->has($sortDir) ? $argumentAccess->get($sortDir) : null,
-                        count($fields)
-                    ))
+                    ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_DIRECTION, $this->resolveDirections($sortDirectionParameterValue, count($fields)))
                     ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_FIELD, $fields)
                     ->setHint(OrderByWalker::HINT_PAGINATOR_SORT_ALIAS, $aliases)
                 ;
@@ -68,12 +70,8 @@ class QuerySubscriber implements EventSubscriberInterface
      *
      * @return list<string>
      */
-    private function resolveDirections(mixed $sortDirectionParameterValue, int $fieldCount): array
+    private function resolveDirections(?string $sortDirectionParameterValue, int $fieldCount): array
     {
-        if (null !== $sortDirectionParameterValue && !is_string($sortDirectionParameterValue)) {
-            throw new InvalidValueException('Cannot sort with array parameter.');
-        }
-
         $directions = [];
         foreach (explode('+', (string) $sortDirectionParameterValue) as $direction) {
             $directions[] = 'asc' === strtolower($direction) ? 'asc' : 'desc';
