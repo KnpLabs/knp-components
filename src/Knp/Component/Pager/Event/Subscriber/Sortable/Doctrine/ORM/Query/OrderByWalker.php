@@ -39,6 +39,8 @@ class OrderByWalker extends TreeWalkerAdapter
         $query = $this->_getQuery();
         $fields = (array)$query->getHint(self::HINT_PAGINATOR_SORT_FIELD);
         $aliases = (array)$query->getHint(self::HINT_PAGINATOR_SORT_ALIAS);
+        // One direction per field, but a single one is still accepted and then applies to all of them.
+        $directions = (array) $query->getHint(self::HINT_PAGINATOR_SORT_DIRECTION);
 
         $components = $this->getQueryComponents();
         foreach ($fields as $index => $field) {
@@ -59,7 +61,7 @@ class OrderByWalker extends TreeWalkerAdapter
                 throw new InvalidValueException("There is no component field [$field] in the given Query");
             }
 
-            $direction = $query->getHint(self::HINT_PAGINATOR_SORT_DIRECTION);
+            $direction = $directions[$index] ?? $directions[array_key_last($directions)];
             if ($alias !== false) {
                 $pathExpression = new PathExpression(PathExpression::TYPE_STATE_FIELD, $alias, $field);
                 $pathExpression->type = PathExpression::TYPE_STATE_FIELD;

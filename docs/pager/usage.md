@@ -111,6 +111,21 @@ $pagination = $paginator->paginate($query, 1/*page number*/, 20/*limit per page*
 The Paginator will add an `ORDER BY` automatically for each attribute for the
 `defaultSortFieldName` option.
 
+Each column can also get its own direction, given in the same order as the fields:
+
+```php
+$pagination = $paginator->paginate($query, 1/*page number*/, 20/*limit per page*/, [
+    'defaultSortFieldName' => ['u.lastname', 'u.firstname'],
+    'defaultSortDirection' => ['desc', 'asc'],
+]);
+```
+
+The same applies to the `sort` and `direction` request parameters, where both are joined
+by a `+`: `?sort=u.lastname%2Bu.firstname&direction=desc%2Basc`. A single direction still
+applies to every field, when fewer directions than fields are given the last one is
+repeated for the remaining fields, and any direction beyond the number of fields is
+ignored.
+
 ## Filtering database query results by multiple columns (only Doctrine ORM and Propel)
 
 You can also filter the result of a database query by multiple columns.
