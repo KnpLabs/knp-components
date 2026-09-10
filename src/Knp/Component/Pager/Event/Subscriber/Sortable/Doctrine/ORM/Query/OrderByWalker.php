@@ -37,8 +37,8 @@ class OrderByWalker extends TreeWalkerAdapter
     public function walkSelectStatement(SelectStatement $AST): void
     {
         $query = $this->_getQuery();
-        $fields = (array)$query->getHint(self::HINT_PAGINATOR_SORT_FIELD);
-        $aliases = (array)$query->getHint(self::HINT_PAGINATOR_SORT_ALIAS);
+        $fields = (array) $query->getHint(self::HINT_PAGINATOR_SORT_FIELD);
+        $aliases = (array) $query->getHint(self::HINT_PAGINATOR_SORT_ALIAS);
 
         $components = $this->getQueryComponents();
         foreach ($fields as $index => $field) {
