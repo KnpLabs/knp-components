@@ -130,11 +130,11 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
      */
     public function offsetExists($offset): bool
     {
-        if ($this->items instanceof \ArrayIterator) {
-            return array_key_exists($offset, iterator_to_array($this->items));
+        if (is_array($this->items)) {
+            return array_key_exists($offset, $this->items);
         }
 
-        return array_key_exists($offset, $this->items);
+        return array_key_exists($offset, iterator_to_array($this->items));
     }
 
     /**
