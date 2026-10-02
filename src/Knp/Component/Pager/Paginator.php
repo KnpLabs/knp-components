@@ -75,6 +75,11 @@ final class Paginator implements PaginatorInterface
             $options[PaginatorInterface::DEFAULT_SORT_FIELD_NAME] = implode('+', $options[PaginatorInterface::DEFAULT_SORT_FIELD_NAME]);
         }
 
+        // normalize default sort direction, given per field like the field names
+        if (isset($options[PaginatorInterface::DEFAULT_SORT_DIRECTION]) && is_array($options[PaginatorInterface::DEFAULT_SORT_DIRECTION])) {
+            $options[PaginatorInterface::DEFAULT_SORT_DIRECTION] = implode('+', $options[PaginatorInterface::DEFAULT_SORT_DIRECTION]);
+        }
+
         $argumentAccess = $this->argumentAccess;
         
         // default sort field and direction are set based on options (if available)
