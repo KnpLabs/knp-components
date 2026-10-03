@@ -5,7 +5,7 @@ namespace Knp\Component\Pager;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 
 /**
- * PaginatorInterface
+ * Paginates any target, such as a query or an array, into a pagination object.
  */
 interface PaginatorInterface
 {
