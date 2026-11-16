@@ -54,6 +54,9 @@ class OrderByWalker extends TreeWalkerAdapter
                     throw new InvalidValueException("There is no component aliased by [$alias] in the given Query");
                 }
                 $meta = $components[$alias];
+                if (!isset($meta['metadata'])) {
+                    throw new InvalidValueException($this->getResultAliasMessage($AST, $alias, $field));
+                }
                 if (!$meta['metadata']->hasField($field)) {
                     throw new InvalidValueException("There is no such field [$field] in the given Query component, aliased by [$alias]");
                 }
@@ -92,5 +95,20 @@ class OrderByWalker extends TreeWalkerAdapter
                 $AST->orderByClause = new OrderByClause([$orderByItem]);
             }
         }
+    }
+
+    /**
+     * Result variables (SELECT s AS sector) are query components without metadata, so they have no fields
+     */
+    private function getResultAliasMessage(SelectStatement $AST, string $alias, string $field): string
+    {
+        $message = "[$alias] is a result alias, not an entity alias";
+        foreach ($AST->selectClause->selectExpressions as $selectExpression) {
+            if ($selectExpression->fieldIdentificationVariable === $alias && \is_string($selectExpression->expression)) {
+                return "$message: sort by [{$selectExpression->expression}.$field] instead";
+            }
+        }
+
+        return $message;
     }
 }
