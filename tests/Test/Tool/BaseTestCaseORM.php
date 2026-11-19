@@ -8,6 +8,7 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Logging\Middleware;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
@@ -238,6 +239,14 @@ abstract class BaseTestCaseORM extends BaseTestCase
             ->method('getQuoteStrategy')
             ->willReturn(new DefaultQuoteStrategy())
         ;
+
+        // DBAL 4.6+ resolves the column types through the configuration
+        if (method_exists(Configuration::class, 'getTypeProvider')) {
+            $config
+                ->method('getTypeProvider')
+                ->willReturn(Type::getTypeRegistry())
+            ;
+        }
 
         $config
             ->method('getNamingStrategy')
