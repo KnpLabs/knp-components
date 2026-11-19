@@ -10,9 +10,11 @@ use Knp\Component\Pager\ArgumentAccess\RequestArgumentAccess;
 use Knp\Component\Pager\Event\Subscriber\Paginate\Doctrine\ORM\QuerySubscriber;
 use Knp\Component\Pager\Event\Subscriber\Paginate\PaginationSubscriber;
 use Knp\Component\Pager\Event\Subscriber\Sortable\Doctrine\ORM\QuerySubscriber as Sortable;
+use Knp\Component\Pager\Exception\InvalidValueException;
 use Knp\Component\Pager\Pagination\SlidingPagination;
 use Knp\Component\Pager\Paginator;
 use Knp\Component\Pager\PaginatorInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Test\Fixture\Entity\Article;
@@ -212,6 +214,33 @@ final class QueryTest extends BaseTestCaseORM
         $executed = $this->queryAnalyzer->getExecutedQueries();
 
         $this->assertEquals('SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.enabled AS enabled_2, COUNT(a0_.id) AS sclr_3 FROM Article a0_ ORDER BY sclr_3 ASC LIMIT 10', $executed[1]);
+    }
+
+    #[Test]
+    #[DataProvider('provideResultAliasSorts')]
+    public function shouldNotSortByAFieldOfAResultAlias(string $sort, string $expectedMessage): void
+    {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage($expectedMessage);
+
+        $query = $this
+            ->getMockSqliteEntityManager()
+            ->createQuery('SELECT a AS article, COUNT(a) AS counter FROM Test\Fixture\Entity\Article a')
+        ;
+        $query->setHint(QuerySubscriber::HINT_FETCH_JOIN_COLLECTION, false);
+
+        $requestStack = $this->createRequestStack(['sort' => $sort, 'direction' => 'asc']);
+        $p = $this->getPaginatorInstance($requestStack);
+        $p->paginate($query, 1, 10, [PaginatorInterface::DISTINCT => false]);
+    }
+
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public static function provideResultAliasSorts(): iterable
+    {
+        yield 'entity selected under a result alias' => ['article.title', '[article] is a result alias, not an entity alias: sort by [a.title] instead'];
+        yield 'scalar result alias' => ['counter.title', '[counter] is a result alias, not an entity alias'];
     }
 
     #[Test]
